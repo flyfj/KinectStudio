@@ -1,0 +1,31 @@
+﻿<Window x:Class="KinectMotionAnalyzer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:KinectMotionAnalyzer.Processors"
+        Title="MainWindow" Height="722" Width="834" Closing="Window_Closing">
+    <Window.Resources>
+        <local:KinectDataStreamManager x:Key="datamanager"></local:KinectDataStreamManager>
+    </Window.Resources>
+    <Grid ShowGridLines="False" DataContext="{StaticResource datamanager}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height ="Auto" />
+            <RowDefinition Height="84" />
+            <RowDefinition Height="416*" />
+        </Grid.RowDefinitions>
+        <Border BorderBrush="Silver" BorderThickness="1" Height="20" HorizontalAlignment="Left" Name="border1" VerticalAlignment="Top" Width="826" Background="#FF9AE81E"></Border>
+        <Button Grid.Row="1" Content="Start Kinect" Height="35" HorizontalAlignment="Left" Margin="565,25,0,0" Name="runBtn" VerticalAlignment="Top" Width="115" Click="runBtn_Click" />
+        <Image Grid.Row="2" Height="533" HorizontalAlignment="Left" Margin="12,34,0,0" Name="display_image" Stretch="Fill" VerticalAlignment="Top" Width="788" Source="{Binding StreamDataBitmap}"/>
+        <GroupBox Grid.Row="1" Header="Steams" Height="60" HorizontalAlignment="Left" Margin="120,8,0,0" Name="groupBox1" VerticalAlignment="Top" Width="415">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="403*" />
+                    <ColumnDefinition Width="0*" />
+                </Grid.ColumnDefinitions>
+                <RadioButton Content="Color Stream" Height="16" HorizontalAlignment="Left" Margin="23,10,0,0" Name="colorBtn" VerticalAlignment="Top" IsChecked="True" />
+                <RadioButton Content="Depth Stream" Height="16" HorizontalAlignment="Left" Margin="140,10,0,0" Name="depthBtn" VerticalAlignment="Top" />
+                <RadioButton Content="Skeleton Stream" Height="16" HorizontalAlignment="Left" Margin="271,10,0,0" Name="skeletonBtn" VerticalAlignment="Top" />
+            </Grid>
+        </GroupBox>
+        <Border Background="#FF9AE81E" BorderBrush="Silver" BorderThickness="1" Height="20" Name="border2" Margin="0,0,0,559" Grid.Row="2" />
+    </Grid>
+</Window>
