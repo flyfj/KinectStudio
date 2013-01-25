@@ -27,12 +27,12 @@ namespace KinectMotionAnalyzer
         private KinectDataStreamManager kinect_data_manager;
         private KinectSensor kinect_sensor;
 
+
         public MainWindow()
         {
             InitializeComponent();
 
             kinect_data_manager = new KinectDataStreamManager();
-            display_image.Source = kinect_data_manager.StreamDataBitmap;
 
             if (!InitKinect())
                 MessageBox.Show("Kinect not connected.");
@@ -57,14 +57,23 @@ namespace KinectMotionAnalyzer
             if (kinect_sensor != null)
             {
                 kinect_sensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
+
+                kinect_data_manager.StreamDataBitmap = new WriteableBitmap(
+                    kinect_sensor.ColorStream.FrameWidth, kinect_sensor.ColorStream.FrameHeight, 96, 96,
+                    PixelFormats.Bgr32, null);
+
+                // set source (must after source has been initialized otherwise it's null forever)
+                display_image.Source = kinect_data_manager.StreamDataBitmap;
+
                 kinect_sensor.DepthStream.Enable(DepthImageFormat.Resolution320x240Fps30);
                 kinect_sensor.SkeletonStream.Enable();
-                kinect_sensor.ColorStream.Enable(ColorImageFormat.InfraredResolution640x480Fps30);
+
+                // can't use IR simultaneously with color
+                //kinect_sensor.ColorStream.Enable(ColorImageFormat.InfraredResolution640x480Fps30);
             }
             else
                 return false;
 
-            //MessageBox.Show("Kinect enabled.");
 
             kinect_sensor.ColorFrameReady += kinect_colorframe_ready;
             kinect_sensor.DepthFrameReady += kinect_depthframe_ready;
@@ -72,10 +81,14 @@ namespace KinectMotionAnalyzer
             return true;
         }
 
+
         // data ready handlers
         void kinect_colorframe_ready(object sender, ColorImageFrameReadyEventArgs e)
         {
-            using (var frame = e.OpenColorImageFrame())
+            if ( !colorRadioBtn.IsChecked.Value )
+                return;
+
+            using (ColorImageFrame frame = e.OpenColorImageFrame())
             {
                 if (frame == null)
                     return;
@@ -86,7 +99,10 @@ namespace KinectMotionAnalyzer
 
         void kinect_depthframe_ready(object sender, DepthImageFrameReadyEventArgs e)
         {
-            using (var frame = e.OpenDepthImageFrame())
+            if (!depthRadioBtn.IsChecked.Value)
+                return;
+
+            using (DepthImageFrame frame = e.OpenDepthImageFrame())
             {
                 if (frame == null)
                     return;
@@ -97,7 +113,10 @@ namespace KinectMotionAnalyzer
 
         void kinect_skeletonframe_ready(object sender, SkeletonFrameReadyEventArgs e)
         {
-            using (var frame = e.OpenSkeletonFrame())
+            if (!skeletonRadioBtn.IsChecked.Value)
+                return;
+
+            using (SkeletonFrame frame = e.OpenSkeletonFrame())
             {
                 if (frame == null)
                     return;

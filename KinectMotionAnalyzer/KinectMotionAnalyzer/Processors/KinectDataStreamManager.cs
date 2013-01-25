@@ -13,6 +13,9 @@ using System.Linq.Expressions;
 namespace KinectMotionAnalyzer.Processors
 {
 
+    /// <summary>
+    /// notifier class used to notify ui when data is updated
+    /// </summary>
     public abstract class Notifier: INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -39,7 +42,7 @@ namespace KinectMotionAnalyzer.Processors
     /// <summary>
     /// used for fetch data and update UI
     /// </summary>
-    public class KinectDataStreamManager: Notifier
+    public class KinectDataStreamManager
     {
         // data property
         public WriteableBitmap StreamDataBitmap;
@@ -50,12 +53,14 @@ namespace KinectMotionAnalyzer.Processors
         // Intermediate storage for the depth data received from the camera
         private DepthImagePixel[] depthPixels;
 
+
+        // update functions
         public void UpdateColorData(ColorImageFrame frame)
         {
             // update property value
             if (colorPixelData == null)
             {
-                colorPixelData = new byte[frame.PixelDataLength];
+                colorPixelData = new byte[frame.PixelDataLength];    // always BGR32
             }
 
             frame.CopyPixelDataTo(colorPixelData);
@@ -66,17 +71,23 @@ namespace KinectMotionAnalyzer.Processors
                     PixelFormats.Bgr32, null);
             }
 
-            int stride = frame.Width * sizeof(int);
-            Int32Rect drawRect = new Int32Rect(0, 0, frame.Width, frame.Height);
+            int stride = StreamDataBitmap.PixelWidth * sizeof(int);
+            Int32Rect drawRect = new Int32Rect(0, 0, StreamDataBitmap.PixelWidth, StreamDataBitmap.PixelHeight);
             StreamDataBitmap.WritePixels(drawRect, colorPixelData, stride, 0);
 
             // notify...
-            RaisePropertyChanged(() => StreamDataBitmap);
+            //RaisePropertyChanged(() => StreamDataBitmap);
 
         }
 
         public void UpdateDepthData(DepthImageFrame frame)
         {
+
+            if (colorPixelData == null)
+            {
+                colorPixelData = new byte[frame.Width * frame.Height * sizeof(int)];    // always BGR32
+            }
+
             if (depthPixels == null)
             {
                 depthPixels = new DepthImagePixel[frame.PixelDataLength];
