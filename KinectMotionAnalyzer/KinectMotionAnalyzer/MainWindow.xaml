@@ -3,9 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:KinectMotionAnalyzer.Processors"
         Title="MainWindow" Height="722" Width="834" Closing="Window_Closing">
-    <Window.Resources>
-        <local:KinectDataStreamManager x:Key="datamanager"></local:KinectDataStreamManager>
-    </Window.Resources>
     <Grid ShowGridLines="False">
         <Grid.RowDefinitions>
             <RowDefinition Height ="Auto" />
@@ -13,10 +10,10 @@
             <RowDefinition Height="416*" />
         </Grid.RowDefinitions>
         <Border BorderBrush="Silver" BorderThickness="1" Height="20" HorizontalAlignment="Left" Name="border1" VerticalAlignment="Top" Width="826" Background="#FF9AE81E"></Border>
-        <Button Grid.Row="1" Content="Start Kinect" Height="35" HorizontalAlignment="Left" Margin="439,30,0,0" Name="runBtn" VerticalAlignment="Top" Width="115" Click="runBtn_Click" />
-        <Image Grid.Row="2" Width="640" Height="480" HorizontalAlignment="Left" Margin="84,56,0,0" Name="display_image" VerticalAlignment="Top" />
+        <Button Grid.Row="1" Content="Start Kinect" Height="35" HorizontalAlignment="Left" Margin="545,30,0,0" Name="runBtn" VerticalAlignment="Top" Width="115" Click="runBtn_Click" />
+        <Image Grid.Row="2" Width="640" Height="480" HorizontalAlignment="Left" Margin="84,56,0,0" Name="display_image" VerticalAlignment="Top" Stretch="None" />
         <Border Background="#FF9AE81E" BorderBrush="Silver" BorderThickness="1" Height="20" Name="border2" Margin="0,0,0,559" Grid.Row="2" />
-        <GroupBox Grid.Row="1" Header="Streams" Height="72" HorizontalAlignment="Left" Margin="174,6,0,0" Name="groupBox1" VerticalAlignment="Top" Width="200">
+        <GroupBox Grid.Row="1" Header="Streams" Height="72" HorizontalAlignment="Left" Margin="280,6,0,0" Name="groupBox1" VerticalAlignment="Top" Width="200">
             <Grid>
                 <ComboBox Height="23" HorizontalAlignment="Left" Margin="21,10,0,0" Name="streamCombBox" VerticalAlignment="Top" Width="149" SelectionChanged="streamCombBox_SelectionChanged" HorizontalContentAlignment="Center">
                     <ComboBoxItem Content="Color Stream" IsSelected="True" />
@@ -25,5 +22,6 @@
                 </ComboBox>
             </Grid>
         </GroupBox>
+        <Label Content="Kinect Status" Grid.Row="1" Height="28" HorizontalAlignment="Left" Margin="128,33,0,0" Name="kinectStatusLabel" VerticalAlignment="Top" Width="115" Background="{x:Null}" BorderThickness="1" HorizontalContentAlignment="Center" BorderBrush="Black" />
     </Grid>
 </Window>

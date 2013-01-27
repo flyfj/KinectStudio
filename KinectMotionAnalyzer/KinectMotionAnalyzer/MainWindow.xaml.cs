@@ -32,15 +32,17 @@ namespace KinectMotionAnalyzer
         {
             InitializeComponent();
 
-            kinect_data_manager = new KinectDataStreamManager();
-
             if (!InitKinect())
-                MessageBox.Show("Kinect not connected.");
+                kinectStatusLabel.Content = "Kinect not connected";
             else
-                MessageBox.Show("Kinect initialized.");
+                kinectStatusLabel.Content = "Kinect initialized";
+
         }
 
   
+        /// <summary>
+        /// initialize kinect sensor and init data members
+        /// </summary>
         private bool InitKinect()
         {
             // enumerate and fetch an available sensor
@@ -52,6 +54,9 @@ namespace KinectMotionAnalyzer
                     break;
                 }
             }
+
+            if (kinect_sensor != null)
+                kinect_data_manager = new KinectDataStreamManager(ref kinect_sensor);
 
             // enable data stream
             if (kinect_sensor != null)
@@ -68,21 +73,25 @@ namespace KinectMotionAnalyzer
                 //kinect_sensor.DepthStream.Enable(DepthImageFormat.Resolution320x240Fps30);
                 //kinect_sensor.SkeletonStream.Enable();
 
-                // can't use IR simultaneously with color
+                // can't use IR simultaneously with color!
                 //kinect_sensor.ColorStream.Enable(ColorImageFormat.InfraredResolution640x480Fps30);
+
+                // bind event handlers
+                kinect_sensor.ColorFrameReady += kinect_colorframe_ready;
+                kinect_sensor.DepthFrameReady += kinect_depthframe_ready;
+                kinect_sensor.SkeletonFrameReady += kinect_skeletonframe_ready;
+
             }
             else
                 return false;
 
-            kinect_sensor.ColorFrameReady += kinect_colorframe_ready;
-            kinect_sensor.DepthFrameReady += kinect_depthframe_ready;
-            kinect_sensor.SkeletonFrameReady += kinect_skeletonframe_ready;
 
             return true;
         }
 
 
-        // data ready handlers
+#region data_ready_handlers
+
         void kinect_colorframe_ready(object sender, ColorImageFrameReadyEventArgs e)
         {
             if (streamCombBox.SelectedIndex != 0)
@@ -125,11 +134,14 @@ namespace KinectMotionAnalyzer
             }
         }
 
+#endregion
+        
 
-        //
+#region UI_control
+
         private void runBtn_Click(object sender, RoutedEventArgs e)
         {
-            if(runBtn.Content.ToString() == "Start Kinect")
+            if (runBtn.Content.ToString() == "Start Kinect")
             {
                 if (kinect_sensor != null)
                 {
@@ -164,20 +176,24 @@ namespace KinectMotionAnalyzer
             kinect_sensor.ColorStream.Disable();
             kinect_sensor.DepthStream.Disable();
             kinect_sensor.SkeletonStream.Disable();
-            
+
             // start selected stream
+            this.display_image.Source = kinect_data_manager.StreamDataBitmap;
             int cur_sel = (sender as ComboBox).SelectedIndex;
             if (cur_sel == 0)
                 kinect_sensor.ColorStream.Enable();
             if (cur_sel == 1)
                 kinect_sensor.DepthStream.Enable();
             if (cur_sel == 2)
-                kinect_sensor.SkeletonStream.Enable();    
+            {
+                // switch image source
+                this.display_image.Source = kinect_data_manager.skeletonImageSource;
+                kinect_sensor.SkeletonStream.Enable();
+            }
 
         }
 
-
-
+#endregion
 
 
     }
