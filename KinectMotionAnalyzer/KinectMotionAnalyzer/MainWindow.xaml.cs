@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,7 +35,10 @@ namespace KinectMotionAnalyzer
             InitializeComponent();
 
             if (!InitKinect())
+            {
                 kinectStatusLabel.Content = "Kinect not connected";
+                MessageBox.Show("Kinect not found.");
+            }
             else
                 kinectStatusLabel.Content = "Kinect initialized";
 
@@ -55,31 +60,46 @@ namespace KinectMotionAnalyzer
                 }
             }
 
+
             if (kinect_sensor != null)
                 kinect_data_manager = new KinectDataStreamManager(ref kinect_sensor);
 
             // enable data stream
             if (kinect_sensor != null)
             {
+                // initialize all streams
                 kinect_sensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
+                kinect_sensor.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
+                kinect_sensor.SkeletonStream.Enable();
+                // can't use IR simultaneously with color!
+                //kinect_sensor.ColorStream.Enable(ColorImageFormat.InfraredResolution640x480Fps30);
 
-                kinect_data_manager.StreamDataBitmap = new WriteableBitmap(
+                // initialize image sources
+                kinect_data_manager.ColorStreamBitmap = new WriteableBitmap(
                     kinect_sensor.ColorStream.FrameWidth, kinect_sensor.ColorStream.FrameHeight, 96, 96,
                     PixelFormats.Bgr32, null);
 
+                kinect_data_manager.DepthStreamBitmap = new WriteableBitmap(
+                    kinect_sensor.DepthStream.FrameWidth, kinect_sensor.DepthStream.FrameHeight, 96, 96,
+                    PixelFormats.Bgr32, null);
+
                 // set source (must after source has been initialized otherwise it's null forever)
-                display_image.Source = kinect_data_manager.StreamDataBitmap;
-
-                //kinect_sensor.DepthStream.Enable(DepthImageFormat.Resolution320x240Fps30);
-                //kinect_sensor.SkeletonStream.Enable();
-
-                // can't use IR simultaneously with color!
-                //kinect_sensor.ColorStream.Enable(ColorImageFormat.InfraredResolution640x480Fps30);
+                color_disp_img.Source = kinect_data_manager.ColorStreamBitmap;
+                depth_disp_img.Source = kinect_data_manager.DepthStreamBitmap;
+                skeleton_disp_img.Source = kinect_data_manager.skeletonImageSource;
 
                 // bind event handlers
                 kinect_sensor.ColorFrameReady += kinect_colorframe_ready;
                 kinect_sensor.DepthFrameReady += kinect_depthframe_ready;
                 kinect_sensor.SkeletonFrameReady += kinect_skeletonframe_ready;
+
+                // enable data stream based on initial check
+                if (!colorCheckBox.IsChecked.Value)
+                    kinect_sensor.ColorStream.Disable();
+                if (!depthCheckBox.IsChecked.Value)
+                    kinect_sensor.DepthStream.Disable();
+                if (!skeletonCheckBox.IsChecked.Value)
+                    kinect_sensor.SkeletonStream.Disable();
 
             }
             else
@@ -94,8 +114,6 @@ namespace KinectMotionAnalyzer
 
         void kinect_colorframe_ready(object sender, ColorImageFrameReadyEventArgs e)
         {
-            if (streamCombBox.SelectedIndex != 0)
-                return;
 
             using (ColorImageFrame frame = e.OpenColorImageFrame())
             {
@@ -108,8 +126,6 @@ namespace KinectMotionAnalyzer
 
         void kinect_depthframe_ready(object sender, DepthImageFrameReadyEventArgs e)
         {
-            if (streamCombBox.SelectedIndex != 1)
-                return;
 
             using (DepthImageFrame frame = e.OpenDepthImageFrame())
             {
@@ -122,8 +138,6 @@ namespace KinectMotionAnalyzer
 
         void kinect_skeletonframe_ready(object sender, SkeletonFrameReadyEventArgs e)
         {
-            if (streamCombBox.SelectedIndex != 2)
-                return;
 
             using (SkeletonFrame frame = e.OpenSkeletonFrame())
             {
@@ -141,17 +155,15 @@ namespace KinectMotionAnalyzer
 
         private void runBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (runBtn.Content.ToString() == "Start Kinect")
+
+            if (kinect_sensor != null)
             {
-                if (kinect_sensor != null)
+                if (!kinect_sensor.IsRunning)
                 {
                     kinect_sensor.Start();
                     runBtn.Content = "Stop Kinect";
                 }
-            }
-            else
-            {
-                if (kinect_sensor != null)
+                else
                 {
                     kinect_sensor.Stop();
                     runBtn.Content = "Start Kinect";
@@ -167,33 +179,88 @@ namespace KinectMotionAnalyzer
             }
         }
 
-        private void streamCombBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void colorCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             if (kinect_sensor == null)
                 return;
 
-            // stop current streams
-            kinect_sensor.ColorStream.Disable();
-            kinect_sensor.DepthStream.Disable();
-            kinect_sensor.SkeletonStream.Disable();
-
-            // start selected stream
-            this.display_image.Source = kinect_data_manager.StreamDataBitmap;
-            int cur_sel = (sender as ComboBox).SelectedIndex;
-            if (cur_sel == 0)
+            if (!kinect_sensor.ColorStream.IsEnabled)
                 kinect_sensor.ColorStream.Enable();
-            if (cur_sel == 1)
-                kinect_sensor.DepthStream.Enable();
-            if (cur_sel == 2)
-            {
-                // switch image source
-                this.display_image.Source = kinect_data_manager.skeletonImageSource;
-                kinect_sensor.SkeletonStream.Enable();
-            }
-
         }
 
+        private void colorCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (kinect_sensor == null)
+                return;
+
+            if (kinect_sensor.ColorStream.IsEnabled)
+                kinect_sensor.ColorStream.Disable();
+        }
+
+        private void depthCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            if (kinect_sensor == null)
+                return;
+
+            if (!kinect_sensor.DepthStream.IsEnabled)
+                kinect_sensor.DepthStream.Enable();
+        }
+
+        private void depthCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (kinect_sensor == null)
+                return;
+
+            if (kinect_sensor.DepthStream.IsEnabled)
+                kinect_sensor.DepthStream.Disable();
+        }
+
+        private void skeletonCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            if (kinect_sensor == null)
+                return;
+
+            if (!kinect_sensor.SkeletonStream.IsEnabled)
+                kinect_sensor.SkeletonStream.Enable();
+        }
+
+        private void skeletonCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (kinect_sensor == null)
+                return;
+
+            if (kinect_sensor.SkeletonStream.IsEnabled)
+                kinect_sensor.SkeletonStream.Disable();
+        }
+        
+
 #endregion
+
+        /// <summary>
+        /// Save current kinect data
+        /// </summary>
+        private void saveBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (kinect_sensor == null || !kinect_sensor.IsRunning)
+                return;
+
+
+            string time = System.DateTime.Now.ToString("hh'-'mm'-'ss", CultureInfo.CurrentUICulture.DateTimeFormat);
+
+            string myPhotos = "D:"; //Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+
+            string colorpath = myPhotos + "\\Kinect_color_" + time + ".png";
+            string depthpath = myPhotos + "\\Kinect_depth_" + time + ".txt";
+            string skeletonpath = myPhotos + "\\Kinect_skeleton_" + time + ".txt";
+
+            if (kinect_sensor.ColorStream.IsEnabled)
+                kinect_data_manager.SaveKinectData(kinect_data_manager.ColorStreamBitmap, colorpath, "COLOR");
+            if (kinect_sensor.DepthStream.IsEnabled)
+                kinect_data_manager.SaveKinectData(kinect_data_manager.depthPixels, depthpath, "DEPTH");
+            if (kinect_sensor.SkeletonStream.IsEnabled)
+                kinect_data_manager.SaveKinectData(kinect_data_manager.skeletons, skeletonpath, "SKELETON");
+            
+        }
 
 
     }

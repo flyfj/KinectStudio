@@ -1,4 +1,8 @@
-﻿using System;
+﻿
+
+using System.IO;
+using System;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -39,6 +43,7 @@ namespace KinectMotionAnalyzer.Processors
 
     }
 
+
     /// <summary>
     /// used for fetch data and update UI
     /// </summary>
@@ -48,13 +53,18 @@ namespace KinectMotionAnalyzer.Processors
         public KinectSensor sensor_ref;
 
         // data property
-        public WriteableBitmap StreamDataBitmap;
+        public WriteableBitmap ColorStreamBitmap;
+        public WriteableBitmap DepthStreamBitmap;
 
         // intermediate storage for color image pixel data
         private byte[] colorPixelData;
+        private byte[] depthPixelData;
 
         // Intermediate storage for the depth data received from the camera
-        private DepthImagePixel[] depthPixels;
+        public DepthImagePixel[] depthPixels;
+
+        // current skeleton data
+        public Skeleton[] skeletons;
 
 
         /// <summary>
@@ -85,6 +95,7 @@ namespace KinectMotionAnalyzer.Processors
         public DrawingImage skeletonImageSource;
 
 
+
         public KinectDataStreamManager(ref KinectSensor sensor)
         {
             if(sensor == null)
@@ -101,6 +112,85 @@ namespace KinectMotionAnalyzer.Processors
             this.skeletonImageSource = new DrawingImage(this.drawingGroup);
         }
 
+        public bool SaveKinectData(object data, string path, string type)
+        {
+            if (type == "COLOR" && data != null)    // save color image
+            {
+                WriteableBitmap img = data as WriteableBitmap;
+
+                // create a png bitmap encoder which knows how to save a .png file
+                BitmapEncoder encoder = new PngBitmapEncoder();
+
+                // create frame from the writable bitmap and add to encoder
+                encoder.Frames.Add(BitmapFrame.Create(img));
+
+                // write the new file to disk
+                try
+                {
+                    using (FileStream fs = new FileStream(path, FileMode.Create))
+                    {
+                        encoder.Save(fs);
+                    }
+                }
+                catch (IOException)
+                {
+                    throw new ArgumentException("Error saving file to: " + path);
+                }
+
+            }
+            if (type == "DEPTH" && data != null)    // save depth data to text file
+            {
+                DepthImagePixel[] dpixels = data as DepthImagePixel[];
+
+                // save depth value
+                FileInfo t = new FileInfo(path);
+                StreamWriter writer = t.CreateText();
+                for (int i = 0; i < dpixels.Length; i++)
+                {
+                    writer.Write(dpixels[i].Depth);
+                    writer.Write(" ");
+                }
+
+                writer.Close();
+
+            }
+            if (type == "SKELETON" && data != null) // save skeleton data to text file
+            {
+                Skeleton[] skeletons = data as Skeleton[];
+
+                FileInfo t = new FileInfo(path);
+                StreamWriter writer = t.CreateText();
+                writer.Write("Tracking id # Tracking state (tracked-joints/position_only) # Joints number # ");
+                writer.WriteLine("Joint0 type # Joint0 state # Joint0 point # ...\n");
+                for (int i = 0; i < skeletons.Length; i++)
+                {
+                    writer.WriteLine(skeletons[i].TrackingId + " " +
+                    skeletons[i].TrackingState + " " + skeletons[i].Joints.Count);
+
+                    if (skeletons[i].TrackingState == SkeletonTrackingState.Tracked)
+                    {
+                        // print all joint data
+                        foreach (Joint joint in skeletons[i].Joints)
+                        {
+                            writer.WriteLine(joint.JointType + " " + joint.Position.X + " "
+                                + joint.Position.Y + " " + joint.Position.Z);
+                        }
+                    }
+                    else if (skeletons[i].TrackingState == SkeletonTrackingState.PositionOnly)
+                    {
+                        writer.WriteLine(skeletons[i].Position.X + " " +
+                            skeletons[i].Position.Y + " " + skeletons[i].Position.Z);
+                    }
+                    
+                }
+
+                writer.Close();
+
+            }
+
+            return true;
+        }
+
 
 #region Update_functions
 
@@ -114,15 +204,15 @@ namespace KinectMotionAnalyzer.Processors
 
             frame.CopyPixelDataTo(colorPixelData);
 
-            if (StreamDataBitmap == null)
+            if (ColorStreamBitmap == null)
             {
-                StreamDataBitmap = new WriteableBitmap(frame.Width, frame.Height, 96, 96,
+                ColorStreamBitmap = new WriteableBitmap(frame.Width, frame.Height, 96, 96,
                     PixelFormats.Bgr32, null);
             }
 
-            int stride = StreamDataBitmap.PixelWidth * sizeof(int);
-            Int32Rect drawRect = new Int32Rect(0, 0, StreamDataBitmap.PixelWidth, StreamDataBitmap.PixelHeight);
-            StreamDataBitmap.WritePixels(drawRect, colorPixelData, stride, 0);
+            int stride = ColorStreamBitmap.PixelWidth * sizeof(int);
+            Int32Rect drawRect = new Int32Rect(0, 0, ColorStreamBitmap.PixelWidth, ColorStreamBitmap.PixelHeight);
+            ColorStreamBitmap.WritePixels(drawRect, colorPixelData, stride, 0);
 
             // notify...
             //RaisePropertyChanged(() => StreamDataBitmap);
@@ -132,9 +222,9 @@ namespace KinectMotionAnalyzer.Processors
         public void UpdateDepthData(DepthImageFrame frame)
         {
 
-            if (colorPixelData == null)
+            if (depthPixelData == null)
             {
-                colorPixelData = new byte[frame.Width * frame.Height * sizeof(int)];    // always BGR32
+                depthPixelData = new byte[frame.Width * frame.Height * sizeof(int)];    // always BGR32
             }
 
             if (depthPixels == null)
@@ -152,7 +242,7 @@ namespace KinectMotionAnalyzer.Processors
             int colorPixelIndex = 0;
             for (int i = 0; i < this.depthPixels.Length; ++i)
             {
-                // Get the depth for this pixel
+                // Get the depth for this pixel (millimeter)
                 short depth = depthPixels[i].Depth;
 
                 // To convert to a byte, we're discarding the most-significant
@@ -167,13 +257,13 @@ namespace KinectMotionAnalyzer.Processors
                 byte intensity = (byte)(depth >= minDepth && depth <= maxDepth ? depth : 0);
 
                 // Write out blue byte
-                colorPixelData[colorPixelIndex++] = intensity;
+                depthPixelData[colorPixelIndex++] = intensity;
 
                 // Write out green byte
-                colorPixelData[colorPixelIndex++] = intensity;
+                depthPixelData[colorPixelIndex++] = intensity;
 
                 // Write out red byte                        
-                colorPixelData[colorPixelIndex++] = intensity;
+                depthPixelData[colorPixelIndex++] = intensity;
 
                 // We're outputting BGR, the last byte in the 32 bits is unused so skip it
                 // If we were outputting BGRA, we would write alpha here.
@@ -181,22 +271,21 @@ namespace KinectMotionAnalyzer.Processors
             }
 
 
-            if (StreamDataBitmap == null)
+            if (DepthStreamBitmap == null)
             {
-                StreamDataBitmap = new WriteableBitmap(frame.Width, frame.Height, 96, 96,
+                DepthStreamBitmap = new WriteableBitmap(frame.Width, frame.Height, 96, 96,
                     PixelFormats.Bgr32, null);
             }
 
             // write to bitmap
             int stride = frame.Width * sizeof(int);
             Int32Rect drawRect = new Int32Rect(0, 0, frame.Width, frame.Height);
-            StreamDataBitmap.WritePixels(drawRect, colorPixelData, stride, 0);
+            DepthStreamBitmap.WritePixels(drawRect, depthPixelData, stride, 0);
         }
 
         public void UpdateSkeletonData(SkeletonFrame frame)
         {
             // get skeleton data
-            Skeleton[] skeletons = new Skeleton[0];
             skeletons = new Skeleton[frame.SkeletonArrayLength];
             frame.CopySkeletonDataTo(skeletons);
 
