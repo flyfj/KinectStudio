@@ -42,6 +42,8 @@ namespace KinectMotionAnalyzer
             else
                 kinectStatusLabel.Content = "Kinect initialized";
 
+
+
         }
 
   

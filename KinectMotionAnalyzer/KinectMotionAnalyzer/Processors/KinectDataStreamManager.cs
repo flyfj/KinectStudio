@@ -2,6 +2,7 @@
 
 using System.IO;
 using System;
+using System.Xml;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,7 +46,7 @@ namespace KinectMotionAnalyzer.Processors
 
 
     /// <summary>
-    /// used for fetch data and update UI
+    /// used to fetch data and update UI
     /// </summary>
     public class KinectDataStreamManager
     {

@@ -11,7 +11,7 @@
         </Grid.RowDefinitions>
         <Border BorderBrush="Silver" BorderThickness="1" Height="20" HorizontalAlignment="Left" Name="border1" VerticalAlignment="Top" Width="1181" Background="#FF9AE81E"></Border>
         <Button Grid.Row="1" Content="Start Kinect" Height="35" HorizontalAlignment="Left" Margin="637,29,0,0" Name="runBtn" VerticalAlignment="Top" Width="115" Click="runBtn_Click" />
-        <Image Grid.Row="2" Width="338" Height="271" HorizontalAlignment="Left" Margin="23,54,0,0" Name="color_disp_img" VerticalAlignment="Top" Stretch="None" />
+        <Image Grid.Row="2" Width="338" Height="271" HorizontalAlignment="Left" Margin="23,54,0,0" Name="color_disp_img" VerticalAlignment="Top" Stretch="Uniform" />
         <Border Background="#FF9AE81E" BorderBrush="Silver" BorderThickness="1" Name="border2" Margin="0,0,0,328" Grid.Row="2" />
         <GroupBox Grid.Row="1" Header="Streams" Height="72" HorizontalAlignment="Left" Margin="271,9,0,0" Name="groupBox1" VerticalAlignment="Top" Width="296">
             <Grid>
@@ -21,8 +21,8 @@
             </Grid>
         </GroupBox>
         <Label Content="Kinect Status" Grid.Row="1" Height="28" HorizontalAlignment="Left" Margin="55,38,0,0" Name="kinectStatusLabel" VerticalAlignment="Top" Width="162" Background="{x:Null}" BorderThickness="1" HorizontalContentAlignment="Center" BorderBrush="Black" />
-        <Image Height="271" HorizontalAlignment="Left" Margin="387,54,0,0" Name="depth_disp_img" Stretch="None" VerticalAlignment="Top" Width="365" Grid.Row="2" />
+        <Image Height="271" HorizontalAlignment="Left" Margin="387,54,0,0" Name="depth_disp_img" Stretch="Uniform" VerticalAlignment="Top" Width="365" Grid.Row="2" />
         <Button Content="Screen shot" Height="35" HorizontalAlignment="Left" Margin="796,29,0,0" Name="saveBtn" VerticalAlignment="Top" Width="115" Grid.Row="1" Click="saveBtn_Click" />
-        <Image Height="271" HorizontalAlignment="Left" Margin="780,54,0,0" Name="skeleton_disp_img" Stretch="None" VerticalAlignment="Top" Width="365" Grid.Row="2" />
+        <Image Height="271" HorizontalAlignment="Left" Margin="780,54,0,0" Name="skeleton_disp_img" Stretch="Uniform" VerticalAlignment="Top" Width="365" Grid.Row="2" />
     </Grid>
 </Window>
