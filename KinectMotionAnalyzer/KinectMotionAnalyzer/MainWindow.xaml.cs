@@ -41,9 +41,6 @@ namespace KinectMotionAnalyzer
             }
             else
                 kinectStatusLabel.Content = "Kinect initialized";
-
-
-
         }
 
   
@@ -253,14 +250,18 @@ namespace KinectMotionAnalyzer
 
             string colorpath = myPhotos + "\\Kinect_color_" + time + ".png";
             string depthpath = myPhotos + "\\Kinect_depth_" + time + ".txt";
-            string skeletonpath = myPhotos + "\\Kinect_skeleton_" + time + ".txt";
+            string skeletonpath = myPhotos + "\\Kinect_skeleton_" + time + ".xml";
 
             if (kinect_sensor.ColorStream.IsEnabled)
                 kinect_data_manager.SaveKinectData(kinect_data_manager.ColorStreamBitmap, colorpath, "COLOR");
             if (kinect_sensor.DepthStream.IsEnabled)
                 kinect_data_manager.SaveKinectData(kinect_data_manager.depthPixels, depthpath, "DEPTH");
             if (kinect_sensor.SkeletonStream.IsEnabled)
-                kinect_data_manager.SaveKinectData(kinect_data_manager.skeletons, skeletonpath, "SKELETON");
+            {
+                KinectRecorder.WriteToSkeletonFile(skeletonpath, kinect_data_manager.skeletons);
+                statusbarLabel.Content = "Save skeletons to file: " + skeletonpath;
+            }
+             //kinect_data_manager.SaveKinectData(kinect_data_manager.skeletons, skeletonpath, "SKELETON");
             
         }
 

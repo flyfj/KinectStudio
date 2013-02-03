@@ -167,7 +167,7 @@ namespace KinectMotionAnalyzer.Processors
                 {
                     writer.WriteLine(skeletons[i].TrackingId + " " +
                     skeletons[i].TrackingState + " " + skeletons[i].Joints.Count);
-
+                    
                     if (skeletons[i].TrackingState == SkeletonTrackingState.Tracked)
                     {
                         // print all joint data
