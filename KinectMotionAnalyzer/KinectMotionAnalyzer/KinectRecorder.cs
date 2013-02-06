@@ -15,8 +15,14 @@ namespace KinectMotionAnalyzer
     /// </summary>
     class KinectRecorder
     {
-        // skeleton
-        static public bool WriteToSkeletonFile(string filename, Skeleton[] data)
+
+        /// <summary>
+        /// save skeleton data to xml file
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="data">skeleton from each time stamp</param>
+        /// <returns></returns>
+        static public bool WriteToSkeletonFile(string filename, Dictionary<int, Skeleton[]> data)
         {
 
             XmlDocument xmldoc = new XmlDocument();
@@ -26,113 +32,164 @@ namespace KinectMotionAnalyzer
             XmlElement root = xmldoc.CreateElement("Skeletons");
             xmldoc.AppendChild(root);
 
-            foreach(Skeleton ske in data)
+            #region save_frames
+            foreach (KeyValuePair<int, Skeleton[]> pair in data)
             {
-                // create each skeleton
-                XmlElement skeleton_elem = xmldoc.CreateElement("Skeleton");
-                skeleton_elem.SetAttribute("Id", ske.TrackingId.ToString());
-                skeleton_elem.SetAttribute("State", ske.TrackingState.ToString());
-                if (ske.TrackingState != SkeletonTrackingState.NotTracked)
+
+                XmlElement frame_elem = xmldoc.CreateElement("Frame");
+                // good habit to add right after creation to prevent forgetting later
+                root.AppendChild(frame_elem);   
+
+                frame_elem.SetAttribute("Id", pair.Key.ToString());
+
+                #region output_skeletons
+                foreach (Skeleton ske in pair.Value)
                 {
-                    // write position first
-                    XmlElement pos_elem = xmldoc.CreateElement("Position");
-                    pos_elem.SetAttribute("posx", ske.Position.X.ToString());
-                    pos_elem.SetAttribute("posy", ske.Position.Y.ToString());
-                    pos_elem.SetAttribute("posz", ske.Position.Z.ToString());
-                    skeleton_elem.AppendChild(pos_elem);
+                    // if not tracked, ignore now
+                    if (ske.TrackingState != SkeletonTrackingState.Tracked)
+                        continue;
 
-                    if (ske.TrackingState == SkeletonTrackingState.Tracked)
+                    // create each skeleton
+                    XmlElement skeleton_elem = xmldoc.CreateElement("Skeleton");
+                    frame_elem.AppendChild(skeleton_elem);
+
+                    skeleton_elem.SetAttribute("Id", ske.TrackingId.ToString());
+                    skeleton_elem.SetAttribute("State", ske.TrackingState.ToString());
+                    if (ske.TrackingState != SkeletonTrackingState.NotTracked)
                     {
-                        XmlElement joints_elem = xmldoc.CreateElement("Joints");
-                        skeleton_elem.AppendChild(joints_elem);
-                        // add joints
-                        foreach (Joint joint in ske.Joints)
-                        {
-                            XmlElement joint_elem = xmldoc.CreateElement("Joint");
-                            joint_elem.SetAttribute("Type", joint.JointType.ToString());
-                            joint_elem.SetAttribute("TypeId", int.Parse(joint.JointType.ToString()).ToString());
-                            joint_elem.SetAttribute("State", joint.TrackingState.ToString());
-                            //XmlElement joint_rotation_elem = xmldoc.CreateElement("Rotation");
-                            XmlElement joint_pos_elem = xmldoc.CreateElement("Position");
-                            joint_pos_elem.SetAttribute("posx", joint.Position.X.ToString());
-                            joint_pos_elem.SetAttribute("posy", joint.Position.Y.ToString());
-                            joint_pos_elem.SetAttribute("posz", joint.Position.Z.ToString());
-                            //joint_elem.SetAttribute("Orientation", ske.BoneOrientations[joint.JointType].AbsoluteRotation.
+                        // write position first
+                        XmlElement pos_elem = xmldoc.CreateElement("Position");
+                        pos_elem.SetAttribute("posx", ske.Position.X.ToString());
+                        pos_elem.SetAttribute("posy", ske.Position.Y.ToString());
+                        pos_elem.SetAttribute("posz", ske.Position.Z.ToString());
+                        skeleton_elem.AppendChild(pos_elem);
 
-                            joint_elem.AppendChild(joint_pos_elem);
-                            joints_elem.AppendChild(joint_elem);
+                        #region Output_joints
+                        if (ske.TrackingState == SkeletonTrackingState.Tracked)
+                        {
+                            XmlElement joints_elem = xmldoc.CreateElement("Joints");
+                            skeleton_elem.AppendChild(joints_elem);
+
+                            // add joints
+                            foreach (Joint joint in ske.Joints)
+                            {
+                                XmlElement joint_elem = xmldoc.CreateElement("Joint");
+                                joint_elem.SetAttribute("Type", joint.JointType.ToString());
+                                int jtype = (int)joint.JointType;
+                                joint_elem.SetAttribute("TypeId", jtype.ToString());
+                                joint_elem.SetAttribute("State", joint.TrackingState.ToString());
+                                //XmlElement joint_rotation_elem = xmldoc.CreateElement("Rotation");
+                                XmlElement joint_pos_elem = xmldoc.CreateElement("Position");
+                                joint_pos_elem.SetAttribute("posx", joint.Position.X.ToString());
+                                joint_pos_elem.SetAttribute("posy", joint.Position.Y.ToString());
+                                joint_pos_elem.SetAttribute("posz", joint.Position.Z.ToString());
+                                //joint_elem.SetAttribute("Orientation", ske.BoneOrientations[joint.JointType].AbsoluteRotation.
+
+                                joint_elem.AppendChild(joint_pos_elem);
+                                joints_elem.AppendChild(joint_elem);
+                            }
                         }
+                        #endregion
                     }
                 }
-
-                root.AppendChild(skeleton_elem);
+                #endregion
             }
+            #endregion
 
             xmldoc.Save(filename);
 
             return true;
         }
 
-        static public Skeleton[] ReadFromSkeletonFile(string filename)
+        static public Dictionary<int, Skeleton[]> ReadFromSkeletonFile(string filename)
         {
+
             XmlDocument doc = new XmlDocument();
             doc.Load(filename);
 
+            Dictionary<int, Skeleton[]> skeletonsCollection = new Dictionary<int, Skeleton[]>();
             XmlElement root = doc.DocumentElement;
-            Skeleton[] skeletons = new Skeleton[root.ChildNodes.Count];
+            
 
+            #region read_frames
             for (int i = 0; i < root.ChildNodes.Count; i++ )
             {
-                Skeleton cur_skeleton = new Skeleton();
+                // read each frame element
+                XmlElement frame_elem = root.ChildNodes[i] as XmlElement;
+                int frame_id = int.Parse(frame_elem.Attributes["Id"].Value);
 
-                XmlElement ske_elem = root.ChildNodes[i] as XmlElement;
-                int id = int.Parse(ske_elem.Attributes["Id"].Value);
-                string state = ske_elem.Attributes["State"].Value;
+                Skeleton[] skeletons = new Skeleton[frame_elem.ChildNodes.Count];
 
-                cur_skeleton.TrackingId = id;
-                cur_skeleton.TrackingState = SkeletonTrackingState.NotTracked;
-
-                if (state != SkeletonTrackingState.NotTracked.ToString())
+                for (int j = 0; j < frame_elem.ChildNodes.Count; j++)
                 {
-                    cur_skeleton.TrackingState = SkeletonTrackingState.PositionOnly;
-                    // get position
-                    XmlElement pos_elem = ske_elem.ChildNodes[0] as XmlElement;
-                    SkeletonPoint position = new SkeletonPoint();
-                    position.X = float.Parse(pos_elem.Attributes["posx"].Value);
-                    position.Y = float.Parse(pos_elem.Attributes["posy"].Value);
-                    position.Y = float.Parse(pos_elem.Attributes["posz"].Value);
+                    
+                    XmlElement ske_elem = frame_elem.ChildNodes[j] as XmlElement;
+                    int id = int.Parse(ske_elem.Attributes["Id"].Value);
+                    string state = ske_elem.Attributes["State"].Value;
 
-                    cur_skeleton.Position = position;   // set value
+                    Skeleton cur_skeleton = new Skeleton();
+                    cur_skeleton.TrackingId = id;
+                    cur_skeleton.TrackingState = SkeletonTrackingState.NotTracked;
 
-                    if (state == SkeletonTrackingState.Tracked.ToString())
+                    #region input_joints
+                    if (state != SkeletonTrackingState.NotTracked.ToString())
                     {
-                        cur_skeleton.TrackingState = SkeletonTrackingState.Tracked;
+                        cur_skeleton.TrackingState = SkeletonTrackingState.PositionOnly;
 
-                        // read joints
-                        foreach (XmlElement joint_elem in ske_elem.ChildNodes[1])
+                        // get position
+                        XmlElement pos_elem = ske_elem.ChildNodes[0] as XmlElement;
+                        SkeletonPoint position = new SkeletonPoint();
+                        position.X = float.Parse(pos_elem.Attributes["posx"].Value);
+                        position.Y = float.Parse(pos_elem.Attributes["posy"].Value);
+                        position.Y = float.Parse(pos_elem.Attributes["posz"].Value);
+
+                        cur_skeleton.Position = position;   // set value
+
+                        #region read_joint
+                        if (state == SkeletonTrackingState.Tracked.ToString())
                         {
-                            int jointtype = int.Parse(joint_elem.Attributes["TypeId"].Value);
-                            JointType type = (JointType)jointtype;
-                            XmlElement joint_pos_elem = joint_elem.ChildNodes[0] as XmlElement;
+                            cur_skeleton.TrackingState = SkeletonTrackingState.Tracked;
 
-                            SkeletonPoint joint_pos = new SkeletonPoint();
-                            joint_pos.X = float.Parse(joint_pos_elem.Attributes["posx"].Value);
-                            joint_pos.Y = float.Parse(joint_pos_elem.Attributes["posy"].Value);
-                            joint_pos.Z = float.Parse(joint_pos_elem.Attributes["posz"].Value);
+                            // read joints
+                            foreach (XmlElement joint_elem in ske_elem.ChildNodes[1])
+                            {
+                                int jointtype = int.Parse(joint_elem.Attributes["TypeId"].Value);
+                                JointType type = (JointType)jointtype;
 
-                            Joint joint = new Joint();
-                            joint.Position = joint_pos;
-                            joint.TrackingState = JointTrackingState.Tracked;
-                            cur_skeleton.Joints[type] = joint;
+                                // get a copy of current joint 
+                                // (jointtype is read-only, this is the way we get it)
+                                Joint cur_joint = cur_skeleton.Joints[type];
+
+                                XmlElement joint_pos_elem = joint_elem.ChildNodes[0] as XmlElement;
+
+                                SkeletonPoint joint_pos = new SkeletonPoint();
+                                joint_pos.X = float.Parse(joint_pos_elem.Attributes["posx"].Value);
+                                joint_pos.Y = float.Parse(joint_pos_elem.Attributes["posy"].Value);
+                                joint_pos.Z = float.Parse(joint_pos_elem.Attributes["posz"].Value);
+
+                                cur_joint.Position = joint_pos;
+                                cur_joint.TrackingState = JointTrackingState.Tracked;
+                                
+                                // copy back to update
+                                cur_skeleton.Joints[type] = cur_joint;
+                                
+                            }
                         }
+                        #endregion
                     }
+                    #endregion
+
+                    // set to skeleton data
+                    skeletons[j] = cur_skeleton;
+                    
                 }
 
-                skeletons[i] = cur_skeleton;
-
+                // add to dictionary
+                skeletonsCollection.Add(frame_id, skeletons);
             }
+            #endregion
 
-            return skeletons;
+            return skeletonsCollection;
         }
     }
 }

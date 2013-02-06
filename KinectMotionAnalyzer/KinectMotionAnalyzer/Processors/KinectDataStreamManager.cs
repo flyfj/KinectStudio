@@ -290,6 +290,14 @@ namespace KinectMotionAnalyzer.Processors
             skeletons = new Skeleton[frame.SkeletonArrayLength];
             frame.CopySkeletonDataTo(skeletons);
 
+            UpdateSkeletonData(skeletons);
+        }
+
+        public void UpdateSkeletonData(Skeleton[] skeletons)
+        {
+            if (skeletons == null)
+                return;
+
             // draw skeletons
             using (DrawingContext dc = this.drawingGroup.Open())
             {
@@ -322,7 +330,6 @@ namespace KinectMotionAnalyzer.Processors
                 this.drawingGroup.ClipGeometry =
                     new RectangleGeometry(new Rect(0.0, 0.0, RenderWidth, RenderHeight));
             }
-
         }
 
 #endregion

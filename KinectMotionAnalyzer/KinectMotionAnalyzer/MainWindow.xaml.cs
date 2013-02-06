@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.Win32;
 using Microsoft.Kinect;
 
 
@@ -36,11 +37,11 @@ namespace KinectMotionAnalyzer
 
             if (!InitKinect())
             {
-                kinectStatusLabel.Content = "Kinect not connected";
+                statusbarLabel.Content = "Kinect not connected";
                 MessageBox.Show("Kinect not found.");
             }
             else
-                kinectStatusLabel.Content = "Kinect initialized";
+                statusbarLabel.Content = "Kinect initialized";
         }
 
   
@@ -258,11 +259,38 @@ namespace KinectMotionAnalyzer
                 kinect_data_manager.SaveKinectData(kinect_data_manager.depthPixels, depthpath, "DEPTH");
             if (kinect_sensor.SkeletonStream.IsEnabled)
             {
-                KinectRecorder.WriteToSkeletonFile(skeletonpath, kinect_data_manager.skeletons);
+                Dictionary<int, Skeleton[]> skeletonCollection = new Dictionary<int, Skeleton[]>();
+                skeletonCollection.Add(1, kinect_data_manager.skeletons);
+                KinectRecorder.WriteToSkeletonFile(skeletonpath, skeletonCollection);
                 statusbarLabel.Content = "Save skeletons to file: " + skeletonpath;
             }
              //kinect_data_manager.SaveKinectData(kinect_data_manager.skeletons, skeletonpath, "SKELETON");
             
+        }
+
+        private void button1_Click(object sender, RoutedEventArgs e)
+        {
+            GestureRecognizerWindow test = new GestureRecognizerWindow();
+            test.Show();
+        }
+
+        private void loadSkeletonBtn_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.DefaultExt = ".xml";
+            dialog.FileName = "Skeleton";
+            dialog.Filter = "Skeleton data file (.xml)|*.xml";
+
+            Nullable<bool> result = dialog.ShowDialog();
+
+            if (result == true)
+            {
+                string filename = dialog.FileName;
+                // test: read skeleton data and display
+                Dictionary<int, Skeleton[]> skeleton_data = 
+                    KinectRecorder.ReadFromSkeletonFile(filename);
+                kinect_data_manager.UpdateSkeletonData(skeleton_data[1]);
+            }
         }
 
 
