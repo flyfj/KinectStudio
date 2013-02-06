@@ -48,12 +48,19 @@ namespace KinectMotionAnalyzer.Processors
     /// <summary>
     /// used to fetch data and update UI
     /// </summary>
-    public class KinectDataStreamManager
+    public class KinectDataManager
     {
+
         // sensor reference
         public KinectSensor sensor_ref;
 
-        // data property
+        // tool object
+        //public KinectRecorder recorder;
+
+        // gesture data: DUMMY
+        public Dictionary<int, Skeleton[]> gesture = new Dictionary<int, Skeleton[]>();
+
+        // visualization data
         public WriteableBitmap ColorStreamBitmap;
         public WriteableBitmap DepthStreamBitmap;
 
@@ -97,7 +104,7 @@ namespace KinectMotionAnalyzer.Processors
 
 
 
-        public KinectDataStreamManager(ref KinectSensor sensor)
+        public KinectDataManager(ref KinectSensor sensor)
         {
             if(sensor == null)
             {
@@ -113,87 +120,9 @@ namespace KinectMotionAnalyzer.Processors
             this.skeletonImageSource = new DrawingImage(this.drawingGroup);
         }
 
-        public bool SaveKinectData(object data, string path, string type)
-        {
-            if (type == "COLOR" && data != null)    // save color image
-            {
-                WriteableBitmap img = data as WriteableBitmap;
-
-                // create a png bitmap encoder which knows how to save a .png file
-                BitmapEncoder encoder = new PngBitmapEncoder();
-
-                // create frame from the writable bitmap and add to encoder
-                encoder.Frames.Add(BitmapFrame.Create(img));
-
-                // write the new file to disk
-                try
-                {
-                    using (FileStream fs = new FileStream(path, FileMode.Create))
-                    {
-                        encoder.Save(fs);
-                    }
-                }
-                catch (IOException)
-                {
-                    throw new ArgumentException("Error saving file to: " + path);
-                }
-
-            }
-            if (type == "DEPTH" && data != null)    // save depth data to text file
-            {
-                DepthImagePixel[] dpixels = data as DepthImagePixel[];
-
-                // save depth value
-                FileInfo t = new FileInfo(path);
-                StreamWriter writer = t.CreateText();
-                for (int i = 0; i < dpixels.Length; i++)
-                {
-                    writer.Write(dpixels[i].Depth);
-                    writer.Write(" ");
-                }
-
-                writer.Close();
-
-            }
-            if (type == "SKELETON" && data != null) // save skeleton data to text file
-            {
-                Skeleton[] skeletons = data as Skeleton[];
-
-                FileInfo t = new FileInfo(path);
-                StreamWriter writer = t.CreateText();
-                writer.Write("Tracking id # Tracking state (tracked-joints/position_only) # Joints number # ");
-                writer.WriteLine("Joint0 type # Joint0 state # Joint0 point # ...\n");
-                for (int i = 0; i < skeletons.Length; i++)
-                {
-                    writer.WriteLine(skeletons[i].TrackingId + " " +
-                    skeletons[i].TrackingState + " " + skeletons[i].Joints.Count);
-                    
-                    if (skeletons[i].TrackingState == SkeletonTrackingState.Tracked)
-                    {
-                        // print all joint data
-                        foreach (Joint joint in skeletons[i].Joints)
-                        {
-                            writer.WriteLine(joint.JointType + " " + joint.Position.X + " "
-                                + joint.Position.Y + " " + joint.Position.Z);
-                        }
-                    }
-                    else if (skeletons[i].TrackingState == SkeletonTrackingState.PositionOnly)
-                    {
-                        writer.WriteLine(skeletons[i].Position.X + " " +
-                            skeletons[i].Position.Y + " " + skeletons[i].Position.Z);
-                    }
-                    
-                }
-
-                writer.Close();
-
-            }
-
-            return true;
-        }
 
 
-#region Update_functions
+#region visualization_functions
 
         public void UpdateColorData(ColorImageFrame frame)
         {
@@ -284,7 +213,7 @@ namespace KinectMotionAnalyzer.Processors
             DepthStreamBitmap.WritePixels(drawRect, depthPixelData, stride, 0);
         }
 
-        public void UpdateSkeletonData(SkeletonFrame frame)
+        public void UpdateSkeletonData(SkeletonFrame frame, bool ifRecording = false)
         {
             // get skeleton data
             skeletons = new Skeleton[frame.SkeletonArrayLength];
@@ -332,10 +261,7 @@ namespace KinectMotionAnalyzer.Processors
             }
         }
 
-#endregion
-        
-
-#region Skeleton_drawing_functions
+        #region Skeleton_drawing_functions
 
         /// <summary>
         /// Draws indicators to show which edges are clipping skeleton data
@@ -479,7 +405,94 @@ namespace KinectMotionAnalyzer.Processors
                 SkeletonPointToScreen(joint1.Position));
         }
 
+        #endregion
+
 #endregion
+        
+
+#region data_recording_and_retreival
+
+        public bool SaveKinectData(object data, string path, string type)
+        {
+            if (type == "COLOR" && data != null)    // save color image
+            {
+                WriteableBitmap img = data as WriteableBitmap;
+
+                // create a png bitmap encoder which knows how to save a .png file
+                BitmapEncoder encoder = new PngBitmapEncoder();
+
+                // create frame from the writable bitmap and add to encoder
+                encoder.Frames.Add(BitmapFrame.Create(img));
+
+                // write the new file to disk
+                try
+                {
+                    using (FileStream fs = new FileStream(path, FileMode.Create))
+                    {
+                        encoder.Save(fs);
+                    }
+                }
+                catch (IOException)
+                {
+                    throw new ArgumentException("Error saving file to: " + path);
+                }
+
+            }
+            if (type == "DEPTH" && data != null)    // save depth data to text file
+            {
+                DepthImagePixel[] dpixels = data as DepthImagePixel[];
+
+                // save depth value
+                FileInfo t = new FileInfo(path);
+                StreamWriter writer = t.CreateText();
+                for (int i = 0; i < dpixels.Length; i++)
+                {
+                    writer.Write(dpixels[i].Depth);
+                    writer.Write(" ");
+                }
+
+                writer.Close();
+
+            }
+            if (type == "SKELETON" && data != null) // save skeleton data to text file
+            {
+                Skeleton[] skeletons = data as Skeleton[];
+
+                FileInfo t = new FileInfo(path);
+                StreamWriter writer = t.CreateText();
+                writer.Write("Tracking id # Tracking state (tracked-joints/position_only) # Joints number # ");
+                writer.WriteLine("Joint0 type # Joint0 state # Joint0 point # ...\n");
+                for (int i = 0; i < skeletons.Length; i++)
+                {
+                    writer.WriteLine(skeletons[i].TrackingId + " " +
+                    skeletons[i].TrackingState + " " + skeletons[i].Joints.Count);
+
+                    if (skeletons[i].TrackingState == SkeletonTrackingState.Tracked)
+                    {
+                        // print all joint data
+                        foreach (Joint joint in skeletons[i].Joints)
+                        {
+                            writer.WriteLine(joint.JointType + " " + joint.Position.X + " "
+                                + joint.Position.Y + " " + joint.Position.Z);
+                        }
+                    }
+                    else if (skeletons[i].TrackingState == SkeletonTrackingState.PositionOnly)
+                    {
+                        writer.WriteLine(skeletons[i].Position.X + " " +
+                            skeletons[i].Position.Y + " " + skeletons[i].Position.Z);
+                    }
+
+                }
+
+                writer.Close();
+
+            }
+
+            return true;
+        }
+
+#endregion
+
 
         
     }

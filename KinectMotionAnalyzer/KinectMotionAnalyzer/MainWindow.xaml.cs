@@ -21,14 +21,26 @@ namespace KinectMotionAnalyzer
 {
     using KinectMotionAnalyzer.Processors;
 
+    enum KinectMode
+    {
+        Run,
+        Replay,
+        Stop
+    }
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
 
-        private KinectDataStreamManager kinect_data_manager;
+        private KinectDataManager kinect_data_manager;
         private KinectSensor kinect_sensor;
+        private KinectMode mode;
+
+        // data record
+        int frame_id;
+        bool ifRecording;
 
 
         public MainWindow()
@@ -42,6 +54,10 @@ namespace KinectMotionAnalyzer
             }
             else
                 statusbarLabel.Content = "Kinect initialized";
+
+            frame_id = 0;
+            ifRecording = false;
+            mode = KinectMode.Stop;
         }
 
   
@@ -62,7 +78,7 @@ namespace KinectMotionAnalyzer
 
 
             if (kinect_sensor != null)
-                kinect_data_manager = new KinectDataStreamManager(ref kinect_sensor);
+                kinect_data_manager = new KinectDataManager(ref kinect_sensor);
 
             // enable data stream
             if (kinect_sensor != null)
@@ -144,7 +160,18 @@ namespace KinectMotionAnalyzer
                 if (frame == null)
                     return;
 
-                kinect_data_manager.UpdateSkeletonData(frame);
+                // get skeleton data
+                Skeleton[] skeletons = new Skeleton[frame.SkeletonArrayLength];
+                frame.CopySkeletonDataTo(skeletons);
+
+                if (stopSkeletonRecordBtn.IsEnabled)
+                {
+                    // add data to collection
+                    kinect_data_manager.gesture.Add(frame_id, skeletons);
+                    frame_id++;
+                }
+
+                kinect_data_manager.UpdateSkeletonData(skeletons);
             }
         }
 
@@ -162,11 +189,15 @@ namespace KinectMotionAnalyzer
                 {
                     kinect_sensor.Start();
                     runBtn.Content = "Stop Kinect";
+                    startSkeletonRecordBtn.IsEnabled = true;
+                    mode = KinectMode.Run;
                 }
                 else
                 {
                     kinect_sensor.Stop();
                     runBtn.Content = "Start Kinect";
+                    startSkeletonRecordBtn.IsEnabled = false;
+                    mode = KinectMode.Stop;
                 }
             }
         }
@@ -276,6 +307,9 @@ namespace KinectMotionAnalyzer
 
         private void loadSkeletonBtn_Click(object sender, RoutedEventArgs e)
         {
+            if (kinect_sensor.IsRunning)
+                return;
+
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.DefaultExt = ".xml";
             dialog.FileName = "Skeleton";
@@ -289,8 +323,72 @@ namespace KinectMotionAnalyzer
                 // test: read skeleton data and display
                 Dictionary<int, Skeleton[]> skeleton_data = 
                     KinectRecorder.ReadFromSkeletonFile(filename);
-                kinect_data_manager.UpdateSkeletonData(skeleton_data[1]);
+                // save to data manager object
+                kinect_data_manager.gesture = skeleton_data;
+
+                int min_frame_id = skeleton_data.Keys.Min();
+                int max_frame_id = skeleton_data.Keys.Max();
+
+                skeletonVideoSlider.IsEnabled = true;
+                skeletonVideoSlider.Minimum = min_frame_id;
+                skeletonVideoSlider.Maximum = max_frame_id;
+                skeletonVideoSlider.Value = min_frame_id;
+                skeletonSliderLabel.Content = min_frame_id.ToString();
+
+                kinect_data_manager.UpdateSkeletonData(skeleton_data[min_frame_id]);
+
+                mode = KinectMode.Replay;
             }
+        }
+
+        private void skeletonVideoSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            // valid only when kinect is stopped so no new data will come
+            if (!kinect_sensor.IsRunning && mode == KinectMode.Replay)
+            {
+                // load new skeleton data
+                int cur_frame_id = (int)skeletonVideoSlider.Value;
+                if (kinect_data_manager.gesture[cur_frame_id] != null)
+                {
+                    kinect_data_manager.UpdateSkeletonData(kinect_data_manager.gesture[cur_frame_id]);
+                }
+
+                // update label
+                skeletonSliderLabel.Content = skeletonVideoSlider.Value.ToString();
+            }
+            
+        }
+
+        private void startSkeletonRecordBtn_Click(object sender, RoutedEventArgs e)
+        {
+            // reset
+            frame_id = 0;
+
+            statusbarLabel.Content = "Recording skeleton";
+
+            stopSkeletonRecordBtn.IsEnabled = true;
+            startSkeletonRecordBtn.IsEnabled = false;
+        }
+
+        private void stopSkeletonRecordBtn_Click(object sender, RoutedEventArgs e)
+        {
+            // save record data to file
+            string time = System.DateTime.Now.ToString("hh'-'mm'-'ss", CultureInfo.CurrentUICulture.DateTimeFormat);
+
+            string myPhotos = "D:"; //Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+            string skeletonpath = myPhotos + "\\Kinect_skeleton_" + time + ".xml";
+
+            KinectRecorder.WriteToSkeletonFile(skeletonpath, kinect_data_manager.gesture);
+
+            statusbarLabel.Content = "Save skeletons to file: " + skeletonpath;
+
+
+            //clear data
+            kinect_data_manager.gesture.Clear();
+            // set state
+            stopSkeletonRecordBtn.IsEnabled = false;
+            startSkeletonRecordBtn.IsEnabled = true;
+
         }
 
 
