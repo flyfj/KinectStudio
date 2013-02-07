@@ -68,7 +68,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="GestureRecognizer.cs" />
+    <Compile Include="Processors\GestureRecognizer.cs" />
     <Compile Include="GestureRecognizerWindow.xaml.cs">
       <DependentUpon>GestureRecognizerWindow.xaml</DependentUpon>
     </Compile>
