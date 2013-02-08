@@ -29,5 +29,7 @@
         <Button Content="Set End" Height="34" HorizontalAlignment="Left" Margin="1003,546,0,0" Name="replay_setEndBtn" VerticalAlignment="Top" Width="92" FontSize="14" Click="replay_setEndBtn_Click" />
         <Label BorderThickness="1" Content="0" FontSize="13" FontStretch="Normal" Height="32" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="1104,548,0,0" Name="replay_endLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="68" />
         <Label BorderThickness="1" Content="0" FontSize="13" FontStretch="Normal" Height="32" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="921,548,0,0" Name="replay_startLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="65" />
+        <Label Content="Matching Distance" Height="46" HorizontalAlignment="Left" Margin="573,529,0,0" Name="recDistLabel" VerticalAlignment="Top" Width="158" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" />
+        <Button Content="Start Recognition" FontSize="15" Height="46" HorizontalAlignment="Left" Margin="576,454,0,0" Name="gestureRecognitionBtn" VerticalAlignment="Top" Width="155" IsEnabled="False" Click="gestureRecognitionBtn_Click" />
     </Grid>
 </Window>

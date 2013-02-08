@@ -22,7 +22,7 @@ namespace KinectMotionAnalyzer.Processors
         /// <param name="filename"></param>
         /// <param name="data">skeleton from each time stamp</param>
         /// <returns></returns>
-        static public bool WriteToSkeletonFile(string filename, Dictionary<int, Skeleton> data)
+        static public bool WriteToSkeletonFile(string filename, List<Skeleton> data)
         {
 
             XmlDocument xmldoc = new XmlDocument();
@@ -33,18 +33,17 @@ namespace KinectMotionAnalyzer.Processors
             xmldoc.AppendChild(root);
 
             #region save_frames
-            foreach (KeyValuePair<int, Skeleton> pair in data)
+            for (int i = 0; i < data.Count; i++ )
             {
-
                 XmlElement frame_elem = xmldoc.CreateElement("Frame");
                 // good habit to add right after creation to prevent forgetting later
-                root.AppendChild(frame_elem);   
+                root.AppendChild(frame_elem);
 
-                frame_elem.SetAttribute("Id", pair.Key.ToString());
+                frame_elem.SetAttribute("Id", i.ToString());
 
                 #region output_skeletons
 
-                Skeleton ske = pair.Value;
+                Skeleton ske = data[i];
 
                 // create each skeleton
                 XmlElement skeleton_elem = xmldoc.CreateElement("Skeleton");
@@ -95,13 +94,13 @@ namespace KinectMotionAnalyzer.Processors
             return true;
         }
 
-        static public Dictionary<int, Skeleton> ReadFromSkeletonFile(string filename)
+        static public List<Skeleton> ReadFromSkeletonFile(string filename)
         {
 
             XmlDocument doc = new XmlDocument();
             doc.Load(filename);
 
-            Dictionary<int, Skeleton> skeletonsCollection = new Dictionary<int, Skeleton>();
+            List<Skeleton> skeletonsCollection = new List<Skeleton>();
             XmlElement root = doc.DocumentElement;
             
 
@@ -172,7 +171,7 @@ namespace KinectMotionAnalyzer.Processors
                 #endregion
 
                 // add to dictionary
-                skeletonsCollection.Add(frame_id, cur_skeleton);
+                skeletonsCollection.Add(cur_skeleton);
                 
             }
             #endregion

@@ -20,21 +20,29 @@ namespace KinectMotionAnalyzer
     
     using KinectMotionAnalyzer.Processors;
 
+
     /// <summary>
     /// Interaction logic for GestureRecognizerWindow.xaml
     /// </summary>
     public partial class GestureRecognizerWindow : Window
     {
-
+        // tools
         private KinectDataManager kinect_data_manager;
         private KinectDataManager replay_data_manager;
         private KinectSensor kinect_sensor;
 
+        // recognition
+        private GestureRecognizer gesture_recognizer;
+        private string GESTURE_DATABASE_DIR = "D:\\gdata\\";
+
+        // sign
         bool isReplay = false;
+        bool isRecognition = false;
         
         // record params
         private int frame_id = 0;
         Dictionary<int, Skeleton> gesture_data = new Dictionary<int, Skeleton>();
+        Gesture temp_gesture = new Gesture();
 
 
         public GestureRecognizerWindow()
@@ -127,6 +135,29 @@ namespace KinectMotionAnalyzer
                     frame_id++;
                 }
 
+                if (isRecognition)
+                {
+                    foreach (Skeleton ske in skeletons)
+                    {
+                        if (ske.TrackingState == SkeletonTrackingState.Tracked)
+                        {
+                            if (temp_gesture.data.Count > gesture_recognizer.gesture_max_len)
+                                temp_gesture.data.RemoveAt(0);
+
+                            temp_gesture.data.Add(ske);
+                            break;
+                        }
+                    }
+
+                    if(temp_gesture.data.Count >= gesture_recognizer.gesture_min_len && 
+                        temp_gesture.data.Count <= gesture_recognizer.gesture_max_len)
+                    {
+                        // do recognition
+                        float dist = gesture_recognizer.MatchToDatabase(temp_gesture);
+                        recDistLabel.Content = dist.ToString();
+                    }
+                }
+
                 kinect_data_manager.UpdateSkeletonData(skeletons);
             }
         }
@@ -142,6 +173,7 @@ namespace KinectMotionAnalyzer
                 DeactivateReplay();
                 gestureReplayBtn.IsEnabled = false;
                 gestureCaptureBtn.IsEnabled = true;
+                gestureRecognitionBtn.IsEnabled = true;
 
                 kinect_sensor.Start();
                 kinectRunBtn.Content = "Stop";
@@ -150,8 +182,11 @@ namespace KinectMotionAnalyzer
             {
                 kinect_sensor.Stop();
                 kinectRunBtn.Content = "Run";
+
                 gestureCaptureBtn.IsEnabled = false;
                 gestureReplayBtn.IsEnabled = true;
+                gestureRecognitionBtn.IsEnabled = false;
+                isRecognition = false;
             }
         }
 
@@ -163,6 +198,7 @@ namespace KinectMotionAnalyzer
                 frame_id = 0;
                 gesture_data.Clear();
                 gestureCaptureBtn.Content = "Stop Capture";
+                gestureRecognitionBtn.IsEnabled = false;
             }
             else
             {
@@ -174,7 +210,7 @@ namespace KinectMotionAnalyzer
                 }
 
                 gestureCaptureBtn.Content = "Capture";
-
+                gestureRecognitionBtn.IsEnabled = true;
                 
             }
             
@@ -186,7 +222,7 @@ namespace KinectMotionAnalyzer
             string time = System.DateTime.Now.ToString("hh'-'mm'-'ss", CultureInfo.CurrentUICulture.DateTimeFormat);
 
             string myPhotos = "D:"; //Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-            string skeletonpath = myPhotos + "\\Kinect_skeleton_" + time + ".xml";
+            string skeletonpath = myPhotos + "\\gdata\\Kinect_skeleton_" + time + ".xml";
 
             // save data from start label to end label
             int start_id = int.Parse(replay_startLabel.Content.ToString());
@@ -261,6 +297,8 @@ namespace KinectMotionAnalyzer
                 return;
             }
 
+            //gesture_data = gesture;
+
             int min_frame_id = gesture.Keys.Min();
             int max_frame_id = gesture.Keys.Max();
 
@@ -311,6 +349,30 @@ namespace KinectMotionAnalyzer
             }
 
             replay_endLabel.Content = skeletonVideoSlider.Value;
+        }
+
+        private void gestureRecognitionBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (gestureRecognitionBtn.Content.ToString() == "Start Recognition")
+            {
+                if (gesture_recognizer == null)
+                {
+                    gesture_recognizer = new GestureRecognizer();
+                    if (!gesture_recognizer.LoadGestureDatabase(GESTURE_DATABASE_DIR))
+                    {
+                        MessageBox.Show("Fail to load gesture database for recognition.");
+                        return;
+                    }
+                }
+
+                isRecognition = true;
+                gestureRecognitionBtn.Content = "Stop Recognition";
+            }
+            else
+            {
+                isRecognition = false;
+                gestureRecognitionBtn.Content = "Start Recognition";
+            }
         }
 
         

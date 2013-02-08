@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
+using System.IO;
 using System.Text;
+using System.Windows;
 using Microsoft.Kinect;
 
 
@@ -23,7 +25,7 @@ namespace KinectMotionAnalyzer.Processors
     class Gesture
     {
         // actual gesture data
-        public Dictionary<int, Skeleton> data = new Dictionary<int, Skeleton>();
+        public List<Skeleton> data = new List<Skeleton>();
         public GestureName name = GestureName.Unknown;
     }
 
@@ -33,7 +35,7 @@ namespace KinectMotionAnalyzer.Processors
     class GestureTemplate
     {
         // actual gesture data
-        public Dictionary<int, Skeleton> data = new Dictionary<int, Skeleton>();
+        public List<Skeleton> data = new List<Skeleton>();
         public GestureName name = GestureName.Unknown;
 
         // weight for each joint used in recognition (matching)
@@ -46,14 +48,72 @@ namespace KinectMotionAnalyzer.Processors
     /// </summary>
     class GestureRecognizer
     {
+
+        private Dictionary<string, GestureName> GESTURE_DICT = new Dictionary<string, GestureName>();
+
         private Dictionary<GestureName, List<GestureTemplate>> GESTURE_DATABASE = 
             new Dictionary<GestureName, List<GestureTemplate>>();
 
-        public void LoadGestureDatabase(string database_dir)
-        {
+        public int gesture_min_len = 0;
+        public int gesture_max_len = 0;
 
+        public GestureRecognizer()
+        {
+            // set up gesture type mapping
+            GESTURE_DICT.Add("Unknown", GestureName.Unknown);
+            GESTURE_DICT.Add("Bicep_Curl", GestureName.Bicep_Curl);
+            GESTURE_DICT.Add("Squat", GestureName.Squat);
+            GESTURE_DICT.Add("Shoulder_Press", GestureName.Shoulder_Press);
         }
 
+
+        /// <summary>
+        /// read database data from files
+        /// </summary>
+        public bool LoadGestureDatabase(string database_dir)
+        {
+            // enumerate gesture directories
+            if (!Directory.Exists(database_dir))
+                return false;
+
+            IEnumerable<string> gesture_dirs = Directory.EnumerateDirectories(database_dir);
+            int g_min_len = int.MaxValue;
+            int g_max_len = int.MinValue;
+            foreach (string gdir in gesture_dirs)
+            {
+                // get dir name
+                int slash_id = gdir.LastIndexOf('\\');
+                string dirname = gdir.Substring(slash_id+1, gdir.Length - slash_id-1);
+                if (!GESTURE_DICT.ContainsKey(dirname))
+                    continue;
+
+                List<GestureTemplate> cur_gestures = new List<GestureTemplate>();
+                IEnumerable<string> gesture_files = Directory.EnumerateFiles(gdir);
+                foreach (string filename in gesture_files)
+                {
+                    GestureTemplate gtemp = new GestureTemplate();
+                    gtemp.data = KinectRecorder.ReadFromSkeletonFile(filename);
+                    gtemp.name = GESTURE_DICT[dirname];
+
+                    if (gtemp.data.Count > g_max_len)
+                        g_max_len = gtemp.data.Count;
+                    if (gtemp.data.Count < g_min_len)
+                        g_min_len = gtemp.data.Count;
+
+                    cur_gestures.Add(gtemp);
+                }
+
+                // add to database
+                GESTURE_DATABASE.Add(GESTURE_DICT[dirname], cur_gestures);
+            }
+
+            return true;
+        }
+
+
+        /// <summary>
+        /// match to each database template
+        /// </summary>
         public float MatchToDatabase(Gesture input)
         {
             // find the most similar gesture in database to test gesture
@@ -75,31 +135,38 @@ namespace KinectMotionAnalyzer.Processors
             return mindist;
         }
 
+
+        /// <summary>
+        /// measure similarity between input gesture and a gesture template
+        /// </summary>
         public float GestureSimilarity(Gesture input, GestureTemplate template)
         {
             // normalize to hip center
-            foreach (KeyValuePair<int,Skeleton> pair in input.data)
+            for (int i = 0; i < input.data.Count; i++)
             {
+                Skeleton ske = input.data[i];
+
                 // subtract each joint position with hip center position
-                Skeleton ske = pair.Value;
+                SkeletonPoint hipcenter = ske.Joints[JointType.HipCenter].Position;
                 SkeletonPoint point = new SkeletonPoint();
                 foreach (Joint joint in ske.Joints)
                 {
                     Joint tjoint = joint;
-                    point.X = joint.Position.X - pair.Value.Joints[JointType.HipCenter].Position.X;
-                    point.Y = joint.Position.Y - pair.Value.Joints[JointType.HipCenter].Position.Y;
-                    point.Z = joint.Position.Z - pair.Value.Joints[JointType.HipCenter].Position.Z;
+                    point.X = joint.Position.X - hipcenter.X;
+                    point.Y = joint.Position.Y - hipcenter.Y;
+                    point.Z = joint.Position.Z - hipcenter.Z;
                     tjoint.Position = point;
                     ske.Joints[joint.JointType] = tjoint;
                 }
 
-                input.data[pair.Key] = ske;
+                input.data[i] = ske;
             }
 
             float dist = DynamicTimeWarping(input.data, template.data, template.jointWeights);
 
             return 0;
         }
+
 
         /// <summary>
         /// generic dtw algorithm
