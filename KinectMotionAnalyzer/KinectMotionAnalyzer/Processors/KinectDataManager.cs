@@ -58,7 +58,7 @@ namespace KinectMotionAnalyzer.Processors
         //public KinectRecorder recorder;
 
         // gesture data: DUMMY
-        public Dictionary<int, Skeleton[]> gesture = new Dictionary<int, Skeleton[]>();
+        public Dictionary<int, Skeleton> gesture = new Dictionary<int, Skeleton>();
 
         // visualization data
         public WriteableBitmap ColorStreamBitmap;
@@ -253,6 +253,39 @@ namespace KinectMotionAnalyzer.Processors
                             BodyCenterThickness);
                         }
                     }
+                }
+
+                // prevent drawing outside of our render area
+                this.drawingGroup.ClipGeometry =
+                    new RectangleGeometry(new Rect(0.0, 0.0, RenderWidth, RenderHeight));
+            }
+        }
+
+        public void UpdateSkeletonData(Skeleton ske)
+        {
+            if (ske == null)
+                return;
+
+            // draw skeletons
+            using (DrawingContext dc = this.drawingGroup.Open())
+            {
+                // Draw a transparent background to set the render size
+                dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
+
+                RenderClippedEdges(ske, dc);
+
+                if (ske.TrackingState == SkeletonTrackingState.Tracked)
+                {
+                    this.DrawBonesAndJoints(ske, dc);
+                }
+                else if (ske.TrackingState == SkeletonTrackingState.PositionOnly)
+                {
+                    dc.DrawEllipse(
+                    this.centerPointBrush,
+                    null,
+                    this.SkeletonPointToScreen(ske.Position),
+                    BodyCenterThickness,
+                    BodyCenterThickness);
                 }
 
                 // prevent drawing outside of our render area

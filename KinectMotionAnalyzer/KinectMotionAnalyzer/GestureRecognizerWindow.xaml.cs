@@ -27,13 +27,14 @@ namespace KinectMotionAnalyzer
     {
 
         private KinectDataManager kinect_data_manager;
+        private KinectDataManager replay_data_manager;
         private KinectSensor kinect_sensor;
 
         bool isReplay = false;
         
         // record params
         private int frame_id = 0;
-        Dictionary<int, Skeleton[]> gesture_data = new Dictionary<int, Skeleton[]>();
+        Dictionary<int, Skeleton> gesture_data = new Dictionary<int, Skeleton>();
 
 
         public GestureRecognizerWindow()
@@ -47,6 +48,8 @@ namespace KinectMotionAnalyzer
             }
             else
                 statusbarLabel.Content = "Kinect initialized";
+
+            DeactivateReplay();
         }
 
 
@@ -65,24 +68,31 @@ namespace KinectMotionAnalyzer
                 }
             }
 
-
-            if (kinect_sensor != null)
-                kinect_data_manager = new KinectDataManager(ref kinect_sensor);
-
             // enable data stream
             if (kinect_sensor != null)
             {
+                // initialize data manager
+                kinect_data_manager = new KinectDataManager(ref kinect_sensor);
+                replay_data_manager = new KinectDataManager(ref kinect_sensor);
+
                 // initialize stream
                 kinect_sensor.SkeletonStream.Enable();
 
                 // set source (must after source has been initialized otherwise it's null forever)
-                skeleton_disp_img.Source = kinect_data_manager.skeletonImageSource;
+                gesture_disp_img.Source = kinect_data_manager.skeletonImageSource;
+                gesture_replay_img.Source = replay_data_manager.skeletonImageSource;
 
                 // bind event handlers
                 kinect_sensor.SkeletonFrameReady += kinect_skeletonframe_ready;
             }
             else
+            {
+                // invalidate all buttons
+                kinectRunBtn.IsEnabled = false;
+                gestureReplayBtn.IsEnabled = false;
+
                 return false;
+            }
 
 
             return true;
@@ -104,7 +114,16 @@ namespace KinectMotionAnalyzer
                 // if capturing, add to gesture data
                 if (gestureCaptureBtn.Content.ToString() == "Stop Capture")
                 {
-                    gesture_data.Add(frame_id, skeletons);
+                    // just add first tracked skeleton, assume only one person is present
+                    foreach (Skeleton ske in skeletons)
+                    {
+                        if (ske.TrackingState == SkeletonTrackingState.Tracked)
+                        {
+                            gesture_data.Add(frame_id, ske);
+                            break;
+                        }
+                    }
+                    
                     frame_id++;
                 }
 
@@ -119,10 +138,13 @@ namespace KinectMotionAnalyzer
 
             if (!kinect_sensor.IsRunning)
             {
+                // can't replay since share same gesture buffer
+                DeactivateReplay();
+                gestureReplayBtn.IsEnabled = false;
+                gestureCaptureBtn.IsEnabled = true;
+
                 kinect_sensor.Start();
                 kinectRunBtn.Content = "Stop";
-                gestureCaptureBtn.IsEnabled = true;
-                gestureReplayBtn.IsEnabled = false;
             }
             else
             {
@@ -144,20 +166,46 @@ namespace KinectMotionAnalyzer
             }
             else
             {
-                // save to file
-                string time = System.DateTime.Now.ToString("hh'-'mm'-'ss", CultureInfo.CurrentUICulture.DateTimeFormat);
+                // show for replay
+                if (gesture_data != null)
+                {
+                    ActivateReplay(gesture_data);
+                    saveGestureBtn.IsEnabled = true;
+                }
 
-                string myPhotos = "D:"; //Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-                string skeletonpath = myPhotos + "\\Kinect_skeleton_" + time + ".xml";
+                gestureCaptureBtn.Content = "Capture";
 
-                KinectRecorder.WriteToSkeletonFile(skeletonpath, gesture_data);
-
-                gesture_data.Clear();
-                frame_id = 0;
-
-                statusbarLabel.Content = "Save skeletons to file: " + skeletonpath;
+                
             }
             
+        }
+
+        private void saveGestureBtn_Click(object sender, RoutedEventArgs e)
+        {
+            // save to file
+            string time = System.DateTime.Now.ToString("hh'-'mm'-'ss", CultureInfo.CurrentUICulture.DateTimeFormat);
+
+            string myPhotos = "D:"; //Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+            string skeletonpath = myPhotos + "\\Kinect_skeleton_" + time + ".xml";
+
+            // save data from start label to end label
+            int start_id = int.Parse(replay_startLabel.Content.ToString());
+            int end_id = int.Parse(replay_endLabel.Content.ToString());
+            Dictionary<int, Skeleton> toSaveGesture = new Dictionary<int, Skeleton>();
+            foreach(KeyValuePair<int, Skeleton> pair in gesture_data)
+            {
+                if (pair.Key >= start_id && pair.Key <= end_id)
+                    toSaveGesture.Add(pair.Key, pair.Value);
+            }
+            KinectRecorder.WriteToSkeletonFile(skeletonpath, toSaveGesture);
+
+            gesture_data.Clear();
+            frame_id = 0;
+
+            statusbarLabel.Content = "Save skeletons to file: " + skeletonpath;
+
+            DeactivateReplay();
+            saveGestureBtn.IsEnabled = false;
         }
 
         private void skeletonVideoSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -167,9 +215,9 @@ namespace KinectMotionAnalyzer
             {
                 // load new skeleton data
                 int cur_frame_id = (int)skeletonVideoSlider.Value;
-                if (gesture_data[cur_frame_id] != null)
+                if (gesture_data.ContainsKey(cur_frame_id))
                 {
-                    kinect_data_manager.UpdateSkeletonData(gesture_data[cur_frame_id]);
+                    replay_data_manager.UpdateSkeletonData(gesture_data[cur_frame_id]);
                 }
 
                 // update label
@@ -180,7 +228,7 @@ namespace KinectMotionAnalyzer
         private void gestureReplayBtn_Click(object sender, RoutedEventArgs e)
         {
 
-            if (kinect_sensor.IsRunning)
+            if (kinect_sensor != null && kinect_sensor.IsRunning)
                 return;
 
             OpenFileDialog dialog = new OpenFileDialog();
@@ -196,20 +244,73 @@ namespace KinectMotionAnalyzer
                 // test: read skeleton data and display
                 gesture_data = KinectRecorder.ReadFromSkeletonFile(filename);
 
-                int min_frame_id = gesture_data.Keys.Min();
-                int max_frame_id = gesture_data.Keys.Max();
+                statusbarLabel.Content = "Load gesture file from " + filename;
 
-                skeletonVideoSlider.IsEnabled = true;
-                skeletonVideoSlider.Minimum = min_frame_id;
-                skeletonVideoSlider.Maximum = max_frame_id;
-                skeletonVideoSlider.Value = min_frame_id;
-                skeletonSliderLabel.Content = min_frame_id.ToString();
-
-                kinect_data_manager.UpdateSkeletonData(gesture_data[min_frame_id]);
+                ActivateReplay(gesture_data);
 
                 isReplay = true;
             }
 
+        }
+
+        private void ActivateReplay(Dictionary<int, Skeleton> gesture)
+        {
+            if (gesture == null)
+            {
+                statusbarLabel.Content = "Replay gesture is null.";
+                return;
+            }
+
+            int min_frame_id = gesture.Keys.Min();
+            int max_frame_id = gesture.Keys.Max();
+
+            skeletonVideoSlider.IsEnabled = true;
+            skeletonVideoSlider.Minimum = min_frame_id;
+            skeletonVideoSlider.Maximum = max_frame_id;
+            skeletonVideoSlider.Value = min_frame_id;
+            skeletonSliderLabel.Content = min_frame_id.ToString();
+
+            replay_setStartBtn.IsEnabled = true;
+            replay_startLabel.Content = min_frame_id.ToString();
+            replay_setEndBtn.IsEnabled = true;
+            replay_endLabel.Content = max_frame_id;
+
+            isReplay = true;
+
+            replay_data_manager.UpdateSkeletonData(gesture[min_frame_id]);
+        }
+
+        private void DeactivateReplay()
+        {
+            // clear all
+            skeletonVideoSlider.IsEnabled = false;
+            skeletonVideoSlider.Minimum = 0;
+            skeletonVideoSlider.Maximum = 0;
+            skeletonVideoSlider.Value = 0;
+            skeletonSliderLabel.Content = "0";
+
+            replay_setStartBtn.IsEnabled = false;
+            replay_startLabel.Content = "0";
+            replay_setEndBtn.IsEnabled = false;
+            replay_endLabel.Content = "0";
+
+            isReplay = false;
+        }
+
+        private void replay_setStartBtn_Click(object sender, RoutedEventArgs e)
+        {
+            replay_startLabel.Content = skeletonVideoSlider.Value.ToString();
+        }
+
+        private void replay_setEndBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if(skeletonVideoSlider.Value < double.Parse(replay_startLabel.Content.ToString()))
+            {
+                MessageBox.Show("End frame can't be earlier than start frame.");
+                return;
+            }
+
+            replay_endLabel.Content = skeletonVideoSlider.Value;
         }
 
         

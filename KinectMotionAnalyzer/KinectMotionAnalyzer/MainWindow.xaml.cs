@@ -40,7 +40,7 @@ namespace KinectMotionAnalyzer
 
         // data record
         int frame_id;
-        bool ifRecording;
+        bool ifRecording = false;
 
 
         public MainWindow()
@@ -166,8 +166,16 @@ namespace KinectMotionAnalyzer
 
                 if (stopSkeletonRecordBtn.IsEnabled)
                 {
-                    // add data to collection
-                    kinect_data_manager.gesture.Add(frame_id, skeletons);
+                    // add data to collection (only first tracked one)
+                    foreach(Skeleton ske in skeletons)
+                    {
+                        if (ske.TrackingState == SkeletonTrackingState.Tracked)
+                        {
+                            kinect_data_manager.gesture.Add(frame_id, ske);
+                            break;
+                        }
+                    }
+                    
                     frame_id++;
                 }
 
@@ -290,8 +298,8 @@ namespace KinectMotionAnalyzer
                 kinect_data_manager.SaveKinectData(kinect_data_manager.depthPixels, depthpath, "DEPTH");
             if (kinect_sensor.SkeletonStream.IsEnabled)
             {
-                Dictionary<int, Skeleton[]> skeletonCollection = new Dictionary<int, Skeleton[]>();
-                skeletonCollection.Add(1, kinect_data_manager.skeletons);
+                Dictionary<int, Skeleton> skeletonCollection = new Dictionary<int, Skeleton>();
+                //skeletonCollection.Add(1, kinect_data_manager.skeletons);
                 KinectRecorder.WriteToSkeletonFile(skeletonpath, skeletonCollection);
                 statusbarLabel.Content = "Save skeletons to file: " + skeletonpath;
             }
@@ -321,7 +329,7 @@ namespace KinectMotionAnalyzer
             {
                 string filename = dialog.FileName;
                 // test: read skeleton data and display
-                Dictionary<int, Skeleton[]> skeleton_data = 
+                Dictionary<int, Skeleton> skeleton_data = 
                     KinectRecorder.ReadFromSkeletonFile(filename);
                 // save to data manager object
                 kinect_data_manager.gesture = skeleton_data;
@@ -335,7 +343,7 @@ namespace KinectMotionAnalyzer
                 skeletonVideoSlider.Value = min_frame_id;
                 skeletonSliderLabel.Content = min_frame_id.ToString();
 
-                kinect_data_manager.UpdateSkeletonData(skeleton_data[min_frame_id]);
+                //kinect_data_manager.UpdateSkeletonData(skeleton_data[min_frame_id]);
 
                 mode = KinectMode.Replay;
             }
@@ -350,7 +358,7 @@ namespace KinectMotionAnalyzer
                 int cur_frame_id = (int)skeletonVideoSlider.Value;
                 if (kinect_data_manager.gesture[cur_frame_id] != null)
                 {
-                    kinect_data_manager.UpdateSkeletonData(kinect_data_manager.gesture[cur_frame_id]);
+                    //kinect_data_manager.UpdateSkeletonData(kinect_data_manager.gesture[cur_frame_id]);
                 }
 
                 // update label

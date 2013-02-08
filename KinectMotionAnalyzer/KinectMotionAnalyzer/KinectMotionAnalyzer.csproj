@@ -72,7 +72,7 @@
     <Compile Include="GestureRecognizerWindow.xaml.cs">
       <DependentUpon>GestureRecognizerWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="KinectRecorder.cs" />
+    <Compile Include="Processors\KinectRecorder.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
