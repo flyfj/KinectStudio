@@ -13,9 +13,9 @@
         <Button Content="Load Gesture" Height="46" HorizontalAlignment="Left" Margin="591,304,0,0" Name="gestureReplayBtn" VerticalAlignment="Top" Width="118" Click="gestureReplayBtn_Click" FontSize="15" />
         <ComboBox Height="34" HorizontalAlignment="Left" Margin="542,112,0,0" Name="gestureComboBox" VerticalAlignment="Top" Width="222" Text="" SnapsToDevicePixels="True" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15">
             <ComboBoxItem Content="Choose Type" IsEnabled="False" IsSelected="True" />
-            <ComboBoxItem Content="Bicep Curl" />
+            <ComboBoxItem Content="Bicep_Curl" />
             <ComboBoxItem Content="Squat" />
-            <ComboBoxItem Content="Shoulder Press" />
+            <ComboBoxItem Content="Shoulder_Press" />
         </ComboBox>
         <Border BorderBrush="Black" BorderThickness="1" Height="549" HorizontalAlignment="Left" Margin="38,40,0,0" Name="dispImgBorder" VerticalAlignment="Top" Width="436">
             <Image Name="gesture_disp_img" Stretch="Uniform" Width="413" Height="532" />

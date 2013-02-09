@@ -171,7 +171,7 @@ namespace KinectMotionAnalyzer
                     {
                         if (ske.TrackingState == SkeletonTrackingState.Tracked)
                         {
-                            kinect_data_manager.gesture.Add(frame_id, ske);
+                            kinect_data_manager.gesture.Add(ske);
                             break;
                         }
                     }
@@ -298,7 +298,7 @@ namespace KinectMotionAnalyzer
                 kinect_data_manager.SaveKinectData(kinect_data_manager.depthPixels, depthpath, "DEPTH");
             if (kinect_sensor.SkeletonStream.IsEnabled)
             {
-                Dictionary<int, Skeleton> skeletonCollection = new Dictionary<int, Skeleton>();
+                List<Skeleton> skeletonCollection = new List<Skeleton>();
                 //skeletonCollection.Add(1, kinect_data_manager.skeletons);
                 KinectRecorder.WriteToSkeletonFile(skeletonpath, skeletonCollection);
                 statusbarLabel.Content = "Save skeletons to file: " + skeletonpath;
@@ -329,13 +329,13 @@ namespace KinectMotionAnalyzer
             {
                 string filename = dialog.FileName;
                 // test: read skeleton data and display
-                Dictionary<int, Skeleton> skeleton_data = 
+                List<Skeleton> skeleton_data = 
                     KinectRecorder.ReadFromSkeletonFile(filename);
                 // save to data manager object
                 kinect_data_manager.gesture = skeleton_data;
 
-                int min_frame_id = skeleton_data.Keys.Min();
-                int max_frame_id = skeleton_data.Keys.Max();
+                int min_frame_id = 0;
+                int max_frame_id = skeleton_data.Count;
 
                 skeletonVideoSlider.IsEnabled = true;
                 skeletonVideoSlider.Minimum = min_frame_id;

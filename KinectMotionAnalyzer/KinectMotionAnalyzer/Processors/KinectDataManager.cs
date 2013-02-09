@@ -58,7 +58,7 @@ namespace KinectMotionAnalyzer.Processors
         //public KinectRecorder recorder;
 
         // gesture data: DUMMY
-        public Dictionary<int, Skeleton> gesture = new Dictionary<int, Skeleton>();
+        public List<Skeleton> gesture = new List<Skeleton>();
 
         // visualization data
         public WriteableBitmap ColorStreamBitmap;

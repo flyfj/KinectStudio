@@ -41,7 +41,7 @@ namespace KinectMotionAnalyzer
         
         // record params
         private int frame_id = 0;
-        Dictionary<int, Skeleton> gesture_data = new Dictionary<int, Skeleton>();
+        List<Skeleton> gesture_data = new List<Skeleton>();
         Gesture temp_gesture = new Gesture();
 
 
@@ -119,6 +119,8 @@ namespace KinectMotionAnalyzer
                 Skeleton[] skeletons = new Skeleton[frame.SkeletonArrayLength];
                 frame.CopySkeletonDataTo(skeletons);
 
+                kinect_data_manager.UpdateSkeletonData(skeletons);
+
                 // if capturing, add to gesture data
                 if (gestureCaptureBtn.Content.ToString() == "Stop Capture")
                 {
@@ -127,12 +129,10 @@ namespace KinectMotionAnalyzer
                     {
                         if (ske.TrackingState == SkeletonTrackingState.Tracked)
                         {
-                            gesture_data.Add(frame_id, ske);
+                            gesture_data.Add(ske);
                             break;
                         }
                     }
-                    
-                    frame_id++;
                 }
 
                 if (isRecognition)
@@ -149,16 +149,14 @@ namespace KinectMotionAnalyzer
                         }
                     }
 
-                    if(temp_gesture.data.Count >= gesture_recognizer.gesture_min_len && 
-                        temp_gesture.data.Count <= gesture_recognizer.gesture_max_len)
+                    if(temp_gesture.data.Count >= gesture_recognizer.gesture_min_len/2 && 
+                        temp_gesture.data.Count <= gesture_recognizer.gesture_max_len*2)
                     {
                         // do recognition
                         float dist = gesture_recognizer.MatchToDatabase(temp_gesture);
                         recDistLabel.Content = dist.ToString();
                     }
                 }
-
-                kinect_data_manager.UpdateSkeletonData(skeletons);
             }
         }
 
@@ -194,6 +192,13 @@ namespace KinectMotionAnalyzer
         {
             if (gestureCaptureBtn.Content.ToString() == "Capture")
             {
+                // check if type is selected
+                if (gestureComboBox.SelectedIndex <= 0)
+                {
+                    MessageBox.Show("Select a gesture type before capturing.");
+                    return;
+                }
+
                 // reset
                 frame_id = 0;
                 gesture_data.Clear();
@@ -202,7 +207,7 @@ namespace KinectMotionAnalyzer
             }
             else
             {
-                // show for replay
+                // prepare for replay
                 if (gesture_data != null)
                 {
                     ActivateReplay(gesture_data);
@@ -211,9 +216,7 @@ namespace KinectMotionAnalyzer
 
                 gestureCaptureBtn.Content = "Capture";
                 gestureRecognitionBtn.IsEnabled = true;
-                
             }
-            
         }
 
         private void saveGestureBtn_Click(object sender, RoutedEventArgs e)
@@ -221,19 +224,17 @@ namespace KinectMotionAnalyzer
             // save to file
             string time = System.DateTime.Now.ToString("hh'-'mm'-'ss", CultureInfo.CurrentUICulture.DateTimeFormat);
 
+            string gesture_name = (gestureComboBox.SelectedItem as ComboBoxItem).Content.ToString();
             string myPhotos = "D:"; //Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-            string skeletonpath = myPhotos + "\\gdata\\Kinect_skeleton_" + time + ".xml";
+            string skeletonpath = myPhotos + "\\gdata\\" + gesture_name + "\\Kinect_skeleton_" + time + ".xml";
 
             // save data from start label to end label
             int start_id = int.Parse(replay_startLabel.Content.ToString());
             int end_id = int.Parse(replay_endLabel.Content.ToString());
-            Dictionary<int, Skeleton> toSaveGesture = new Dictionary<int, Skeleton>();
-            foreach(KeyValuePair<int, Skeleton> pair in gesture_data)
-            {
-                if (pair.Key >= start_id && pair.Key <= end_id)
-                    toSaveGesture.Add(pair.Key, pair.Value);
-            }
-            KinectRecorder.WriteToSkeletonFile(skeletonpath, toSaveGesture);
+            // remove end part first so front id will not change
+            gesture_data.RemoveRange(end_id + 1, gesture_data.Count - end_id - 1);
+            gesture_data.RemoveRange(0, start_id);
+            KinectRecorder.WriteToSkeletonFile(skeletonpath, gesture_data);
 
             gesture_data.Clear();
             frame_id = 0;
@@ -251,7 +252,7 @@ namespace KinectMotionAnalyzer
             {
                 // load new skeleton data
                 int cur_frame_id = (int)skeletonVideoSlider.Value;
-                if (gesture_data.ContainsKey(cur_frame_id))
+                if (gesture_data.Count > cur_frame_id)
                 {
                     replay_data_manager.UpdateSkeletonData(gesture_data[cur_frame_id]);
                 }
@@ -289,18 +290,18 @@ namespace KinectMotionAnalyzer
 
         }
 
-        private void ActivateReplay(Dictionary<int, Skeleton> gesture)
+        private void ActivateReplay(List<Skeleton> gesture)
         {
-            if (gesture == null)
+            if (gesture == null || gesture.Count == 0)
             {
-                statusbarLabel.Content = "Replay gesture is null.";
+                statusbarLabel.Content = "Replay gesture is empty.";
                 return;
             }
 
             //gesture_data = gesture;
 
-            int min_frame_id = gesture.Keys.Min();
-            int max_frame_id = gesture.Keys.Max();
+            int min_frame_id = 0;
+            int max_frame_id = gesture.Count - 1;
 
             skeletonVideoSlider.IsEnabled = true;
             skeletonVideoSlider.Minimum = min_frame_id;
@@ -358,11 +359,12 @@ namespace KinectMotionAnalyzer
                 if (gesture_recognizer == null)
                 {
                     gesture_recognizer = new GestureRecognizer();
-                    if (!gesture_recognizer.LoadGestureDatabase(GESTURE_DATABASE_DIR))
-                    {
-                        MessageBox.Show("Fail to load gesture database for recognition.");
-                        return;
-                    }
+                }
+
+                if (!gesture_recognizer.LoadGestureDatabase(GESTURE_DATABASE_DIR))
+                {
+                    MessageBox.Show("Fail to load gesture database for recognition.");
+                    return;
                 }
 
                 isRecognition = true;
@@ -371,6 +373,7 @@ namespace KinectMotionAnalyzer
             else
             {
                 isRecognition = false;
+                recDistLabel.Content = 0;
                 gestureRecognitionBtn.Content = "Start Recognition";
             }
         }

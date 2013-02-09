@@ -76,9 +76,11 @@ namespace KinectMotionAnalyzer.Processors
             if (!Directory.Exists(database_dir))
                 return false;
 
+            GESTURE_DATABASE.Clear();
+
             IEnumerable<string> gesture_dirs = Directory.EnumerateDirectories(database_dir);
-            int g_min_len = int.MaxValue;
-            int g_max_len = int.MinValue;
+            gesture_min_len = int.MaxValue;
+            gesture_max_len = int.MinValue;
             foreach (string gdir in gesture_dirs)
             {
                 // get dir name
@@ -95,17 +97,24 @@ namespace KinectMotionAnalyzer.Processors
                     gtemp.data = KinectRecorder.ReadFromSkeletonFile(filename);
                     gtemp.name = GESTURE_DICT[dirname];
 
-                    if (gtemp.data.Count > g_max_len)
-                        g_max_len = gtemp.data.Count;
-                    if (gtemp.data.Count < g_min_len)
-                        g_min_len = gtemp.data.Count;
+                    if (gtemp.data.Count > gesture_max_len)
+                        gesture_max_len = gtemp.data.Count;
+                    if (gtemp.data.Count < gesture_min_len)
+                        gesture_min_len = gtemp.data.Count;
 
                     cur_gestures.Add(gtemp);
                 }
 
-                // add to database
-                GESTURE_DATABASE.Add(GESTURE_DICT[dirname], cur_gestures);
+                if(cur_gestures.Count > 0)
+                {
+                    // add to database
+                    GESTURE_DATABASE.Add(GESTURE_DICT[dirname], cur_gestures);
+                }
+                
             }
+
+            if (GESTURE_DATABASE.Count == 0)
+                return false;
 
             return true;
         }
@@ -141,30 +150,42 @@ namespace KinectMotionAnalyzer.Processors
         /// </summary>
         public float GestureSimilarity(Gesture input, GestureTemplate template)
         {
-            // normalize to hip center
+            Gesture input2 = new Gesture();
+            GestureTemplate temp2 = new GestureTemplate();
             for (int i = 0; i < input.data.Count; i++)
             {
-                Skeleton ske = input.data[i];
-
-                // subtract each joint position with hip center position
-                SkeletonPoint hipcenter = ske.Joints[JointType.HipCenter].Position;
-                SkeletonPoint point = new SkeletonPoint();
-                foreach (Joint joint in ske.Joints)
-                {
-                    Joint tjoint = joint;
-                    point.X = joint.Position.X - hipcenter.X;
-                    point.Y = joint.Position.Y - hipcenter.Y;
-                    point.Z = joint.Position.Z - hipcenter.Z;
-                    tjoint.Position = point;
-                    ske.Joints[joint.JointType] = tjoint;
-                }
-
-                input.data[i] = ske;
+                input2.data.Add(input.data[i]);
+                input2.data[i] = NormalizeSkeleton(input2.data[i]);
             }
 
-            float dist = DynamicTimeWarping(input.data, template.data, template.jointWeights);
+            for (int i = 0; i < template.data.Count; i++)
+            {
+                temp2.data.Add(template.data[i]);
+                temp2.data[i] = NormalizeSkeleton(temp2.data[i]);
+            }
 
-            return 0;
+            float dist = DynamicTimeWarping(input2.data, temp2.data, template.jointWeights);
+
+            return dist;
+        }
+
+        private Skeleton NormalizeSkeleton(Skeleton input)
+        {
+            // normalize to hip center
+            // subtract each joint position with hip center position
+            SkeletonPoint hipcenter = input.Joints[JointType.HipCenter].Position;
+            SkeletonPoint point = new SkeletonPoint();
+            foreach (Joint joint in input.Joints)
+            {
+                Joint tjoint = joint;
+                point.X = joint.Position.X - hipcenter.X;
+                point.Y = joint.Position.Y - hipcenter.Y;
+                point.Z = joint.Position.Z - hipcenter.Z;
+                tjoint.Position = point;
+                input.Joints[joint.JointType] = tjoint;
+            }
+
+            return input;
         }
 
 
@@ -172,21 +193,21 @@ namespace KinectMotionAnalyzer.Processors
         /// generic dtw algorithm
         /// </summary>
         public float DynamicTimeWarping(
-            Dictionary<int, Skeleton> input1, Dictionary<int, Skeleton> input2, Dictionary<JointType, float> weights)
+            List<Skeleton> input1, List<Skeleton> input2, Dictionary<JointType, float> weights)
         {
-            if (input1 == null || input2 == null)
+            if (input1 == null || input2 == null || input1.Count == 0 || input2.Count == 0)
                 return -1;
 
             // perform DTW to align two arrays
             int length1 = input1.Count;
             int length2 = input2.Count;
-            float[][] DTW = {new float[length1+1], new float[length2+1]};   // make an extra space for 0 match
+            float[,] DTW = new float[length1+1, length2+1];   // make an extra space for 0 match
 
             for(int i=1; i<=length1; i++)
-                DTW[0][i] = float.PositiveInfinity;
+                DTW[i, 0] = float.PositiveInfinity;
             for(int i=1; i<=length2; i++)
-                DTW[i][0] = float.PositiveInfinity;
-            DTW[0][0] = 0;
+                DTW[0, i] = float.PositiveInfinity;
+            DTW[0, 0] = 0;
 
             for(int i=1; i<=length1; i++)
             {
@@ -195,11 +216,11 @@ namespace KinectMotionAnalyzer.Processors
                     int loc1 = i - 1;
                     int loc2 = j - 1;
                     float cost = DistBetweenPose(input1[loc1], input2[loc2], weights);
-                    DTW[i][j] = cost + Math.Min(DTW[i-1][j], Math.Min(DTW[i][j-1], DTW[i-1][j-1]));
+                    DTW[i, j] = cost + Math.Min(DTW[i-1, j], Math.Min(DTW[i, j-1], DTW[i-1, j-1]));
                 }
             }
 
-            return DTW[length1][length2];
+            return DTW[length1, length2];
         }
 
         private float DistBetweenPose(Skeleton pose1, Skeleton pose2, Dictionary<JointType, float> weights)
@@ -218,13 +239,13 @@ namespace KinectMotionAnalyzer.Processors
                 float pointdist = dx * dx + dy * dy + dz * dz;
                 pointdist = (float)Math.Sqrt((double)pointdist);
 
-                dist += weights[type] * pointdist;
-                sumw += weights[type];
+                dist += pointdist;
+                //sumw += weights[type];
             }
 
-            dist /= sumw;
+            //dist /= sumw;
 
-            return dist;
+            return dist / 20;
         }
     }
 }
