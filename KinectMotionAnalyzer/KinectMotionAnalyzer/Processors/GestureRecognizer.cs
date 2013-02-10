@@ -30,16 +30,50 @@ namespace KinectMotionAnalyzer.Processors
     }
 
     /// <summary>
+    /// common data for all template gesture
+    /// </summary>
+    class GestureTemplateBase
+    {
+        public GestureName name = GestureName.Unknown;
+        // weight for each joint used in recognition (matching)
+        public Dictionary<JointType, float> jointWeights = new Dictionary<JointType, float>();
+
+        public GestureTemplateBase()
+        {
+            name = GestureName.Unknown;
+            jointWeights[JointType.AnkleLeft] = 0;
+            jointWeights[JointType.AnkleRight] = 0;
+            jointWeights[JointType.ElbowLeft] = 0;
+            jointWeights[JointType.ElbowRight] = 0;
+            jointWeights[JointType.FootLeft] = 0;
+            jointWeights[JointType.FootRight] = 0;
+            jointWeights[JointType.HandLeft] = 0;
+            jointWeights[JointType.HandRight] = 0;
+            jointWeights[JointType.Head] = 0;
+            jointWeights[JointType.HipCenter] = 0;
+            jointWeights[JointType.HipLeft] = 0;
+            jointWeights[JointType.HipRight] = 0;
+            jointWeights[JointType.KneeLeft] = 0;
+            jointWeights[JointType.KneeRight] = 0;
+            jointWeights[JointType.ShoulderCenter] = 0;
+            jointWeights[JointType.ShoulderLeft] = 0;
+            jointWeights[JointType.ShoulderRight] = 0;
+            jointWeights[JointType.Spine] = 0;
+            jointWeights[JointType.WristLeft] = 0;
+            jointWeights[JointType.WristRight] = 0;
+        }
+
+    }
+
+    /// <summary>
     /// template gesture
     /// </summary>
     class GestureTemplate
     {
         // actual gesture data
         public List<Skeleton> data = new List<Skeleton>();
-        public GestureName name = GestureName.Unknown;
 
-        // weight for each joint used in recognition (matching)
-        public Dictionary<JointType, float> jointWeights = new Dictionary<JointType, float>();
+        public GestureTemplateBase basis = new GestureTemplateBase();
     }
 
 
@@ -49,7 +83,8 @@ namespace KinectMotionAnalyzer.Processors
     class GestureRecognizer
     {
 
-        private Dictionary<string, GestureName> GESTURE_DICT = new Dictionary<string, GestureName>();
+        private Dictionary<string, GestureTemplateBase> GESTURE_BASES = 
+            new Dictionary<string, GestureTemplateBase>();
 
         private Dictionary<GestureName, List<GestureTemplate>> GESTURE_DATABASE = 
             new Dictionary<GestureName, List<GestureTemplate>>();
@@ -60,10 +95,24 @@ namespace KinectMotionAnalyzer.Processors
         public GestureRecognizer()
         {
             // set up gesture type mapping
-            GESTURE_DICT.Add("Unknown", GestureName.Unknown);
-            GESTURE_DICT.Add("Bicep_Curl", GestureName.Bicep_Curl);
-            GESTURE_DICT.Add("Squat", GestureName.Squat);
-            GESTURE_DICT.Add("Shoulder_Press", GestureName.Shoulder_Press);
+            GestureTemplateBase unknown_basis = new GestureTemplateBase();
+            GESTURE_BASES.Add("Unknown", unknown_basis);
+            
+            GestureTemplateBase bicep_curl_basis = new GestureTemplateBase();
+            bicep_curl_basis.name = GestureName.Bicep_Curl;
+            bicep_curl_basis.jointWeights[JointType.ShoulderLeft] = 1;
+            bicep_curl_basis.jointWeights[JointType.ShoulderRight] = 1;
+            bicep_curl_basis.jointWeights[JointType.ElbowLeft] = 1;
+            bicep_curl_basis.jointWeights[JointType.ElbowRight] = 1;
+            GESTURE_BASES.Add("Bicep_Curl", bicep_curl_basis);
+
+            GestureTemplateBase squat_basis = new GestureTemplateBase();
+            squat_basis.name = GestureName.Squat;
+            GESTURE_BASES.Add("Squat", squat_basis);
+
+            GestureTemplateBase shoulder_press_basis = new GestureTemplateBase();
+            shoulder_press_basis.name = GestureName.Shoulder_Press;
+            GESTURE_BASES.Add("Shoulder_Press", shoulder_press_basis);
         }
 
 
@@ -86,16 +135,16 @@ namespace KinectMotionAnalyzer.Processors
                 // get dir name
                 int slash_id = gdir.LastIndexOf('\\');
                 string dirname = gdir.Substring(slash_id+1, gdir.Length - slash_id-1);
-                if (!GESTURE_DICT.ContainsKey(dirname))
+                if (!GESTURE_BASES.ContainsKey(dirname))
                     continue;
 
                 List<GestureTemplate> cur_gestures = new List<GestureTemplate>();
-                IEnumerable<string> gesture_files = Directory.EnumerateFiles(gdir);
+                IEnumerable<string> gesture_files = Directory.EnumerateFiles(gdir, "*.xml");
                 foreach (string filename in gesture_files)
                 {
                     GestureTemplate gtemp = new GestureTemplate();
                     gtemp.data = KinectRecorder.ReadFromSkeletonFile(filename);
-                    gtemp.name = GESTURE_DICT[dirname];
+                    gtemp.basis.name = GESTURE_BASES[dirname].name;
 
                     if (gtemp.data.Count > gesture_max_len)
                         gesture_max_len = gtemp.data.Count;
@@ -108,7 +157,7 @@ namespace KinectMotionAnalyzer.Processors
                 if(cur_gestures.Count > 0)
                 {
                     // add to database
-                    GESTURE_DATABASE.Add(GESTURE_DICT[dirname], cur_gestures);
+                    GESTURE_DATABASE.Add(GESTURE_BASES[dirname].name, cur_gestures);
                 }
                 
             }
@@ -123,7 +172,7 @@ namespace KinectMotionAnalyzer.Processors
         /// <summary>
         /// match to each database template
         /// </summary>
-        public float MatchToDatabase(Gesture input)
+        public float MatchToDatabase(Gesture input, out string res)
         {
             // find the most similar gesture in database to test gesture
             float mindist = float.PositiveInfinity;
@@ -140,6 +189,8 @@ namespace KinectMotionAnalyzer.Processors
                     }
                 }
             }
+
+            res = bestname.ToString();
 
             return mindist;
         }
@@ -164,23 +215,34 @@ namespace KinectMotionAnalyzer.Processors
                 temp2.data[i] = NormalizeSkeleton(temp2.data[i]);
             }
 
-            float dist = DynamicTimeWarping(input2.data, temp2.data, template.jointWeights);
+            float dist = DynamicTimeWarping(input2.data, temp2.data, template.basis.jointWeights);
 
             return dist;
         }
 
         private Skeleton NormalizeSkeleton(Skeleton input)
         {
-            // normalize to hip center
-            // subtract each joint position with hip center position
-            SkeletonPoint hipcenter = input.Joints[JointType.HipCenter].Position;
-            SkeletonPoint point = new SkeletonPoint();
+            // normalize
+            // subtract each joint position with center position
+            // normalize size with shoulder width
+            SkeletonPoint centerpt = input.Joints[JointType.HipCenter].Position;
+            float shoulderWidth = Tools.GetJointDistance(
+                input.Joints[JointType.ShoulderLeft].Position,
+                input.Joints[JointType.ShoulderRight].Position);
+
             foreach (Joint joint in input.Joints)
             {
+                SkeletonPoint point = new SkeletonPoint();
                 Joint tjoint = joint;
-                point.X = joint.Position.X - hipcenter.X;
-                point.Y = joint.Position.Y - hipcenter.Y;
-                point.Z = joint.Position.Z - hipcenter.Z;
+                // normalize position
+                point.X = joint.Position.X - centerpt.X;
+                point.Y = joint.Position.Y - centerpt.Y;
+                point.Z = joint.Position.Z - centerpt.Z;
+                // normalize size
+                //point.X /= shoulderWidth;
+                //point.Y /= shoulderWidth;
+                //point.Z /= shoulderWidth;
+
                 tjoint.Position = point;
                 input.Joints[joint.JointType] = tjoint;
             }
@@ -233,19 +295,13 @@ namespace KinectMotionAnalyzer.Processors
             for (int i = 0; i < pose1.Joints.Count; i++)
             {
                 JointType type = (JointType)i;
-                float dx = pose1.Joints[type].Position.X - pose2.Joints[type].Position.X;
-                float dy = pose1.Joints[type].Position.Y - pose2.Joints[type].Position.Y;
-                float dz = pose1.Joints[type].Position.Z - pose2.Joints[type].Position.Z;
-                float pointdist = dx * dx + dy * dy + dz * dz;
-                pointdist = (float)Math.Sqrt((double)pointdist);
-
-                dist += pointdist;
+                dist += Tools.GetJointDistance(pose1.Joints[type].Position, pose2.Joints[type].Position);
                 //sumw += weights[type];
             }
 
             //dist /= sumw;
 
-            return dist / 20;
+            return dist / pose1.Joints.Count;
         }
     }
 }

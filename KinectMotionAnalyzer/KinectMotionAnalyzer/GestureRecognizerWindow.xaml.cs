@@ -153,7 +153,14 @@ namespace KinectMotionAnalyzer
                         temp_gesture.data.Count <= gesture_recognizer.gesture_max_len*2)
                     {
                         // do recognition
-                        float dist = gesture_recognizer.MatchToDatabase(temp_gesture);
+                        string res = "";
+                        float dist = gesture_recognizer.MatchToDatabase(temp_gesture, out res);
+                        gesture_match_scorebar.Value = dist;
+                        if (dist <= 7.0)
+                            rec_res_label.Content = res;
+                        else
+                            rec_res_label.Content = "Unknown";
+
                         recDistLabel.Content = dist.ToString();
                     }
                 }
