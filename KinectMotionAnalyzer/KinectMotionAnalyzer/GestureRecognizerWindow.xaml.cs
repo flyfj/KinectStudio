@@ -137,7 +137,8 @@ namespace KinectMotionAnalyzer
 
                 if (isRecognition)
                 {
-                    
+                    #region update_gesture_data
+
                     foreach (Skeleton ske in skeletons)
                     {
                         if (ske.TrackingState == SkeletonTrackingState.Tracked)
@@ -149,10 +150,13 @@ namespace KinectMotionAnalyzer
                             }
 
                             temp_gesture.data.Add(ske);
-                            Debug.WriteLine("Add frame");
+                            Debug.WriteLine("Add frame:" + temp_gesture.data.Count.ToString());
                             break;
                         }
                     }
+
+                    #endregion
+                    
 
                     if(temp_gesture.data.Count >= gesture_recognizer.gesture_min_len/2 && 
                         temp_gesture.data.Count <= gesture_recognizer.gesture_max_len*2)
@@ -161,6 +165,7 @@ namespace KinectMotionAnalyzer
                         gesture_match_scorebar.Value = gesture_match_scorebar.Maximum;
                         recDistLabel.Content = gesture_match_scorebar.Maximum;
                         rec_res_label.Content = "Unknown";
+                        Debug.WriteLine("reset");
 
                         Debug.WriteLine("Do recognition.");
 
@@ -274,7 +279,7 @@ namespace KinectMotionAnalyzer
         private void skeletonVideoSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             // valid only when kinect is stopped so no new data will come
-            if (!kinect_sensor.IsRunning && isReplay && gesture_data.Count > 0)
+            if (isReplay && gesture_data.Count > 0)
             {
                 // load new skeleton data
                 int cur_frame_id = (int)skeletonVideoSlider.Value;
@@ -380,7 +385,7 @@ namespace KinectMotionAnalyzer
 
         private void gestureRecognitionBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (gestureRecognitionBtn.Content.ToString() == "Start Recognition")
+            if (!isRecognition)
             {
                 if (gesture_recognizer == null)
                 {

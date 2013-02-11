@@ -5,6 +5,7 @@ using System.Linq;
 using System.IO;
 using System.Text;
 using System.Windows;
+using System.Web;
 using Microsoft.Kinect;
 
 
@@ -362,39 +363,10 @@ namespace KinectMotionAnalyzer.Processors
             return dist;
         }
 
-        private Skeleton NormalizeSkeleton(Skeleton input)
-        {
-            // normalize
-            // subtract each joint position with center position
-            // normalize size with shoulder width
-            SkeletonPoint centerpt = input.Joints[JointType.HipCenter].Position;
-            float shoulderWidth = Tools.GetJointDistance(
-                input.Joints[JointType.ShoulderLeft].Position,
-                input.Joints[JointType.ShoulderRight].Position);
-
-            foreach (Joint joint in input.Joints)
-            {
-                SkeletonPoint point = new SkeletonPoint();
-                Joint tjoint = joint;
-                // normalize position
-                point.X = joint.Position.X - centerpt.X;
-                point.Y = joint.Position.Y - centerpt.Y;
-                point.Z = joint.Position.Z - centerpt.Z;
-                // normalize size
-                //point.X /= shoulderWidth;
-                //point.Y /= shoulderWidth;
-                //point.Z /= shoulderWidth;
-
-                tjoint.Position = point;
-                input.Joints[joint.JointType] = tjoint;
-            }
-
-            return input;
-        }
-
 
         /// <summary>
         /// generic dtw algorithm
+        /// bug: as long as they have similar finishing pose, it will be detected
         /// </summary>
         public double DynamicTimeWarping(
             ArrayList input1, ArrayList input2, Dictionary<JointType, float> weights)
@@ -408,10 +380,9 @@ namespace KinectMotionAnalyzer.Processors
             double[,] DTW = new double[length1+1, length2+1];   // make an extra space for 0 match
 
             for (int i = 1; i <= length1; i++)
-            {
-                for (int j = 1; j <= length2; j++)
-                    DTW[i, j] = double.PositiveInfinity;
-            }
+                DTW[i, 0] = double.PositiveInfinity;
+            for (int j = 1; j <= length2; j++)
+                DTW[0, j] = double.PositiveInfinity;
             DTW[0, 0] = 0;
 
             for(int i=1; i<=length1; i++)
