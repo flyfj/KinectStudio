@@ -62,10 +62,10 @@ namespace DTWGestureRecognition
         /// <summary>
         /// How many skeleton frames to store in the _video buffer
         /// </summary>
-        private const int BufferSize = 32;
+        private const int BufferSize = 32;  // max frames to store
 
         /// <summary>
-        /// The minumum number of frames in the _video buffer before we attempt to start matching gestures
+        /// The minimum number of frames in the _video buffer before we attempt to start matching gestures
         /// </summary>
         private const int MinimumFrames = 6;
 
@@ -428,12 +428,14 @@ namespace DTWGestureRecognition
         /// </summary>
         /// <param name="sender">The sender object</param>
         /// <param name="e">Image Frame Ready Event Args</param>
-        private void NuiColorFrameReady(object sender, ImageFrameReadyEventArgs e)
+        private void NuiColorFrameReady(object sender, ColorImageFrameReadyEventArgs e)
         {
             // 32-bit per pixel, RGBA image
-            PlanarImage image = e.ImageFrame.Image;
+            ColorImageFrame image = e.OpenColorImageFrame();
+            byte[] pixelbytes = new byte[image.PixelDataLength];
+            image.CopyPixelDataTo(pixelbytes);
             videoImage.Source = BitmapSource.Create(
-                image.Width, image.Height, 96, 96, PixelFormats.Bgr32, null, image.Bits, image.Width * image.BytesPerPixel);
+                image.Width, image.Height, 96, 96, PixelFormats.Bgr32, null, pixelbytes, image.Width * image.BytesPerPixel);
         }
 
         /// <summary>
@@ -518,10 +520,10 @@ namespace DTWGestureRecognition
             {
                 ////Debug.WriteLine("Reading and video.Count=" + video.Count);
                 string s = _dtw.Recognize(_video);
-                results.Text = "Recognised as: " + s;
+                results.Text = "Recognized as: " + s;
                 if (!s.Contains("__UNKNOWN"))
                 {
-                    // There was no match so reset the buffer
+                    //  recognized as a type; ?There was no match so reset the buffer?
                     _video = new ArrayList();
                 }
             }
@@ -536,13 +538,14 @@ namespace DTWGestureRecognition
                 }
                 else
                 {
-                    // Remove the first frame in the buffer
+                    // Remove the first frame in the buffer; keep total size as buffersize
                     _video.RemoveAt(0);
                 }
             }
 
             // Decide which skeleton frames to capture. Only do so if the frames actually returned a number. 
-            // For some reason my Kinect/PC setup didn't always return a double in range (i.e. infinity) even when standing completely within the frame.
+            // For some reason my Kinect/PC setup didn't always return a double in range (i.e. infinity) 
+            // even when standing completely within the frame.
             // TODO Weird. Need to investigate this
             if (!double.IsNaN(a.GetPoint(0).X))
             {

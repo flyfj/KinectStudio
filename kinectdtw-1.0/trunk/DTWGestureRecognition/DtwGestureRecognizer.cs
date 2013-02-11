@@ -67,6 +67,7 @@ namespace DTWGestureRecognition
 
         /// <summary>
         /// The recorded gesture sequences
+        /// one for each label
         /// </summary>
         private readonly ArrayList _sequences;
 
@@ -116,7 +117,8 @@ namespace DTWGestureRecognition
         /// <param name="lab">Sequence name</param>
         public void AddOrUpdate(ArrayList seq, string lab)
         {
-            // First we check whether there is already a recording for this label. If so overwrite it, otherwise add a new entry
+            // First we check whether there is already a recording for this label. 
+            // If so overwrite it, otherwise add a new entry
             int existingIndex = -1;
 
             for (int i = 0; i < _labels.Count; i++)
@@ -127,7 +129,8 @@ namespace DTWGestureRecognition
                 }
             }
 
-            // If we have a match then remove the entries at the existing index to avoid duplicates. We will add the new entries later anyway
+            // If we have a match then remove the entries at the existing index to avoid duplicates. 
+            // We will add the new entries later anyway
             if (existingIndex >= 0)
             {
                 _sequences.RemoveAt(existingIndex);
@@ -150,6 +153,7 @@ namespace DTWGestureRecognition
         {
             double minDist = double.PositiveInfinity;
             string classification = "__UNKNOWN";
+            // match to each template sequence
             for (int i = 0; i < _sequences.Count; i++)
             {
                 var example = (ArrayList) _sequences[i];

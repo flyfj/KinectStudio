@@ -16,5 +16,14 @@ namespace KinectMotionAnalyzer.Processors
 
             return dist;
         }
+
+        static public double Dist2(double[] a, double[] b)
+        {
+            double dist = 0;
+            for(int i=0; i<a.Length; i++)
+                dist += Math.Pow(a[i] - b[i], 2);
+
+            return Math.Sqrt(dist);
+        }
     }
 }

@@ -27,6 +27,8 @@ namespace KinectMotionAnalyzer.Processors
         // actual gesture data
         public List<Skeleton> data = new List<Skeleton>();
         public GestureName name = GestureName.Unknown;
+
+        public GestureTemplateBase basis;
     }
 
     /// <summary>
@@ -168,20 +170,171 @@ namespace KinectMotionAnalyzer.Processors
             return true;
         }
 
+        /// <summary>
+        /// preprocess input data and transform to 1d feature vector for DTW
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public ArrayList PreprocessGesture(Gesture input)
+        {
+            ArrayList dtw_data = new ArrayList();
+            for(int i=0; i<input.data.Count; i++)
+            {
+                // Extract the coordinates of the points.
+                var p = new Point[6];
+                Point shoulderRight = new Point(), shoulderLeft = new Point();
+                foreach (Joint j in input.data[i].Joints)
+                {
+                    switch (j.JointType)
+                    {
+                        case JointType.HandLeft:
+                            p[0] = new Point(j.Position.X, j.Position.Y);
+                            break;
+                        case JointType.WristLeft:
+                            p[1] = new Point(j.Position.X, j.Position.Y);
+                            break;
+                        case JointType.ElbowLeft:
+                            p[2] = new Point(j.Position.X, j.Position.Y);
+                            break;
+                        case JointType.ElbowRight:
+                            p[3] = new Point(j.Position.X, j.Position.Y);
+                            break;
+                        case JointType.WristRight:
+                            p[4] = new Point(j.Position.X, j.Position.Y);
+                            break;
+                        case JointType.HandRight:
+                            p[5] = new Point(j.Position.X, j.Position.Y);
+                            break;
+                        case JointType.ShoulderLeft:
+                            shoulderLeft = new Point(j.Position.X, j.Position.Y);
+                            break;
+                        case JointType.ShoulderRight:
+                            shoulderRight = new Point(j.Position.X, j.Position.Y);
+                            break;
+                    }
+                }
+
+                // Center the data
+                var center = new Point((shoulderLeft.X + shoulderRight.X) / 2, (shoulderLeft.Y + shoulderRight.Y) / 2);
+                for (int k = 0; k < p.Length; k++)
+                {
+                    p[k].X -= center.X;
+                    p[k].Y -= center.Y;
+                }
+
+                // Normalization of the coordinates
+                double shoulderDist =
+                    Math.Sqrt(Math.Pow((shoulderLeft.X - shoulderRight.X), 2) +
+                              Math.Pow((shoulderLeft.Y - shoulderRight.Y), 2));
+                for (int k = 0; k < p.Length; k++)
+                {
+                    p[k].X /= shoulderDist;
+                    p[k].Y /= shoulderDist;
+                }
+
+                // save in 1d double array
+                double[] feat_vec = new double[p.Length * 2];
+                for (int k = 0; k < p.Length; k++)
+                {
+                    feat_vec[k * 2] = p[k].X;
+                    feat_vec[k * 2 + 1] = p[k].Y;
+                }
+
+                dtw_data.Add(feat_vec);
+
+            }
+
+            return dtw_data;
+        }
+
+
+        public ArrayList PreprocessGesture(GestureTemplate input)
+        {
+            ArrayList dtw_data = new ArrayList();
+            for (int i = 0; i < input.data.Count; i++)
+            {
+                // Extract the coordinates of the points.
+                var p = new Point[6];
+                Point shoulderRight = new Point(), shoulderLeft = new Point();
+                foreach (Joint j in input.data[i].Joints)
+                {
+                    switch (j.JointType)
+                    {
+                        case JointType.HandLeft:
+                            p[0] = new Point(j.Position.X, j.Position.Y);
+                            break;
+                        case JointType.WristLeft:
+                            p[1] = new Point(j.Position.X, j.Position.Y);
+                            break;
+                        case JointType.ElbowLeft:
+                            p[2] = new Point(j.Position.X, j.Position.Y);
+                            break;
+                        case JointType.ElbowRight:
+                            p[3] = new Point(j.Position.X, j.Position.Y);
+                            break;
+                        case JointType.WristRight:
+                            p[4] = new Point(j.Position.X, j.Position.Y);
+                            break;
+                        case JointType.HandRight:
+                            p[5] = new Point(j.Position.X, j.Position.Y);
+                            break;
+                        case JointType.ShoulderLeft:
+                            shoulderLeft = new Point(j.Position.X, j.Position.Y);
+                            break;
+                        case JointType.ShoulderRight:
+                            shoulderRight = new Point(j.Position.X, j.Position.Y);
+                            break;
+                    }
+                }
+
+                // Center the data
+                var center = new Point((shoulderLeft.X + shoulderRight.X) / 2, (shoulderLeft.Y + shoulderRight.Y) / 2);
+                for (int k = 0; k < 6; k++)
+                {
+                    p[k].X -= center.X;
+                    p[k].Y -= center.Y;
+                }
+
+                // Normalization of the coordinates
+                double shoulderDist =
+                    Math.Sqrt(Math.Pow((shoulderLeft.X - shoulderRight.X), 2) +
+                              Math.Pow((shoulderLeft.Y - shoulderRight.Y), 2));
+                for (int k = 0; k < 6; k++)
+                {
+                    p[k].X /= shoulderDist;
+                    p[k].Y /= shoulderDist;
+                }
+
+                // save in 1d double array
+                double[] feat_vec = new double[p.Length * 2];
+                for (int k = 0; k < p.Length; k++)
+                {
+                    feat_vec[k * 2] = p[k].X;
+                    feat_vec[k * 2 + 1] = p[k].Y;
+                }
+
+                dtw_data.Add(feat_vec);
+
+            }
+
+            return dtw_data;
+
+        }
 
         /// <summary>
         /// match to each database template
         /// </summary>
-        public float MatchToDatabase(Gesture input, out string res)
+        public double MatchToDatabase(Gesture input, out string res)
         {
+
             // find the most similar gesture in database to test gesture
-            float mindist = float.PositiveInfinity;
+            double mindist = double.PositiveInfinity;
             GestureName bestname = GestureName.Unknown;
             foreach (GestureName gname in GESTURE_DATABASE.Keys)
             {
                 foreach (GestureTemplate temp in GESTURE_DATABASE[gname])
                 {
-                    float dist = GestureSimilarity(input, temp);
+                    double dist = GestureSimilarity(input, temp);
                     if(dist < mindist)
                     {
                         mindist = dist;
@@ -199,23 +352,12 @@ namespace KinectMotionAnalyzer.Processors
         /// <summary>
         /// measure similarity between input gesture and a gesture template
         /// </summary>
-        public float GestureSimilarity(Gesture input, GestureTemplate template)
+        public double GestureSimilarity(Gesture input, GestureTemplate template)
         {
-            Gesture input2 = new Gesture();
-            GestureTemplate temp2 = new GestureTemplate();
-            for (int i = 0; i < input.data.Count; i++)
-            {
-                input2.data.Add(input.data[i]);
-                input2.data[i] = NormalizeSkeleton(input2.data[i]);
-            }
+            ArrayList input_data = PreprocessGesture(input);
+            ArrayList temp_data = PreprocessGesture(template);
 
-            for (int i = 0; i < template.data.Count; i++)
-            {
-                temp2.data.Add(template.data[i]);
-                temp2.data[i] = NormalizeSkeleton(temp2.data[i]);
-            }
-
-            float dist = DynamicTimeWarping(input2.data, temp2.data, template.basis.jointWeights);
+            double dist = DynamicTimeWarping(input_data, temp_data, template.basis.jointWeights);/// temp_data.Count;
 
             return dist;
         }
@@ -254,8 +396,8 @@ namespace KinectMotionAnalyzer.Processors
         /// <summary>
         /// generic dtw algorithm
         /// </summary>
-        public float DynamicTimeWarping(
-            List<Skeleton> input1, List<Skeleton> input2, Dictionary<JointType, float> weights)
+        public double DynamicTimeWarping(
+            ArrayList input1, ArrayList input2, Dictionary<JointType, float> weights)
         {
             if (input1 == null || input2 == null || input1.Count == 0 || input2.Count == 0)
                 return -1;
@@ -263,21 +405,20 @@ namespace KinectMotionAnalyzer.Processors
             // perform DTW to align two arrays
             int length1 = input1.Count;
             int length2 = input2.Count;
-            float[,] DTW = new float[length1+1, length2+1];   // make an extra space for 0 match
+            double[,] DTW = new double[length1+1, length2+1];   // make an extra space for 0 match
 
-            for(int i=1; i<=length1; i++)
-                DTW[i, 0] = float.PositiveInfinity;
-            for(int i=1; i<=length2; i++)
-                DTW[0, i] = float.PositiveInfinity;
+            for (int i = 1; i <= length1; i++)
+            {
+                for (int j = 1; j <= length2; j++)
+                    DTW[i, j] = double.PositiveInfinity;
+            }
             DTW[0, 0] = 0;
 
             for(int i=1; i<=length1; i++)
             {
                 for(int j=1; j<=length2; j++)
                 {
-                    int loc1 = i - 1;
-                    int loc2 = j - 1;
-                    float cost = DistBetweenPose(input1[loc1], input2[loc2], weights);
+                    double cost = Tools.Dist2((double[])input1[i - 1], (double[])input2[j - 1]);
                     DTW[i, j] = cost + Math.Min(DTW[i-1, j], Math.Min(DTW[i, j-1], DTW[i-1, j-1]));
                 }
             }
@@ -285,13 +426,14 @@ namespace KinectMotionAnalyzer.Processors
             return DTW[length1, length2];
         }
 
+        
+
         private float DistBetweenPose(Skeleton pose1, Skeleton pose2, Dictionary<JointType, float> weights)
         {
             if (pose1 == null || pose2 == null)
                 return -1;
 
             float dist = 0;
-            float sumw = 0;
             for (int i = 0; i < pose1.Joints.Count; i++)
             {
                 JointType type = (JointType)i;

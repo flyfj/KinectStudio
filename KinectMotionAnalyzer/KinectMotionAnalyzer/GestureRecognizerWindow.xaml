@@ -31,7 +31,7 @@
         <Label BorderThickness="1" Content="0" FontSize="13" FontStretch="Normal" Height="32" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="921,548,0,0" Name="replay_startLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="65" />
         <Label Content="Matching Distance" Height="46" HorizontalAlignment="Left" Margin="576,554,0,0" Name="recDistLabel" VerticalAlignment="Top" Width="158" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" />
         <Button Content="Start Recognition" FontSize="15" Height="46" HorizontalAlignment="Left" Margin="576,454,0,0" Name="gestureRecognitionBtn" VerticalAlignment="Top" Width="155" IsEnabled="False" Click="gestureRecognitionBtn_Click" />
-        <ProgressBar Height="29" HorizontalAlignment="Left" Margin="517,518,0,0" Name="gesture_match_scorebar" VerticalAlignment="Top" Width="271" Maximum="50" />
+        <ProgressBar Height="29" HorizontalAlignment="Left" Margin="517,518,0,0" Name="gesture_match_scorebar" VerticalAlignment="Top" Width="271" Maximum="150" />
         <Label Content="Detection" FontSize="16" Height="46" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="494,380,0,0" Name="rec_res_label" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="294" />
     </Grid>
 </Window>

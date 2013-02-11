@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Microsoft.Kinect;
 using Microsoft.Win32;
+using System.Diagnostics;
 
 
 namespace KinectMotionAnalyzer
@@ -119,7 +120,6 @@ namespace KinectMotionAnalyzer
                 Skeleton[] skeletons = new Skeleton[frame.SkeletonArrayLength];
                 frame.CopySkeletonDataTo(skeletons);
 
-                kinect_data_manager.UpdateSkeletonData(skeletons);
 
                 // if capturing, add to gesture data
                 if (gestureCaptureBtn.Content.ToString() == "Stop Capture")
@@ -137,14 +137,19 @@ namespace KinectMotionAnalyzer
 
                 if (isRecognition)
                 {
+                    
                     foreach (Skeleton ske in skeletons)
                     {
                         if (ske.TrackingState == SkeletonTrackingState.Tracked)
                         {
-                            if (temp_gesture.data.Count > gesture_recognizer.gesture_max_len)
+                            if (temp_gesture.data.Count >= gesture_recognizer.gesture_max_len)
+                            {
                                 temp_gesture.data.RemoveAt(0);
+                                Debug.WriteLine("Remove frame.");
+                            }
 
                             temp_gesture.data.Add(ske);
+                            Debug.WriteLine("Add frame");
                             break;
                         }
                     }
@@ -152,18 +157,32 @@ namespace KinectMotionAnalyzer
                     if(temp_gesture.data.Count >= gesture_recognizer.gesture_min_len/2 && 
                         temp_gesture.data.Count <= gesture_recognizer.gesture_max_len*2)
                     {
+                        // reset
+                        gesture_match_scorebar.Value = gesture_match_scorebar.Maximum;
+                        recDistLabel.Content = gesture_match_scorebar.Maximum;
+                        rec_res_label.Content = "Unknown";
+
+                        Debug.WriteLine("Do recognition.");
+
                         // do recognition
                         string res = "";
-                        float dist = gesture_recognizer.MatchToDatabase(temp_gesture, out res);
-                        gesture_match_scorebar.Value = dist;
-                        if (dist <= 7.0)
+                        double dist = gesture_recognizer.MatchToDatabase(temp_gesture, out res);
+                        gesture_match_scorebar.Value = 
+                            (double.IsInfinity(dist) ? gesture_match_scorebar.Maximum : dist);
+                        if (dist >=0 && dist <= 20)
+                        {
                             rec_res_label.Content = res;
+                            temp_gesture.data.Clear();
+                            Debug.WriteLine("Detected");
+                        }
                         else
                             rec_res_label.Content = "Unknown";
 
                         recDistLabel.Content = dist.ToString();
                     }
                 }
+
+                kinect_data_manager.UpdateSkeletonData(skeletons);
             }
         }
 

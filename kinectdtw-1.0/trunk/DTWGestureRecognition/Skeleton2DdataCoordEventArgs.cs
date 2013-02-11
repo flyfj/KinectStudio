@@ -49,7 +49,7 @@ namespace DTWGestureRecognition
         }
 
         /// <summary>
-        /// Gets the coordinates of our _points
+        /// Gets the coordinates of our _points; transform from 2d point array to 1d feature vector
         /// </summary>
         /// <returns>The coordinates of our _points</returns>
         internal double[] GetCoords()
