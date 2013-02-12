@@ -7,43 +7,37 @@ using System.Text;
 using System.Windows;
 using System.Web;
 using Microsoft.Kinect;
+using System.Xml;
+using System.Diagnostics;
 
 
 namespace KinectMotionAnalyzer.Processors
 {
 
-    enum GestureName
-    {
-        Unknown,
-        Bicep_Curl,
-        Squat,
-        Shoulder_Press
-    }
-
     /// <summary>
     /// user gesture
     /// </summary>
-    class Gesture
+    public class Gesture
     {
         // actual gesture data
         public List<Skeleton> data = new List<Skeleton>();
-        public GestureName name = GestureName.Unknown;
-
-        public GestureTemplateBase basis;
+        public string name = "Unknown";
     }
 
     /// <summary>
     /// common data for all template gesture
     /// </summary>
-    class GestureTemplateBase
+    public class GestureTemplateBase
     {
-        public GestureName name = GestureName.Unknown;
-        // weight for each joint used in recognition (matching)
+        // identity
+        public string name = "Unknown";
+        public int id = -1;
+
+        // weight for each joint used in recognition (matching, currently only binary)
         public Dictionary<JointType, float> jointWeights = new Dictionary<JointType, float>();
 
         public GestureTemplateBase()
         {
-            name = GestureName.Unknown;
             jointWeights[JointType.AnkleLeft] = 0;
             jointWeights[JointType.AnkleRight] = 0;
             jointWeights[JointType.ElbowLeft] = 0;
@@ -68,17 +62,6 @@ namespace KinectMotionAnalyzer.Processors
 
     }
 
-    /// <summary>
-    /// template gesture
-    /// </summary>
-    class GestureTemplate
-    {
-        // actual gesture data
-        public List<Skeleton> data = new List<Skeleton>();
-
-        public GestureTemplateBase basis = new GestureTemplateBase();
-    }
-
 
     /// <summary>
     /// recognizer based on dtw
@@ -86,38 +69,124 @@ namespace KinectMotionAnalyzer.Processors
     class GestureRecognizer
     {
 
-        private Dictionary<string, GestureTemplateBase> GESTURE_BASES = 
-            new Dictionary<string, GestureTemplateBase>();
+        private string GESTURE_DATABASE_DIR = "D:\\gdata\\";
 
-        private Dictionary<GestureName, List<GestureTemplate>> GESTURE_DATABASE = 
-            new Dictionary<GestureName, List<GestureTemplate>>();
+        // dynamically generate
+        public Dictionary<int, string> GESTURE_LIST = new Dictionary<int, string>();
 
+        // configuration for each database gesture type
+        public Dictionary<int, GestureTemplateBase> GESTURE_CONFIG = 
+            new Dictionary<int, GestureTemplateBase>();
+
+        // database gesture data
+        private Dictionary<int, List<Gesture>> GESTURE_DATABASE = 
+            new Dictionary<int, List<Gesture>>();
+
+        // maximum and minimum gesture length in database: used to define a valid test gesture
         public int gesture_min_len = 0;
         public int gesture_max_len = 0;
+
 
         public GestureRecognizer()
         {
             // set up gesture type mapping
-            GestureTemplateBase unknown_basis = new GestureTemplateBase();
-            GESTURE_BASES.Add("Unknown", unknown_basis);
+            //GestureTemplateBase unknown_basis = new GestureTemplateBase();
+            //GESTURE_CONFIG.Add("Unknown", unknown_basis);
             
-            GestureTemplateBase bicep_curl_basis = new GestureTemplateBase();
-            bicep_curl_basis.name = GestureName.Bicep_Curl;
-            bicep_curl_basis.jointWeights[JointType.ShoulderLeft] = 1;
-            bicep_curl_basis.jointWeights[JointType.ShoulderRight] = 1;
-            bicep_curl_basis.jointWeights[JointType.ElbowLeft] = 1;
-            bicep_curl_basis.jointWeights[JointType.ElbowRight] = 1;
-            GESTURE_BASES.Add("Bicep_Curl", bicep_curl_basis);
+            //GestureTemplateBase bicep_curl_basis = new GestureTemplateBase();
+            //bicep_curl_basis.name = GestureName.Bicep_Curl;
+            //bicep_curl_basis.jointWeights[JointType.ShoulderLeft] = 1;
+            //bicep_curl_basis.jointWeights[JointType.ShoulderRight] = 1;
+            //bicep_curl_basis.jointWeights[JointType.ElbowLeft] = 1;
+            //bicep_curl_basis.jointWeights[JointType.ElbowRight] = 1;
+            //GESTURE_CONFIG.Add("Bicep_Curl", bicep_curl_basis);
 
-            GestureTemplateBase squat_basis = new GestureTemplateBase();
-            squat_basis.name = GestureName.Squat;
-            GESTURE_BASES.Add("Squat", squat_basis);
+            //GestureTemplateBase squat_basis = new GestureTemplateBase();
+            //squat_basis.name = GestureName.Squat;
+            //GESTURE_CONFIG.Add("Squat", squat_basis);
 
-            GestureTemplateBase shoulder_press_basis = new GestureTemplateBase();
-            shoulder_press_basis.name = GestureName.Shoulder_Press;
-            GESTURE_BASES.Add("Shoulder_Press", shoulder_press_basis);
+            //GestureTemplateBase shoulder_press_basis = new GestureTemplateBase();
+            //shoulder_press_basis.name = GestureName.Shoulder_Press;
+            //GESTURE_CONFIG.Add("Shoulder_Press", shoulder_press_basis);
         }
 
+
+        public bool SaveGestureConfig(Dictionary<int, GestureTemplateBase> config)
+        {
+            if (config.Count == 0)
+            {
+                Debug.WriteLine("Empty gesture configurations.");
+                return false;
+            }
+
+            // write config file for each gesture model
+            // format: <Gesture name = "">
+            //              <Joint type="" weight=""></Joint>
+            //         </Gesture>
+            foreach (int id in config.Keys)
+            {
+                string filename = GESTURE_DATABASE_DIR + config[id].name + ".xml";
+
+                XmlDocument xmldoc = new XmlDocument();
+                XmlDeclaration declar = xmldoc.CreateXmlDeclaration("1.0", null, null);
+                xmldoc.AppendChild(declar);
+                // create root element
+                XmlElement root = xmldoc.CreateElement("Gesture");
+                root.SetAttribute("name", config[id].name);
+                xmldoc.AppendChild(root);
+
+                #region output_joint_weights
+
+                // add joints
+                foreach (JointType joint_type in config[id].jointWeights.Keys)
+                {
+                    XmlElement joint_elem = xmldoc.CreateElement("Joint");
+                    root.AppendChild(joint_elem);
+
+                    joint_elem.SetAttribute("type", joint_type.ToString());
+                    int jtype = (int)joint_type;
+                    joint_elem.SetAttribute("typeid", jtype.ToString());
+                    joint_elem.SetAttribute("weight", config[id].jointWeights[joint_type].ToString());
+                }
+
+                #endregion
+
+                // save to disk
+                xmldoc.Save(filename);
+
+            }
+
+            return true;
+        }
+
+        // TODO: load all config in one function and update ui list every time load config
+        /// <summary>
+        /// load gesture config from file
+        /// </summary>
+        public GestureTemplateBase LoadGestureConfig(string filename, int gid)
+        {
+            if (!File.Exists(filename))
+                return null;
+
+            GestureTemplateBase basis = new GestureTemplateBase();
+
+            XmlDocument doc = new XmlDocument();
+            doc.Load(filename);
+
+            XmlElement root = doc.DocumentElement;
+            basis.name = root.Attributes["name"].Value;
+            basis.id = gid;
+            for (int i = 0; i < root.ChildNodes.Count; i++)
+            {
+                XmlElement joint_elem = root.ChildNodes[i] as XmlElement;
+                int jtype = int.Parse(joint_elem.Attributes["typeid"].Value);
+                JointType type = (JointType)jtype;
+                float weight = float.Parse(joint_elem.Attributes["weight"].Value);
+                basis.jointWeights[type] = weight;
+            }
+
+            return basis;
+        }
 
         /// <summary>
         /// read database data from files
@@ -128,26 +197,41 @@ namespace KinectMotionAnalyzer.Processors
             if (!Directory.Exists(database_dir))
                 return false;
 
+            // clear
+            GESTURE_LIST.Clear();
+            GESTURE_CONFIG.Clear();
             GESTURE_DATABASE.Clear();
 
-            IEnumerable<string> gesture_dirs = Directory.EnumerateDirectories(database_dir);
+            // look for config xml file under database root directory: XXX.xml
+            IEnumerable<string> gesture_config_files = Directory.EnumerateFiles(database_dir, "*.xml");
             gesture_min_len = int.MaxValue;
             gesture_max_len = int.MinValue;
-            foreach (string gdir in gesture_dirs)
+            int gid = 0;
+            foreach (string g_cfile in gesture_config_files)
             {
-                // get dir name
-                int slash_id = gdir.LastIndexOf('\\');
-                string dirname = gdir.Substring(slash_id+1, gdir.Length - slash_id-1);
-                if (!GESTURE_BASES.ContainsKey(dirname))
+                // get gesture name
+                int slash_id = g_cfile.LastIndexOf('\\');
+                string gesture_name = g_cfile.Substring(slash_id + 1, g_cfile.Length - slash_id - 5);
+                
+                // add to list
+                GESTURE_LIST.Add(gid, gesture_name);
+
+                // read configuration file
+                GestureTemplateBase cur_basis = LoadGestureConfig(g_cfile, gid);
+                if (cur_basis == null)
                     continue;
 
-                List<GestureTemplate> cur_gestures = new List<GestureTemplate>();
+                GESTURE_CONFIG.Add(gid, cur_basis);
+
+                // load gesture data
+                string gdir = GESTURE_DATABASE_DIR + gesture_name + "\\";
+                List<Gesture> cur_gestures = new List<Gesture>();
                 IEnumerable<string> gesture_files = Directory.EnumerateFiles(gdir, "*.xml");
                 foreach (string filename in gesture_files)
                 {
-                    GestureTemplate gtemp = new GestureTemplate();
+                    Gesture gtemp = new Gesture();
                     gtemp.data = KinectRecorder.ReadFromSkeletonFile(filename);
-                    gtemp.basis.name = GESTURE_BASES[dirname].name;
+                    gtemp.name = GESTURE_CONFIG[gid].name;
 
                     if (gtemp.data.Count > gesture_max_len)
                         gesture_max_len = gtemp.data.Count;
@@ -157,14 +241,15 @@ namespace KinectMotionAnalyzer.Processors
                     cur_gestures.Add(gtemp);
                 }
 
-                if(cur_gestures.Count > 0)
-                {
-                    // add to database
-                    GESTURE_DATABASE.Add(GESTURE_BASES[dirname].name, cur_gestures);
-                }
+                // add to database
+                if (cur_gestures.Count > 0)
+                    GESTURE_DATABASE.Add(gid, cur_gestures);
                 
+                // increment
+                gid++;
             }
 
+            // no actual model data
             if (GESTURE_DATABASE.Count == 0)
                 return false;
 
@@ -172,155 +257,63 @@ namespace KinectMotionAnalyzer.Processors
         }
 
         /// <summary>
-        /// preprocess input data and transform to 1d feature vector for DTW
+        /// preprocess input data and transform to 1d feature vector for DTW 
+        /// according to specific gesture model
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public ArrayList PreprocessGesture(Gesture input)
+        private ArrayList PreprocessGesture(Gesture input, int gid)
         {
             ArrayList dtw_data = new ArrayList();
+            // each frame
             for(int i=0; i<input.data.Count; i++)
             {
                 // Extract the coordinates of the points.
-                var p = new Point[6];
-                Point shoulderRight = new Point(), shoulderLeft = new Point();
+                List<Point> pts = new List<Point>();
+                Point shoulderRight = new Point(
+                    input.data[i].Joints[JointType.ShoulderRight].Position.X,
+                    input.data[i].Joints[JointType.ShoulderRight].Position.Y);
+                Point shoulderLeft = new Point(
+                    input.data[i].Joints[JointType.ShoulderLeft].Position.X,
+                    input.data[i].Joints[JointType.ShoulderLeft].Position.Y);
+
                 foreach (Joint j in input.data[i].Joints)
                 {
-                    switch (j.JointType)
+                    if (GESTURE_CONFIG[gid].jointWeights[j.JointType] > 0)
                     {
-                        case JointType.HandLeft:
-                            p[0] = new Point(j.Position.X, j.Position.Y);
-                            break;
-                        case JointType.WristLeft:
-                            p[1] = new Point(j.Position.X, j.Position.Y);
-                            break;
-                        case JointType.ElbowLeft:
-                            p[2] = new Point(j.Position.X, j.Position.Y);
-                            break;
-                        case JointType.ElbowRight:
-                            p[3] = new Point(j.Position.X, j.Position.Y);
-                            break;
-                        case JointType.WristRight:
-                            p[4] = new Point(j.Position.X, j.Position.Y);
-                            break;
-                        case JointType.HandRight:
-                            p[5] = new Point(j.Position.X, j.Position.Y);
-                            break;
-                        case JointType.ShoulderLeft:
-                            shoulderLeft = new Point(j.Position.X, j.Position.Y);
-                            break;
-                        case JointType.ShoulderRight:
-                            shoulderRight = new Point(j.Position.X, j.Position.Y);
-                            break;
+                        Point p = new Point(j.Position.X, j.Position.Y);
+                        pts.Add(p);
                     }
                 }
 
                 // Center the data
-                var center = new Point((shoulderLeft.X + shoulderRight.X) / 2, (shoulderLeft.Y + shoulderRight.Y) / 2);
-                for (int k = 0; k < p.Length; k++)
-                {
-                    p[k].X -= center.X;
-                    p[k].Y -= center.Y;
-                }
+                var center = new Point(
+                    input.data[i].Joints[JointType.ShoulderCenter].Position.X, 
+                    input.data[i].Joints[JointType.ShoulderCenter].Position.Y);
+                for (int k = 0; k < pts.Count; k++)
+                    pts[k] = new Point(pts[k].X - center.X, pts[k].Y - center.Y);
 
                 // Normalization of the coordinates
                 double shoulderDist =
                     Math.Sqrt(Math.Pow((shoulderLeft.X - shoulderRight.X), 2) +
                               Math.Pow((shoulderLeft.Y - shoulderRight.Y), 2));
-                for (int k = 0; k < p.Length; k++)
-                {
-                    p[k].X /= shoulderDist;
-                    p[k].Y /= shoulderDist;
-                }
+                for (int k = 0; k < pts.Count; k++)
+                    pts[k] = new Point(pts[k].X / shoulderDist, pts[k].Y / shoulderDist);
 
                 // save in 1d double array
-                double[] feat_vec = new double[p.Length * 2];
-                for (int k = 0; k < p.Length; k++)
+                double[] feat_vec = new double[pts.Count * 2];
+                for (int k = 0; k < pts.Count; k++)
                 {
-                    feat_vec[k * 2] = p[k].X;
-                    feat_vec[k * 2 + 1] = p[k].Y;
+                    feat_vec[k * 2] = pts[k].X;
+                    feat_vec[k * 2 + 1] = pts[k].Y;
                 }
 
                 dtw_data.Add(feat_vec);
-
             }
 
             return dtw_data;
         }
 
-
-        public ArrayList PreprocessGesture(GestureTemplate input)
-        {
-            ArrayList dtw_data = new ArrayList();
-            for (int i = 0; i < input.data.Count; i++)
-            {
-                // Extract the coordinates of the points.
-                var p = new Point[6];
-                Point shoulderRight = new Point(), shoulderLeft = new Point();
-                foreach (Joint j in input.data[i].Joints)
-                {
-                    switch (j.JointType)
-                    {
-                        case JointType.HandLeft:
-                            p[0] = new Point(j.Position.X, j.Position.Y);
-                            break;
-                        case JointType.WristLeft:
-                            p[1] = new Point(j.Position.X, j.Position.Y);
-                            break;
-                        case JointType.ElbowLeft:
-                            p[2] = new Point(j.Position.X, j.Position.Y);
-                            break;
-                        case JointType.ElbowRight:
-                            p[3] = new Point(j.Position.X, j.Position.Y);
-                            break;
-                        case JointType.WristRight:
-                            p[4] = new Point(j.Position.X, j.Position.Y);
-                            break;
-                        case JointType.HandRight:
-                            p[5] = new Point(j.Position.X, j.Position.Y);
-                            break;
-                        case JointType.ShoulderLeft:
-                            shoulderLeft = new Point(j.Position.X, j.Position.Y);
-                            break;
-                        case JointType.ShoulderRight:
-                            shoulderRight = new Point(j.Position.X, j.Position.Y);
-                            break;
-                    }
-                }
-
-                // Center the data
-                var center = new Point((shoulderLeft.X + shoulderRight.X) / 2, (shoulderLeft.Y + shoulderRight.Y) / 2);
-                for (int k = 0; k < 6; k++)
-                {
-                    p[k].X -= center.X;
-                    p[k].Y -= center.Y;
-                }
-
-                // Normalization of the coordinates
-                double shoulderDist =
-                    Math.Sqrt(Math.Pow((shoulderLeft.X - shoulderRight.X), 2) +
-                              Math.Pow((shoulderLeft.Y - shoulderRight.Y), 2));
-                for (int k = 0; k < 6; k++)
-                {
-                    p[k].X /= shoulderDist;
-                    p[k].Y /= shoulderDist;
-                }
-
-                // save in 1d double array
-                double[] feat_vec = new double[p.Length * 2];
-                for (int k = 0; k < p.Length; k++)
-                {
-                    feat_vec[k * 2] = p[k].X;
-                    feat_vec[k * 2 + 1] = p[k].Y;
-                }
-
-                dtw_data.Add(feat_vec);
-
-            }
-
-            return dtw_data;
-
-        }
 
         /// <summary>
         /// match to each database template
@@ -330,21 +323,19 @@ namespace KinectMotionAnalyzer.Processors
 
             // find the most similar gesture in database to test gesture
             double mindist = double.PositiveInfinity;
-            GestureName bestname = GestureName.Unknown;
-            foreach (GestureName gname in GESTURE_DATABASE.Keys)
+            res = "Unknown";
+            foreach (int gid in GESTURE_DATABASE.Keys)
             {
-                foreach (GestureTemplate temp in GESTURE_DATABASE[gname])
+                foreach (Gesture temp in GESTURE_DATABASE[gid])
                 {
-                    double dist = GestureSimilarity(input, temp);
+                    double dist = GestureSimilarity(input, temp, gid);
                     if(dist < mindist)
                     {
                         mindist = dist;
-                        bestname = gname;
+                        res = GESTURE_LIST[gid];
                     }
                 }
             }
-
-            res = bestname.ToString();
 
             return mindist;
         }
@@ -353,12 +344,12 @@ namespace KinectMotionAnalyzer.Processors
         /// <summary>
         /// measure similarity between input gesture and a gesture template
         /// </summary>
-        public double GestureSimilarity(Gesture input, GestureTemplate template)
+        public double GestureSimilarity(Gesture input, Gesture template, int gid)
         {
-            ArrayList input_data = PreprocessGesture(input);
-            ArrayList temp_data = PreprocessGesture(template);
+            ArrayList input_data = PreprocessGesture(input, gid);
+            ArrayList temp_data = PreprocessGesture(template, gid);
 
-            double dist = DynamicTimeWarping(input_data, temp_data, template.basis.jointWeights);/// temp_data.Count;
+            double dist = DynamicTimeWarping(input_data, temp_data, GESTURE_CONFIG[gid].jointWeights);
 
             return dist;
         }

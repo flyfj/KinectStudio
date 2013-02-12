@@ -399,14 +399,33 @@ namespace KinectMotionAnalyzer
                 }
 
                 isRecognition = true;
+                // can't edit gesture
+                add_gesture_btn.IsEnabled = false;
+                remove_gesture_btn.IsEnabled = false;
                 gestureRecognitionBtn.Content = "Stop Recognition";
             }
             else
             {
                 isRecognition = false;
                 recDistLabel.Content = 0;
+                //enable gesture editing
+                add_gesture_btn.IsEnabled = true;
+                remove_gesture_btn.IsEnabled = true;
                 gestureRecognitionBtn.Content = "Start Recognition";
             }
+        }
+
+        private void add_gesture_btn_Click(object sender, RoutedEventArgs e)
+        {
+            // open add window
+            GestureConfigWin add_win = new GestureConfigWin();
+            add_win.Show();
+        }
+
+        private void remove_gesture_btn_Click(object sender, RoutedEventArgs e)
+        {
+            // remove gesture config of current selected one
+
         }
 
         
