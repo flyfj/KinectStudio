@@ -89,25 +89,9 @@ namespace KinectMotionAnalyzer.Processors
 
         public GestureRecognizer()
         {
-            // set up gesture type mapping
-            //GestureTemplateBase unknown_basis = new GestureTemplateBase();
-            //GESTURE_CONFIG.Add("Unknown", unknown_basis);
-            
-            //GestureTemplateBase bicep_curl_basis = new GestureTemplateBase();
-            //bicep_curl_basis.name = GestureName.Bicep_Curl;
-            //bicep_curl_basis.jointWeights[JointType.ShoulderLeft] = 1;
-            //bicep_curl_basis.jointWeights[JointType.ShoulderRight] = 1;
-            //bicep_curl_basis.jointWeights[JointType.ElbowLeft] = 1;
-            //bicep_curl_basis.jointWeights[JointType.ElbowRight] = 1;
-            //GESTURE_CONFIG.Add("Bicep_Curl", bicep_curl_basis);
-
-            //GestureTemplateBase squat_basis = new GestureTemplateBase();
-            //squat_basis.name = GestureName.Squat;
-            //GESTURE_CONFIG.Add("Squat", squat_basis);
-
-            //GestureTemplateBase shoulder_press_basis = new GestureTemplateBase();
-            //shoulder_press_basis.name = GestureName.Shoulder_Press;
-            //GESTURE_CONFIG.Add("Shoulder_Press", shoulder_press_basis);
+            // create database dir if not exist yet
+            if (!Directory.Exists(GESTURE_DATABASE_DIR))
+                Directory.CreateDirectory(GESTURE_DATABASE_DIR);
         }
 
 
