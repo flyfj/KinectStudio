@@ -33,7 +33,7 @@ namespace KinectMotionAnalyzer
         private KinectSensor kinect_sensor;
 
         // recognition
-        private GestureRecognizer gesture_recognizer;
+        private GestureRecognizer gesture_recognizer = new GestureRecognizer();
         private string GESTURE_DATABASE_DIR = "D:\\gdata\\";
 
         // sign
@@ -59,6 +59,11 @@ namespace KinectMotionAnalyzer
                 statusbarLabel.Content = "Kinect initialized";
 
             DeactivateReplay();
+
+            // load gesture config and update ui
+            gesture_recognizer.LoadAllGestureConfig();
+            UpdateGestureComboBox();
+
         }
 
 
@@ -398,6 +403,8 @@ namespace KinectMotionAnalyzer
                     return;
                 }
 
+                UpdateGestureComboBox();
+
                 isRecognition = true;
                 // can't edit gesture
                 add_gesture_btn.IsEnabled = false;
@@ -419,15 +426,56 @@ namespace KinectMotionAnalyzer
         {
             // open add window
             GestureConfigWin add_win = new GestureConfigWin();
-            add_win.Show();
+            if (add_win.ShowDialog().Value == true)
+            {
+                gesture_recognizer.AddGestureConfig(add_win.new_gesture_config);
+                
+                // update list
+                UpdateGestureComboBox();
+                // update status bar
+                statusbarLabel.Content = "Add gesture: " + add_win.new_gesture_config.name;
+            }
         }
 
         private void remove_gesture_btn_Click(object sender, RoutedEventArgs e)
         {
             // remove gesture config of current selected one
+            int gid = gestureComboBox.SelectedIndex;
+            if (gid == 0)    // can't delete default one
+            {
+                MessageBox.Show("Select a valid gesture to remove.");
+                return;
+            }
+
+            ComboBoxItem toRemoveItem = gestureComboBox.Items[gid] as ComboBoxItem;
+            gesture_recognizer.RemoveGestureConfig(toRemoveItem.Content.ToString());
+
+            // update ui
+            UpdateGestureComboBox();
+            // update status bar
+            statusbarLabel.Content = "Remove gesture: " + toRemoveItem.Content;
+        }
+
+        private void UpdateGestureComboBox()
+        {
+
+            gestureComboBox.Items.Clear();
+            // add prompt item
+            ComboBoxItem prompt = new ComboBoxItem();
+            prompt.Content = "Choose Gesture";
+            prompt.IsEnabled = false;
+            prompt.IsSelected = true;
+            gestureComboBox.Items.Add(prompt);
+
+            // add item for each gesture type
+            foreach (string gname in gesture_recognizer.GESTURE_LIST.Values)
+            {
+                ComboBoxItem item = new ComboBoxItem();
+                item.Content = gname;
+                gestureComboBox.Items.Add(item);
+            }
 
         }
 
-        
     }
 }

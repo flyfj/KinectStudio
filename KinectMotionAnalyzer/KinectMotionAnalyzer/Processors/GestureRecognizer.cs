@@ -111,58 +111,91 @@ namespace KinectMotionAnalyzer.Processors
         }
 
 
-        public bool SaveGestureConfig(Dictionary<int, GestureTemplateBase> config)
+        /// <summary>
+        /// gesture config management
+        /// </summary>
+        public bool AddGestureConfig(GestureTemplateBase gbase)
         {
-            if (config.Count == 0)
-            {
-                Debug.WriteLine("Empty gesture configurations.");
-                return false;
-            }
+            string gdir = GESTURE_DATABASE_DIR + gbase.name;
 
-            // write config file for each gesture model
-            // format: <Gesture name = "">
-            //              <Joint type="" weight=""></Joint>
-            //         </Gesture>
-            foreach (int id in config.Keys)
-            {
-                string filename = GESTURE_DATABASE_DIR + config[id].name + ".xml";
+            // save config file
+            string gfilename = GESTURE_DATABASE_DIR + gbase.name + ".xml";
+            SaveGestureConfig(gbase);
 
-                XmlDocument xmldoc = new XmlDocument();
-                XmlDeclaration declar = xmldoc.CreateXmlDeclaration("1.0", null, null);
-                xmldoc.AppendChild(declar);
-                // create root element
-                XmlElement root = xmldoc.CreateElement("Gesture");
-                root.SetAttribute("name", config[id].name);
-                xmldoc.AppendChild(root);
+            // create new directory
+            if (!Directory.Exists(gdir))
+                Directory.CreateDirectory(gdir);
 
-                #region output_joint_weights
-
-                // add joints
-                foreach (JointType joint_type in config[id].jointWeights.Keys)
-                {
-                    XmlElement joint_elem = xmldoc.CreateElement("Joint");
-                    root.AppendChild(joint_elem);
-
-                    joint_elem.SetAttribute("type", joint_type.ToString());
-                    int jtype = (int)joint_type;
-                    joint_elem.SetAttribute("typeid", jtype.ToString());
-                    joint_elem.SetAttribute("weight", config[id].jointWeights[joint_type].ToString());
-                }
-
-                #endregion
-
-                // save to disk
-                xmldoc.Save(filename);
-
-            }
+            int max_id = (GESTURE_LIST.Keys.Count > 0 ? GESTURE_LIST.Keys.Max() : -1);
+            gbase.id = max_id + 1;
+            GESTURE_LIST.Add(max_id+1, gbase.name);
+            GESTURE_CONFIG.Add(max_id + 1, gbase);
 
             return true;
         }
 
-        // TODO: load all config in one function and update ui list every time load config
-        /// <summary>
-        /// load gesture config from file
-        /// </summary>
+        public bool RemoveGestureConfig(string gname)
+        {
+            if (!GESTURE_LIST.ContainsValue(gname))
+                return false;
+
+            // remove from data structure
+            int gid = GESTURE_LIST.FirstOrDefault(x => x.Value == gname).Key;
+            GESTURE_CONFIG.Remove(gid);
+            GESTURE_LIST.Remove(gid);
+
+            // delete config file
+            string filename = GESTURE_DATABASE_DIR + gname + ".xml";
+            if (File.Exists(filename))
+                File.Delete(filename);
+
+            // delete directory and all data
+            string gdir = GESTURE_DATABASE_DIR + gname;
+            if (Directory.Exists(gdir))
+                Directory.Delete(gdir, true);
+
+            return true;
+        }
+
+        public bool SaveGestureConfig(GestureTemplateBase config)
+        {
+            
+            // write config file for each gesture model
+            // format: <Gesture name = "">
+            //              <Joint type="" weight=""></Joint>
+            //         </Gesture>
+            string filename = GESTURE_DATABASE_DIR + config.name + ".xml";
+
+            XmlDocument xmldoc = new XmlDocument();
+            XmlDeclaration declar = xmldoc.CreateXmlDeclaration("1.0", null, null);
+            xmldoc.AppendChild(declar);
+            // create root element
+            XmlElement root = xmldoc.CreateElement("Gesture");
+            root.SetAttribute("name", config.name);
+            xmldoc.AppendChild(root);
+
+            #region output_joint_weights
+
+            // add joints
+            foreach (JointType joint_type in config.jointWeights.Keys)
+            {
+                XmlElement joint_elem = xmldoc.CreateElement("Joint");
+                root.AppendChild(joint_elem);
+
+                joint_elem.SetAttribute("type", joint_type.ToString());
+                int jtype = (int)joint_type;
+                joint_elem.SetAttribute("typeid", jtype.ToString());
+                joint_elem.SetAttribute("weight", config.jointWeights[joint_type].ToString());
+            }
+
+            #endregion
+
+            // save to disk
+            xmldoc.Save(filename);
+
+            return true;
+        }
+
         public GestureTemplateBase LoadGestureConfig(string filename, int gid)
         {
             if (!File.Exists(filename))
@@ -188,6 +221,38 @@ namespace KinectMotionAnalyzer.Processors
             return basis;
         }
 
+        public bool LoadAllGestureConfig()
+        {
+            if (!Directory.Exists(GESTURE_DATABASE_DIR))
+                return false;
+
+            GESTURE_LIST.Clear();
+            GESTURE_CONFIG.Clear();
+
+            // look for config xml file under database root directory: XXX.xml
+            IEnumerable<string> gesture_config_files = Directory.EnumerateFiles(GESTURE_DATABASE_DIR, "*.xml");
+            int gid = 0;
+            foreach (string g_cfile in gesture_config_files)
+            {
+                // get gesture name
+                int slash_id = g_cfile.LastIndexOf('\\');
+                string gesture_name = g_cfile.Substring(slash_id + 1, g_cfile.Length - slash_id - 5);
+
+                // add to list
+                GESTURE_LIST.Add(gid, gesture_name);
+
+                // read configuration file
+                GestureTemplateBase cur_basis = LoadGestureConfig(g_cfile, gid);
+                if (cur_basis == null)
+                    continue;
+
+                GESTURE_CONFIG.Add(gid, cur_basis);
+            }
+
+            return true;
+        }
+
+
         /// <summary>
         /// read database data from files
         /// </summary>
@@ -202,36 +267,24 @@ namespace KinectMotionAnalyzer.Processors
             GESTURE_CONFIG.Clear();
             GESTURE_DATABASE.Clear();
 
-            // look for config xml file under database root directory: XXX.xml
-            IEnumerable<string> gesture_config_files = Directory.EnumerateFiles(database_dir, "*.xml");
-            gesture_min_len = int.MaxValue;
-            gesture_max_len = int.MinValue;
-            int gid = 0;
-            foreach (string g_cfile in gesture_config_files)
+            // load all gesture config
+            if (!LoadAllGestureConfig())
             {
-                // get gesture name
-                int slash_id = g_cfile.LastIndexOf('\\');
-                string gesture_name = g_cfile.Substring(slash_id + 1, g_cfile.Length - slash_id - 5);
-                
-                // add to list
-                GESTURE_LIST.Add(gid, gesture_name);
+                Debug.WriteLine("Fail to load gesture config.");
+                return false;
+            }
 
-                // read configuration file
-                GestureTemplateBase cur_basis = LoadGestureConfig(g_cfile, gid);
-                if (cur_basis == null)
-                    continue;
-
-                GESTURE_CONFIG.Add(gid, cur_basis);
-
-                // load gesture data
-                string gdir = GESTURE_DATABASE_DIR + gesture_name + "\\";
+            // load actual gesture data for each type
+            foreach (int gid in GESTURE_LIST.Keys)
+            {
+                string gdir = GESTURE_DATABASE_DIR + GESTURE_LIST[gid] + "\\";
                 List<Gesture> cur_gestures = new List<Gesture>();
                 IEnumerable<string> gesture_files = Directory.EnumerateFiles(gdir, "*.xml");
                 foreach (string filename in gesture_files)
                 {
                     Gesture gtemp = new Gesture();
                     gtemp.data = KinectRecorder.ReadFromSkeletonFile(filename);
-                    gtemp.name = GESTURE_CONFIG[gid].name;
+                    gtemp.name = GESTURE_LIST[gid];
 
                     if (gtemp.data.Count > gesture_max_len)
                         gesture_max_len = gtemp.data.Count;
@@ -244,9 +297,6 @@ namespace KinectMotionAnalyzer.Processors
                 // add to database
                 if (cur_gestures.Count > 0)
                     GESTURE_DATABASE.Add(gid, cur_gestures);
-                
-                // increment
-                gid++;
             }
 
             // no actual model data

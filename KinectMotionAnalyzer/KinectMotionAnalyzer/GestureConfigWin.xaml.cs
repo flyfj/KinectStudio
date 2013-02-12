@@ -86,12 +86,15 @@ namespace KinectMotionAnalyzer
             new_gesture_config.name = new_gesture_name_box.Text;
             foreach (CheckBox box in joint_checkbox_collection)
             {
-                JointType type = (JointType)(int.Parse(box.Uid));
-                new_gesture_config.jointWeights[type] = 1;
+                if (box.IsChecked.Value)
+                {
+                    JointType type = (JointType)(int.Parse(box.Uid));
+                    new_gesture_config.jointWeights[type] = 1;
+                }
             }
 
             // close window
-            this.Close();
+            this.DialogResult = true;
         }
 
         
