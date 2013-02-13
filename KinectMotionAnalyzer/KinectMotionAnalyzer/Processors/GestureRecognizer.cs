@@ -227,10 +227,10 @@ namespace KinectMotionAnalyzer.Processors
 
                 // read configuration file
                 GestureTemplateBase cur_basis = LoadGestureConfig(g_cfile, gid);
-                if (cur_basis == null)
-                    continue;
 
                 GESTURE_CONFIG.Add(gid, cur_basis);
+
+                gid++;
             }
 
             return true;

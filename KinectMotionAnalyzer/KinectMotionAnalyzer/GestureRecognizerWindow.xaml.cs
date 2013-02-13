@@ -42,7 +42,7 @@ namespace KinectMotionAnalyzer
         
         // record params
         private int frame_id = 0;
-        List<Skeleton> gesture_data = new List<Skeleton>();
+        List<Skeleton> gesture_capture_data = new List<Skeleton>();
         Gesture temp_gesture = new Gesture();
 
 
@@ -102,7 +102,6 @@ namespace KinectMotionAnalyzer
             else
             {
                 // invalidate all buttons
-                kinectRunBtn.IsEnabled = false;
                 gestureReplayBtn.IsEnabled = false;
 
                 return false;
@@ -134,7 +133,7 @@ namespace KinectMotionAnalyzer
                     {
                         if (ske.TrackingState == SkeletonTrackingState.Tracked)
                         {
-                            gesture_data.Add(ske);
+                            gesture_capture_data.Add(ske);
                             break;
                         }
                     }
@@ -182,6 +181,7 @@ namespace KinectMotionAnalyzer
                         if (dist >=0 && dist <= 20)
                         {
                             rec_res_label.Content = res;
+                            last_detection_label.Content = res;
                             temp_gesture.data.Clear();
                             Debug.WriteLine("Detected");
                         }
@@ -193,34 +193,6 @@ namespace KinectMotionAnalyzer
                 }
 
                 kinect_data_manager.UpdateSkeletonData(skeletons);
-            }
-        }
-
-        private void kinectRunBtn_Click(object sender, RoutedEventArgs e)
-        {
-            if (kinect_sensor == null)
-                return;
-
-            if (!kinect_sensor.IsRunning)
-            {
-                // can't replay since share same gesture buffer
-                DeactivateReplay();
-                gestureReplayBtn.IsEnabled = false;
-                gestureCaptureBtn.IsEnabled = true;
-                gestureRecognitionBtn.IsEnabled = true;
-
-                kinect_sensor.Start();
-                kinectRunBtn.Content = "Stop";
-            }
-            else
-            {
-                kinect_sensor.Stop();
-                kinectRunBtn.Content = "Run";
-
-                gestureCaptureBtn.IsEnabled = false;
-                gestureReplayBtn.IsEnabled = true;
-                gestureRecognitionBtn.IsEnabled = false;
-                isRecognition = false;
             }
         }
 
@@ -237,21 +209,40 @@ namespace KinectMotionAnalyzer
 
                 // reset
                 frame_id = 0;
-                gesture_data.Clear();
+                gesture_capture_data.Clear();
                 gestureCaptureBtn.Content = "Stop Capture";
                 gestureRecognitionBtn.IsEnabled = false;
+
+                // start kinect
+                if (kinect_sensor == null)
+                    return;
+
+                if (!kinect_sensor.IsRunning)
+                {
+                    // can't replay since share same gesture buffer
+                    DeactivateReplay();
+                    gestureReplayBtn.IsEnabled = false;
+                    gestureRecognitionBtn.IsEnabled = false;
+
+                    kinect_sensor.Start();
+                }
+
             }
             else
             {
+                kinect_sensor.Stop();
+
                 // prepare for replay
-                if (gesture_data != null)
+                if (gesture_capture_data != null)
                 {
-                    ActivateReplay(gesture_data);
+                    ActivateReplay(gesture_capture_data);
                     saveGestureBtn.IsEnabled = true;
                 }
 
                 gestureCaptureBtn.Content = "Capture";
+                gestureReplayBtn.IsEnabled = true;
                 gestureRecognitionBtn.IsEnabled = true;
+                isRecognition = false;
             }
         }
 
@@ -268,11 +259,11 @@ namespace KinectMotionAnalyzer
             int start_id = int.Parse(replay_startLabel.Content.ToString());
             int end_id = int.Parse(replay_endLabel.Content.ToString());
             // remove end part first so front id will not change
-            gesture_data.RemoveRange(end_id + 1, gesture_data.Count - end_id - 1);
-            gesture_data.RemoveRange(0, start_id);
-            KinectRecorder.WriteToSkeletonFile(skeletonpath, gesture_data);
+            gesture_capture_data.RemoveRange(end_id + 1, gesture_capture_data.Count - end_id - 1);
+            gesture_capture_data.RemoveRange(0, start_id);
+            KinectRecorder.WriteToSkeletonFile(skeletonpath, gesture_capture_data);
 
-            gesture_data.Clear();
+            gesture_capture_data.Clear();
             frame_id = 0;
 
             statusbarLabel.Content = "Save skeletons to file: " + skeletonpath;
@@ -284,13 +275,13 @@ namespace KinectMotionAnalyzer
         private void skeletonVideoSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             // valid only when kinect is stopped so no new data will come
-            if (isReplay && gesture_data.Count > 0)
+            if (isReplay && gesture_capture_data.Count > 0)
             {
                 // load new skeleton data
                 int cur_frame_id = (int)skeletonVideoSlider.Value;
-                if (gesture_data.Count > cur_frame_id)
+                if (gesture_capture_data.Count > cur_frame_id)
                 {
-                    replay_data_manager.UpdateSkeletonData(gesture_data[cur_frame_id]);
+                    replay_data_manager.UpdateSkeletonData(gesture_capture_data[cur_frame_id]);
                 }
 
                 // update label
@@ -315,11 +306,11 @@ namespace KinectMotionAnalyzer
             {
                 string filename = dialog.FileName;
                 // test: read skeleton data and display
-                gesture_data = KinectRecorder.ReadFromSkeletonFile(filename);
+                gesture_capture_data = KinectRecorder.ReadFromSkeletonFile(filename);
 
                 statusbarLabel.Content = "Load gesture file from " + filename;
 
-                ActivateReplay(gesture_data);
+                ActivateReplay(gesture_capture_data);
 
                 isReplay = true;
             }
@@ -405,7 +396,22 @@ namespace KinectMotionAnalyzer
 
                 UpdateGestureComboBox();
 
+                // start kinect
+                if (kinect_sensor == null)
+                    return;
+
+                if (!kinect_sensor.IsRunning)
+                {
+                    // can't replay since share same gesture buffer
+                    DeactivateReplay();
+                    gestureReplayBtn.IsEnabled = false;
+
+                    kinect_sensor.Start();
+                }
+
                 isRecognition = true;
+                gestureCaptureBtn.IsEnabled = false;
+
                 // can't edit gesture
                 add_gesture_btn.IsEnabled = false;
                 remove_gesture_btn.IsEnabled = false;
@@ -413,8 +419,12 @@ namespace KinectMotionAnalyzer
             }
             else
             {
+                kinect_sensor.Stop();
+
                 isRecognition = false;
                 recDistLabel.Content = 0;
+                gestureCaptureBtn.IsEnabled = true;
+
                 //enable gesture editing
                 add_gesture_btn.IsEnabled = true;
                 remove_gesture_btn.IsEnabled = true;
