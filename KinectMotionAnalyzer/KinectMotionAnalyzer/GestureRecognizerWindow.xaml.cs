@@ -94,7 +94,6 @@ namespace KinectMotionAnalyzer
 
                 // set source (must after source has been initialized otherwise it's null forever)
                 gesture_disp_img.Source = kinect_data_manager.skeletonImageSource;
-                gesture_replay_img.Source = replay_data_manager.skeletonImageSource;
 
                 // bind event handlers
                 kinect_sensor.SkeletonFrameReady += kinect_skeletonframe_ready;
@@ -281,7 +280,8 @@ namespace KinectMotionAnalyzer
                 int cur_frame_id = (int)skeletonVideoSlider.Value;
                 if (gesture_capture_data.Count > cur_frame_id)
                 {
-                    replay_data_manager.UpdateSkeletonData(gesture_capture_data[cur_frame_id]);
+                    kinect_data_manager.UpdateSkeletonData(gesture_capture_data[cur_frame_id]);
+                    //replay_data_manager.UpdateSkeletonData(gesture_capture_data[cur_frame_id]);
                 }
 
                 // update label
@@ -343,7 +343,8 @@ namespace KinectMotionAnalyzer
 
             isReplay = true;
 
-            replay_data_manager.UpdateSkeletonData(gesture[min_frame_id]);
+            kinect_data_manager.UpdateSkeletonData(gesture[min_frame_id]);
+            //replay_data_manager.UpdateSkeletonData(gesture[min_frame_id]);
         }
 
         private void DeactivateReplay()
