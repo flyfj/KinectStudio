@@ -74,6 +74,10 @@ namespace KinectMotionAnalyzer.Processors
         // current skeleton data
         public Skeleton[] skeletons;
 
+        // current joint status dictionary
+        public Dictionary<JointType, JointStatus> cur_joint_status;
+        public bool ifShowJointStatus = false;
+
 
         /// <summary>
         /// Skeleton drawing params
@@ -230,7 +234,6 @@ namespace KinectMotionAnalyzer.Processors
             // draw skeletons
             using (DrawingContext dc = this.drawingGroup.Open())
             {
-
                 // Draw a transparent background to set the render size
                 dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
 
@@ -401,7 +404,23 @@ namespace KinectMotionAnalyzer.Processors
 
                 if (drawBrush != null)
                 {
-                    drawingContext.DrawEllipse(drawBrush, null, this.SkeletonPointToScreen(joint.Position), JointThickness, JointThickness);
+                    Point joint2DPos = SkeletonPointToScreen(joint.Position);
+                    drawingContext.DrawEllipse(
+                        drawBrush, null, joint2DPos, 
+                        JointThickness, JointThickness);
+
+                    // draw status
+                    if (ifShowJointStatus && cur_joint_status != null && joint.JointType == JointType.HandRight)
+                    {
+                        FormattedText formattedText = new FormattedText(
+                            cur_joint_status[joint.JointType].abs_speed.ToString("F2") + "m/s",
+                            CultureInfo.GetCultureInfo("en-us"),
+                            FlowDirection.LeftToRight,
+                            new Typeface("Verdana"),
+                            20,
+                            Brushes.Green);
+                        drawingContext.DrawText(formattedText, joint2DPos);
+                    }
                 }
             }
         }

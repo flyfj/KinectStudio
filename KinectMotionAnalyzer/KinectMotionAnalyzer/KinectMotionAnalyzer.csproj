@@ -87,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Processors\KinectDataManager.cs" />
+    <Compile Include="Processors\MotionAssessor.cs" />
     <Compile Include="Processors\Tools.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

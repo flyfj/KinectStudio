@@ -31,6 +31,7 @@ namespace KinectMotionAnalyzer
         private KinectDataManager kinect_data_manager;
         private KinectDataManager replay_data_manager;
         private KinectSensor kinect_sensor;
+        private MotionAssessor motion_assessor = new MotionAssessor();
 
         // recognition
         private GestureRecognizer gesture_recognizer = new GestureRecognizer();
@@ -39,6 +40,7 @@ namespace KinectMotionAnalyzer
         // sign
         bool isReplay = false;
         bool isRecognition = false;
+        bool isStreaming = false;
         
         // record params
         private int frame_id = 0;
@@ -136,40 +138,36 @@ namespace KinectMotionAnalyzer
                 Skeleton[] skeletons = new Skeleton[frame.SkeletonArrayLength];
                 frame.CopySkeletonDataTo(skeletons);
 
+                // get first tracked skeleton
+                Skeleton tracked_skeleton = null;
+                foreach (Skeleton ske in skeletons)
+                {
+                    if (ske.TrackingState == SkeletonTrackingState.Tracked)
+                    {
+                        tracked_skeleton = ske;
+                        break;
+                    }
+                }
 
                 // if capturing, add to gesture data
                 if (gestureCaptureBtn.Content.ToString() == "Stop Capture")
                 {
                     // just add first tracked skeleton, assume only one person is present
-                    foreach (Skeleton ske in skeletons)
-                    {
-                        if (ske.TrackingState == SkeletonTrackingState.Tracked)
-                        {
-                            gesture_capture_data.Add(ske);
-                            break;
-                        }
-                    }
+                    gesture_capture_data.Add(tracked_skeleton);
                 }
 
                 if (isRecognition)
                 {
                     #region update_gesture_data
 
-                    foreach (Skeleton ske in skeletons)
+                    if (temp_gesture.data.Count >= gesture_recognizer.gesture_max_len)
                     {
-                        if (ske.TrackingState == SkeletonTrackingState.Tracked)
-                        {
-                            if (temp_gesture.data.Count >= gesture_recognizer.gesture_max_len)
-                            {
-                                temp_gesture.data.RemoveAt(0);
-                                Debug.WriteLine("Remove frame.");
-                            }
-
-                            temp_gesture.data.Add(ske);
-                            Debug.WriteLine("Add frame:" + temp_gesture.data.Count.ToString());
-                            break;
-                        }
+                        temp_gesture.data.RemoveAt(0);
+                        Debug.WriteLine("Remove frame.");
                     }
+
+                    temp_gesture.data.Add(tracked_skeleton);
+                    Debug.WriteLine("Add frame:" + temp_gesture.data.Count.ToString());
 
                     #endregion
                     
@@ -202,6 +200,13 @@ namespace KinectMotionAnalyzer
 
                         recDistLabel.Content = dist.ToString();
                     }
+                }
+
+                if(kinect_data_manager.ifShowJointStatus)
+                {
+                    // update status
+                    motion_assessor.UpdateJointStatus(tracked_skeleton);
+                    kinect_data_manager.cur_joint_status = motion_assessor.GetCurrentJointStatus();
                 }
 
                 kinect_data_manager.UpdateSkeletonData(skeletons);
@@ -529,7 +534,11 @@ namespace KinectMotionAnalyzer
                 previewBtn.Content = "Stop Stream";
 
                 if (kinect_sensor != null)
+                {
                     kinect_sensor.Start();
+                    isStreaming = true;
+                    kinect_data_manager.ifShowJointStatus = true;
+                }
             }
             else
             {
@@ -539,6 +548,9 @@ namespace KinectMotionAnalyzer
                 previewBtn.Content = "Preview Stream";
 
                 kinect_sensor.Stop();
+
+                isStreaming = false;
+                kinect_data_manager.ifShowJointStatus = false;
             }
             
             
