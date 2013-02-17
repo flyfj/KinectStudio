@@ -1,32 +1,33 @@
 ﻿<Window x:Class="KinectMotionAnalyzer.GestureRecognizerWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="GestureRecognizerWindow" SizeToContent="WidthAndHeight" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" d:DesignWidth="1170" ResizeMode="NoResize">
+        Title="GestureRecognizerWindow" SizeToContent="Height" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" d:DesignWidth="1242" ResizeMode="NoResize" Closing="Window_Closing" Width="1250">
     <Grid>
         <Slider HorizontalAlignment="Left" Interval="1" IsEnabled="False" IsSnapToTickEnabled="True" Margin="75,479,0,159" Name="skeletonVideoSlider" Width="345" ValueChanged="skeletonVideoSlider_ValueChanged" />
         <Label BorderThickness="1" Content="0" FontStretch="Normal" Height="32" HorizontalAlignment="Left" Margin="194,501,0,0" Name="skeletonSliderLabel" VerticalAlignment="Top" Width="126" HorizontalContentAlignment="Center" FontSize="13" VerticalContentAlignment="Center" />
-        <Button Content="Capture" Height="44" HorizontalAlignment="Left" Margin="516,0,0,445" Name="gestureCaptureBtn" VerticalAlignment="Bottom" Width="118" Click="gestureCaptureBtn_Click" IsEnabled="True" FontSize="15" />
+        <Button Content="Capture" Height="44" HorizontalAlignment="Left" Margin="529,0,0,336" Name="gestureCaptureBtn" VerticalAlignment="Bottom" Width="118" Click="gestureCaptureBtn_Click" IsEnabled="True" FontSize="15" />
         <StatusBar Background="#FFB49788" FontSize="18" Height="43" HorizontalAlignment="Left" Margin="12,606,0,0" Name="kinectStatusBar" VerticalAlignment="Top" Width="900">
             <Label Content="Welcome" Name="statusbarLabel" FontStretch="Medium" FontSize="14" />
         </StatusBar>
-        <Button Content="Load Gesture" Height="46" HorizontalAlignment="Left" Margin="590,240,0,0" Name="gestureReplayBtn" VerticalAlignment="Top" Width="118" Click="gestureReplayBtn_Click" FontSize="15" />
-        <ComboBox Height="34" HorizontalAlignment="Left" Margin="541,48,0,0" Name="gestureComboBox" VerticalAlignment="Top" Width="222" Text="" SnapsToDevicePixels="True" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15">
+        <Button Content="Load Gesture" Height="46" HorizontalAlignment="Left" Margin="603,349,0,0" Name="gestureReplayBtn" VerticalAlignment="Top" Width="118" Click="gestureReplayBtn_Click" FontSize="15" />
+        <ComboBox Height="34" HorizontalAlignment="Left" Margin="554,157,0,0" Name="gestureComboBox" VerticalAlignment="Top" Width="222" Text="" SnapsToDevicePixels="True" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15">
             <ComboBoxItem Content="Choose Gesture" IsEnabled="False" IsSelected="True" />
         </ComboBox>
         <Border BorderBrush="Black" BorderThickness="1" Height="451" HorizontalAlignment="Left" Margin="38,19,0,0" Name="dispImgBorder" VerticalAlignment="Top" Width="436">
             <Image Name="gesture_disp_img" Stretch="Uniform" Width="413" Height="414" />
         </Border>
-        <Button Content="Save Gesture" FontSize="15" Height="44" HorizontalAlignment="Left" IsEnabled="False" Margin="669,0,0,445" Name="saveGestureBtn" VerticalAlignment="Bottom" Width="118" Click="saveGestureBtn_Click" />
+        <Button Content="Save Gesture" FontSize="15" Height="44" HorizontalAlignment="Left" IsEnabled="False" Margin="682,0,0,336" Name="saveGestureBtn" VerticalAlignment="Bottom" Width="118" Click="saveGestureBtn_Click" />
         <Button Content="Set Start" Height="34" HorizontalAlignment="Left" Margin="81,547,0,0" Name="replay_setStartBtn" VerticalAlignment="Top" Width="92" FontSize="14" Click="replay_setStartBtn_Click" />
         <Button Content="Set End" Height="34" HorizontalAlignment="Left" Margin="261,547,0,0" Name="replay_setEndBtn" VerticalAlignment="Top" Width="92" FontSize="14" Click="replay_setEndBtn_Click" />
         <Label BorderThickness="1" Content="0" FontSize="13" FontStretch="Normal" Height="32" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="362,549,0,0" Name="replay_endLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="68" />
         <Label BorderThickness="1" Content="0" FontSize="13" FontStretch="Normal" Height="32" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="179,549,0,0" Name="replay_startLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="65" />
-        <Label Content="Matching Distance" Height="46" HorizontalAlignment="Left" Margin="575,540,0,0" Name="recDistLabel" VerticalAlignment="Top" Width="158" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" />
-        <Button Content="Start Recognition" FontSize="15" Height="43" HorizontalAlignment="Left" Margin="575,440,0,0" Name="gestureRecognitionBtn" VerticalAlignment="Top" Width="155" IsEnabled="True" Click="gestureRecognitionBtn_Click" />
-        <ProgressBar Height="29" HorizontalAlignment="Left" Margin="516,504,0,0" Name="gesture_match_scorebar" VerticalAlignment="Top" Width="271" Maximum="150" />
-        <Label Content="Current Detection" FontSize="16" Height="46" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="516,379,0,0" Name="rec_res_label" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="271" />
-        <Button Content="Add Gesture" FontSize="15" Height="40" HorizontalAlignment="Left" Margin="516,110,0,0" Name="add_gesture_btn" VerticalAlignment="Top" Width="118" Click="add_gesture_btn_Click" />
-        <Button Content="Remove Gesture" FontSize="15" Height="40" HorizontalAlignment="Left" Margin="669,110,0,0" Name="remove_gesture_btn" VerticalAlignment="Top" Width="118" Click="remove_gesture_btn_Click" />
-        <Label Content="Last Detection" FontSize="16" Height="46" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="516,312,0,0" Name="last_detection_label" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="271" BorderThickness="2" />
+        <Label Content="Matching Distance" Height="46" HorizontalAlignment="Left" Margin="944,268,0,0" Name="recDistLabel" VerticalAlignment="Top" Width="158" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" />
+        <Button Content="Start Recognition" FontSize="15" Height="43" HorizontalAlignment="Left" Margin="944,168,0,0" Name="gestureRecognitionBtn" VerticalAlignment="Top" Width="155" IsEnabled="True" Click="gestureRecognitionBtn_Click" />
+        <ProgressBar Height="29" HorizontalAlignment="Left" Margin="885,232,0,0" Name="gesture_match_scorebar" VerticalAlignment="Top" Width="271" Maximum="150" />
+        <Label Content="Current Detection" FontSize="16" Height="46" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="885,107,0,0" Name="rec_res_label" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="271" />
+        <Button Content="Add Gesture" FontSize="15" Height="40" HorizontalAlignment="Left" Margin="529,219,0,0" Name="add_gesture_btn" VerticalAlignment="Top" Width="118" Click="add_gesture_btn_Click" />
+        <Button Content="Remove Gesture" FontSize="15" Height="40" HorizontalAlignment="Left" Margin="682,219,0,0" Name="remove_gesture_btn" VerticalAlignment="Top" Width="118" Click="remove_gesture_btn_Click" />
+        <Label Content="Last Detection" FontSize="16" Height="46" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="885,48,0,0" Name="last_detection_label" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="271" BorderThickness="2" />
+        <Button Content="Preview Stream" FontSize="15" Height="40" HorizontalAlignment="Left" Margin="571,67,0,0" Name="previewBtn" VerticalAlignment="Top" Width="182" Click="previewBtn_Click" />
     </Grid>
 </Window>

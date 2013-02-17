@@ -90,12 +90,14 @@ namespace KinectMotionAnalyzer
                 replay_data_manager = new KinectDataManager(ref kinect_sensor);
 
                 // initialize stream
+                kinect_sensor.ColorStream.Enable();
                 kinect_sensor.SkeletonStream.Enable();
 
                 // set source (must after source has been initialized otherwise it's null forever)
                 gesture_disp_img.Source = kinect_data_manager.skeletonImageSource;
 
                 // bind event handlers
+                kinect_sensor.ColorFrameReady += kinect_colorframe_ready;
                 kinect_sensor.SkeletonFrameReady += kinect_skeletonframe_ready;
             }
             else
@@ -106,10 +108,21 @@ namespace KinectMotionAnalyzer
                 return false;
             }
 
-
             return true;
         }
 
+
+        void kinect_colorframe_ready(object sender, ColorImageFrameReadyEventArgs e)
+        {
+
+            using (ColorImageFrame frame = e.OpenColorImageFrame())
+            {
+                if (frame == null)
+                    return;
+
+                kinect_data_manager.UpdateColorData(frame);
+            }
+        }
 
         void kinect_skeletonframe_ready(object sender, SkeletonFrameReadyEventArgs e)
         {
@@ -195,6 +208,8 @@ namespace KinectMotionAnalyzer
             }
         }
 
+#region gesture_management
+
         private void gestureCaptureBtn_Click(object sender, RoutedEventArgs e)
         {
             if (gestureCaptureBtn.Content.ToString() == "Capture")
@@ -211,6 +226,7 @@ namespace KinectMotionAnalyzer
                 gesture_capture_data.Clear();
                 gestureCaptureBtn.Content = "Stop Capture";
                 gestureRecognitionBtn.IsEnabled = false;
+                previewBtn.IsEnabled = false;
 
                 // start kinect
                 if (kinect_sensor == null)
@@ -241,6 +257,7 @@ namespace KinectMotionAnalyzer
                 gestureCaptureBtn.Content = "Capture";
                 gestureReplayBtn.IsEnabled = true;
                 gestureRecognitionBtn.IsEnabled = true;
+                previewBtn.IsEnabled = true;
                 isRecognition = false;
             }
         }
@@ -270,6 +287,65 @@ namespace KinectMotionAnalyzer
             DeactivateReplay();
             saveGestureBtn.IsEnabled = false;
         }
+
+        private void add_gesture_btn_Click(object sender, RoutedEventArgs e)
+        {
+            // open add window
+            GestureConfigWin add_win = new GestureConfigWin();
+            if (add_win.ShowDialog().Value == true)
+            {
+                gesture_recognizer.AddGestureConfig(add_win.new_gesture_config);
+
+                // update list
+                UpdateGestureComboBox();
+                // update status bar
+                statusbarLabel.Content = "Add gesture: " + add_win.new_gesture_config.name;
+            }
+        }
+
+        private void remove_gesture_btn_Click(object sender, RoutedEventArgs e)
+        {
+            // remove gesture config of current selected one
+            int gid = gestureComboBox.SelectedIndex;
+            if (gid == 0)    // can't delete default one
+            {
+                MessageBox.Show("Select a valid gesture to remove.");
+                return;
+            }
+
+            ComboBoxItem toRemoveItem = gestureComboBox.Items[gid] as ComboBoxItem;
+            gesture_recognizer.RemoveGestureConfig(toRemoveItem.Content.ToString());
+
+            // update ui
+            UpdateGestureComboBox();
+            // update status bar
+            statusbarLabel.Content = "Remove gesture: " + toRemoveItem.Content;
+        }
+
+#endregion
+
+        private void UpdateGestureComboBox()
+        {
+
+            gestureComboBox.Items.Clear();
+            // add prompt item
+            ComboBoxItem prompt = new ComboBoxItem();
+            prompt.Content = "Choose Gesture";
+            prompt.IsEnabled = false;
+            prompt.IsSelected = true;
+            gestureComboBox.Items.Add(prompt);
+
+            // add item for each gesture type
+            foreach (string gname in gesture_recognizer.GESTURE_LIST.Values)
+            {
+                ComboBoxItem item = new ComboBoxItem();
+                item.Content = gname;
+                gestureComboBox.Items.Add(item);
+            }
+
+        }
+
+#region gesture_replay
 
         private void skeletonVideoSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -371,7 +447,7 @@ namespace KinectMotionAnalyzer
 
         private void replay_setEndBtn_Click(object sender, RoutedEventArgs e)
         {
-            if(skeletonVideoSlider.Value < double.Parse(replay_startLabel.Content.ToString()))
+            if (skeletonVideoSlider.Value < double.Parse(replay_startLabel.Content.ToString()))
             {
                 MessageBox.Show("End frame can't be earlier than start frame.");
                 return;
@@ -380,6 +456,8 @@ namespace KinectMotionAnalyzer
             replay_endLabel.Content = skeletonVideoSlider.Value;
         }
 
+#endregion
+        
         private void gestureRecognitionBtn_Click(object sender, RoutedEventArgs e)
         {
             if (!isRecognition)
@@ -391,27 +469,26 @@ namespace KinectMotionAnalyzer
 
                 if (!gesture_recognizer.LoadGestureDatabase(GESTURE_DATABASE_DIR))
                 {
-                    MessageBox.Show("Fail to load gesture database for recognition.");
+                    MessageBox.Show("No gesture database found for recognition.");
                     return;
                 }
 
                 UpdateGestureComboBox();
+
+                // can't replay since share same gesture buffer
+                DeactivateReplay();
+                gestureReplayBtn.IsEnabled = false;
 
                 // start kinect
                 if (kinect_sensor == null)
                     return;
 
                 if (!kinect_sensor.IsRunning)
-                {
-                    // can't replay since share same gesture buffer
-                    DeactivateReplay();
-                    gestureReplayBtn.IsEnabled = false;
-
                     kinect_sensor.Start();
-                }
 
                 isRecognition = true;
                 gestureCaptureBtn.IsEnabled = false;
+                previewBtn.IsEnabled = false;
 
                 // can't edit gesture
                 add_gesture_btn.IsEnabled = false;
@@ -425,6 +502,7 @@ namespace KinectMotionAnalyzer
                 isRecognition = false;
                 recDistLabel.Content = 0;
                 gestureCaptureBtn.IsEnabled = true;
+                previewBtn.IsEnabled = true;
 
                 //enable gesture editing
                 add_gesture_btn.IsEnabled = true;
@@ -433,60 +511,38 @@ namespace KinectMotionAnalyzer
             }
         }
 
-        private void add_gesture_btn_Click(object sender, RoutedEventArgs e)
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            // open add window
-            GestureConfigWin add_win = new GestureConfigWin();
-            if (add_win.ShowDialog().Value == true)
-            {
-                gesture_recognizer.AddGestureConfig(add_win.new_gesture_config);
-                
-                // update list
-                UpdateGestureComboBox();
-                // update status bar
-                statusbarLabel.Content = "Add gesture: " + add_win.new_gesture_config.name;
-            }
+            if (kinect_sensor != null)
+                kinect_sensor.Stop();
         }
 
-        private void remove_gesture_btn_Click(object sender, RoutedEventArgs e)
+        private void previewBtn_Click(object sender, RoutedEventArgs e)
         {
-            // remove gesture config of current selected one
-            int gid = gestureComboBox.SelectedIndex;
-            if (gid == 0)    // can't delete default one
+            if (previewBtn.Content.ToString() == "Preview Stream")
             {
-                MessageBox.Show("Select a valid gesture to remove.");
-                return;
+                // disable all other buttons
+                DeactivateReplay();
+                gestureCaptureBtn.IsEnabled = false;
+                gestureRecognitionBtn.IsEnabled = false;
+                gestureReplayBtn.IsEnabled = false;
+                previewBtn.Content = "Stop Stream";
+
+                if (kinect_sensor != null)
+                    kinect_sensor.Start();
             }
-
-            ComboBoxItem toRemoveItem = gestureComboBox.Items[gid] as ComboBoxItem;
-            gesture_recognizer.RemoveGestureConfig(toRemoveItem.Content.ToString());
-
-            // update ui
-            UpdateGestureComboBox();
-            // update status bar
-            statusbarLabel.Content = "Remove gesture: " + toRemoveItem.Content;
-        }
-
-        private void UpdateGestureComboBox()
-        {
-
-            gestureComboBox.Items.Clear();
-            // add prompt item
-            ComboBoxItem prompt = new ComboBoxItem();
-            prompt.Content = "Choose Gesture";
-            prompt.IsEnabled = false;
-            prompt.IsSelected = true;
-            gestureComboBox.Items.Add(prompt);
-
-            // add item for each gesture type
-            foreach (string gname in gesture_recognizer.GESTURE_LIST.Values)
+            else
             {
-                ComboBoxItem item = new ComboBoxItem();
-                item.Content = gname;
-                gestureComboBox.Items.Add(item);
-            }
+                gestureCaptureBtn.IsEnabled = true;
+                gestureReplayBtn.IsEnabled = true;
+                gestureRecognitionBtn.IsEnabled = true;
+                previewBtn.Content = "Preview Stream";
 
-        }
+                kinect_sensor.Stop();
+            }
+            
+            
+        } 
 
     }
 }

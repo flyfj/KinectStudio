@@ -230,8 +230,17 @@ namespace KinectMotionAnalyzer.Processors
             // draw skeletons
             using (DrawingContext dc = this.drawingGroup.Open())
             {
+
                 // Draw a transparent background to set the render size
                 dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
+
+                if (sensor_ref.ColorStream.IsEnabled && ColorStreamBitmap != null)
+                {
+                    Rect drawRect =
+                        new Rect(0, 0, ColorStreamBitmap.PixelWidth, ColorStreamBitmap.PixelHeight);
+
+                    dc.DrawImage(ColorStreamBitmap, drawRect);
+                }
 
                 if (skeletons.Length != 0)
                 {
@@ -269,9 +278,17 @@ namespace KinectMotionAnalyzer.Processors
             // draw skeletons
             using (DrawingContext dc = this.drawingGroup.Open())
             {
+                if(sensor_ref.ColorStream.IsEnabled && ColorStreamBitmap != null)
+                {
+                    Rect drawRect = 
+                        new Rect(0, 0, ColorStreamBitmap.PixelWidth, ColorStreamBitmap.PixelHeight);
+
+                    dc.DrawImage(ColorStreamBitmap, drawRect);
+                }
+
                 // Draw a transparent background to set the render size
                 dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
-
+                
                 RenderClippedEdges(ske, dc);
 
                 if (ske.TrackingState == SkeletonTrackingState.Tracked)
