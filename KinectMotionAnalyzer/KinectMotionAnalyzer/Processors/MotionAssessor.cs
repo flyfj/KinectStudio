@@ -112,6 +112,21 @@ namespace KinectMotionAnalyzer.Processors
 
         }
 
+        public string GetFeedbackForCurrentStatus()
+        {
+            // simple feedback test for back angle
+            string res = "You are doing fine.";
+            if (jointStatusSeq.Count > 0)
+            {
+                Dictionary<JointType, JointStatus> cur_joint_status =
+                    jointStatusSeq[jointStatusSeq.Count - 1];
+                // check back angle
+                if (Math.Abs(cur_joint_status[JointType.Spine].angle - 180) > 10)
+                    res = "Keep your back straight.";
+            }
+            
+            return res;
+        }
 
         public void UpdateJointStatus(Skeleton ske)
         {

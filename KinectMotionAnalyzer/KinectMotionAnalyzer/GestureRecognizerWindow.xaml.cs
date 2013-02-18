@@ -207,6 +207,9 @@ namespace KinectMotionAnalyzer
                     // update status
                     motion_assessor.UpdateJointStatus(tracked_skeleton);
                     kinect_data_manager.cur_joint_status = motion_assessor.GetCurrentJointStatus();
+
+                    // show feedback
+                    feedback_textblock.Text = motion_assessor.GetFeedbackForCurrentStatus();
                 }
 
                 kinect_data_manager.UpdateSkeletonData(skeletons);
@@ -526,15 +529,15 @@ namespace KinectMotionAnalyzer
         {
             if (previewBtn.Content.ToString() == "Preview Stream")
             {
-                // disable all other buttons
-                DeactivateReplay();
-                gestureCaptureBtn.IsEnabled = false;
-                gestureRecognitionBtn.IsEnabled = false;
-                gestureReplayBtn.IsEnabled = false;
-                previewBtn.Content = "Stop Stream";
-
                 if (kinect_sensor != null)
                 {
+                    // disable all other buttons
+                    DeactivateReplay();
+                    gestureCaptureBtn.IsEnabled = false;
+                    gestureRecognitionBtn.IsEnabled = false;
+                    gestureReplayBtn.IsEnabled = false;
+                    previewBtn.Content = "Stop Stream";
+
                     kinect_sensor.Start();
                     isStreaming = true;
                     kinect_data_manager.ifShowJointStatus = true;
@@ -542,15 +545,18 @@ namespace KinectMotionAnalyzer
             }
             else
             {
-                gestureCaptureBtn.IsEnabled = true;
-                gestureReplayBtn.IsEnabled = true;
-                gestureRecognitionBtn.IsEnabled = true;
-                previewBtn.Content = "Preview Stream";
+                if(kinect_sensor != null)
+                {
+                    gestureCaptureBtn.IsEnabled = true;
+                    gestureReplayBtn.IsEnabled = true;
+                    gestureRecognitionBtn.IsEnabled = true;
+                    previewBtn.Content = "Preview Stream";
 
-                kinect_sensor.Stop();
+                    kinect_sensor.Stop();
 
-                isStreaming = false;
-                kinect_data_manager.ifShowJointStatus = false;
+                    isStreaming = false;
+                    kinect_data_manager.ifShowJointStatus = false;
+                }
             }
             
             
