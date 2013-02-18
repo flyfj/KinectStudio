@@ -92,7 +92,7 @@ namespace KinectMotionAnalyzer
                 replay_data_manager = new KinectDataManager(ref kinect_sensor);
 
                 // initialize stream
-                kinect_sensor.ColorStream.Enable();
+                //kinect_sensor.ColorStream.Enable();
                 kinect_sensor.SkeletonStream.Enable();
 
                 // set source (must after source has been initialized otherwise it's null forever)

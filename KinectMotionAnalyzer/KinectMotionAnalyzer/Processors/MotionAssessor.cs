@@ -53,6 +53,65 @@ namespace KinectMotionAnalyzer.Processors
             return angle * 180 / Math.PI;
         }
 
+        private double ComputeJointAngle(Skeleton ske, JointType type)
+        {
+            if (ske == null)
+                return 0;
+
+            SkeletonPoint cur_joint_pos = ske.Joints[type].Position;
+            SkeletonPoint neighbor_joint_pos1 = new SkeletonPoint();
+            SkeletonPoint neighbor_joint_pos2 = new SkeletonPoint();
+            bool valid_joint = false;
+            switch (type)
+            {
+                case JointType.ElbowLeft:
+                    neighbor_joint_pos1 = ske.Joints[JointType.WristLeft].Position;
+                    neighbor_joint_pos2 = ske.Joints[JointType.ShoulderLeft].Position;
+                    valid_joint = true;
+                    break;
+
+                case JointType.ElbowRight:
+                    neighbor_joint_pos1 = ske.Joints[JointType.WristRight].Position;
+                    neighbor_joint_pos2 = ske.Joints[JointType.ShoulderRight].Position;
+                    valid_joint = true;
+                    break;
+
+                case JointType.KneeLeft:
+                    neighbor_joint_pos1 = ske.Joints[JointType.HipLeft].Position;
+                    neighbor_joint_pos2 = ske.Joints[JointType.AnkleLeft].Position;
+                    valid_joint = true;
+                    break;
+
+                case JointType.KneeRight:
+                    neighbor_joint_pos1 = ske.Joints[JointType.HipRight].Position;
+                    neighbor_joint_pos2 = ske.Joints[JointType.AnkleRight].Position;
+                    valid_joint = true;
+                    break;
+
+                case JointType.Spine:
+                    neighbor_joint_pos1 = ske.Joints[JointType.ShoulderCenter].Position;
+                    neighbor_joint_pos2 = ske.Joints[JointType.HipCenter].Position;
+                    valid_joint = true;
+                    break;
+            }
+
+            if (valid_joint)
+            {
+                Point3D vec1 = new Point3D(neighbor_joint_pos1.X - cur_joint_pos.X,
+                        neighbor_joint_pos1.Y - cur_joint_pos.Y,
+                        neighbor_joint_pos1.Z - cur_joint_pos.Z);
+                Point3D vec2 = new Point3D(neighbor_joint_pos2.X - cur_joint_pos.X,
+                            neighbor_joint_pos2.Y - cur_joint_pos.Y,
+                            neighbor_joint_pos2.Z - cur_joint_pos.Z);
+
+                return ComputeAngle(vec1, vec2);
+            }
+            else
+                return 0;
+            
+
+        }
+
 
         public void UpdateJointStatus(Skeleton ske)
         {
@@ -76,28 +135,15 @@ namespace KinectMotionAnalyzer.Processors
             foreach (Joint joint in ske.Joints)
             {
                 JointStatus stat = new JointStatus();
+
                 // position
                 stat.position.X = joint.Position.X;
                 stat.position.Y = joint.Position.Y;
                 stat.position.Z = joint.Position.Z;
+
                 // angle
-                switch (joint.JointType)
-                {
-                    case JointType.ElbowLeft:
+                stat.angle = ComputeJointAngle(ske, joint.JointType);
 
-                        // use wrist left and shoulder left bones
-                        SkeletonPoint wrist_left = ske.Joints[JointType.WristLeft].Position;
-                        SkeletonPoint shoulder_left = ske.Joints[JointType.ShoulderLeft].Position;
-                        Point3D elbow2wrist_vec = new Point3D(wrist_left.X - joint.Position.X,
-                            wrist_left.Y - joint.Position.Y, wrist_left.Z - joint.Position.Z);
-                        Point3D elbow2shoulder_vec = new Point3D(shoulder_left.X - joint.Position.X,
-                            shoulder_left.Y - joint.Position.Y, shoulder_left.Z - joint.Position.Z);
-                        stat.angle = ComputeAngle(elbow2shoulder_vec, elbow2wrist_vec);
-                        break;
-
-                    case JointType.ElbowRight:
-                        break;
-                }
                 // compute speed using last frame data
                 if(jointStatusSeq.Count > 0)
                 {
