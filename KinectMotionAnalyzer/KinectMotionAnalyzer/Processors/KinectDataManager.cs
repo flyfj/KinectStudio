@@ -147,10 +147,6 @@ namespace KinectMotionAnalyzer.Processors
             int stride = ColorStreamBitmap.PixelWidth * sizeof(int);
             Int32Rect drawRect = new Int32Rect(0, 0, ColorStreamBitmap.PixelWidth, ColorStreamBitmap.PixelHeight);
             ColorStreamBitmap.WritePixels(drawRect, colorPixelData, stride, 0);
-
-            // notify...
-            //RaisePropertyChanged(() => StreamDataBitmap);
-
         }
 
         public void UpdateDepthData(DepthImageFrame frame)
@@ -235,15 +231,7 @@ namespace KinectMotionAnalyzer.Processors
             using (DrawingContext dc = this.drawingGroup.Open())
             {
                 // Draw a transparent background to set the render size
-                dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
-
-                if (sensor_ref.ColorStream.IsEnabled && ColorStreamBitmap != null)
-                {
-                    Rect drawRect =
-                        new Rect(0, 0, ColorStreamBitmap.PixelWidth, ColorStreamBitmap.PixelHeight);
-
-                    dc.DrawImage(ColorStreamBitmap, drawRect);
-                }
+                dc.DrawRectangle(Brushes.Transparent, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
 
                 if (skeletons.Length != 0)
                 {
@@ -281,16 +269,8 @@ namespace KinectMotionAnalyzer.Processors
             // draw skeletons
             using (DrawingContext dc = this.drawingGroup.Open())
             {
-                if(sensor_ref.ColorStream.IsEnabled && ColorStreamBitmap != null)
-                {
-                    Rect drawRect = 
-                        new Rect(0, 0, ColorStreamBitmap.PixelWidth, ColorStreamBitmap.PixelHeight);
-
-                    dc.DrawImage(ColorStreamBitmap, drawRect);
-                }
-
                 // Draw a transparent background to set the render size
-                dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
+                dc.DrawRectangle(Brushes.Transparent, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
                 
                 RenderClippedEdges(ske, dc);
 

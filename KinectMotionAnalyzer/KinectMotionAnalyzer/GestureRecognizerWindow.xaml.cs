@@ -96,7 +96,8 @@ namespace KinectMotionAnalyzer
                 kinect_sensor.SkeletonStream.Enable();
 
                 // set source (must after source has been initialized otherwise it's null forever)
-                gesture_disp_img.Source = kinect_data_manager.skeletonImageSource;
+                color_disp_img.Source = kinect_data_manager.ColorStreamBitmap;
+                ske_disp_img.Source = kinect_data_manager.skeletonImageSource;
 
                 // bind event handlers
                 kinect_sensor.ColorFrameReady += kinect_colorframe_ready;

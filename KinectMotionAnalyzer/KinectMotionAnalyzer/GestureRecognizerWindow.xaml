@@ -8,9 +8,6 @@
         <StatusBar Background="#FFB49788" FontSize="18" Height="43" HorizontalAlignment="Left" Margin="12,606,0,0" Name="kinectStatusBar" VerticalAlignment="Top" Width="900">
             <Label Content="Welcome" Name="statusbarLabel" FontStretch="Medium" FontSize="14" />
         </StatusBar>
-        <Border BorderBrush="Black" BorderThickness="1" Height="451" HorizontalAlignment="Left" Margin="38,19,0,0" Name="dispImgBorder" VerticalAlignment="Top" Width="436">
-            <Image Name="gesture_disp_img" Stretch="Uniform" Width="413" Height="414" />
-        </Border>
         <Button Content="Set Start" Height="34" HorizontalAlignment="Left" Margin="81,547,0,0" Name="replay_setStartBtn" VerticalAlignment="Top" Width="92" FontSize="14" Click="replay_setStartBtn_Click" />
         <Button Content="Set End" Height="34" HorizontalAlignment="Left" Margin="261,547,0,0" Name="replay_setEndBtn" VerticalAlignment="Top" Width="92" FontSize="14" Click="replay_setEndBtn_Click" />
         <Label BorderThickness="1" Content="0" FontSize="13" FontStretch="Normal" Height="32" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="362,549,0,0" Name="replay_endLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="68" />
@@ -42,5 +39,11 @@
             </Grid>
         </GroupBox>
         <TextBlock Height="60" HorizontalAlignment="Left" Margin="519,139,0,0" Name="feedback_textblock" Text="User Feedback" VerticalAlignment="Top" Width="330" TextWrapping="Wrap" TextAlignment="Center" FontSize="16" />
+        <GroupBox Header="Display" Height="461" HorizontalAlignment="Left" Margin="31,12,0,0" Name="groupBox3" VerticalAlignment="Top" Width="452" FontSize="16">
+            <Grid>
+                <Image Name="color_disp_img" Stretch="Uniform" Width="413" Height="414" Margin="12,9,16,10" />
+                <Image Name="ske_disp_img" Height="414" Margin="10,10,17,9" Stretch="Uniform" Width="413" />
+            </Grid>
+        </GroupBox>
     </Grid>
 </Window>
