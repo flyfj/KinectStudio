@@ -89,13 +89,16 @@ namespace KinectMotionAnalyzer
             {
                 // initialize data manager
                 kinect_data_manager = new KinectDataManager(ref kinect_sensor);
-                replay_data_manager = new KinectDataManager(ref kinect_sensor);
+                //replay_data_manager = new KinectDataManager(ref kinect_sensor);
 
                 // initialize stream
-                //kinect_sensor.ColorStream.Enable();
+                kinect_sensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
                 kinect_sensor.SkeletonStream.Enable();
 
                 // set source (must after source has been initialized otherwise it's null forever)
+                kinect_data_manager.ColorStreamBitmap = new WriteableBitmap(
+                    kinect_sensor.ColorStream.FrameWidth, kinect_sensor.ColorStream.FrameHeight, 96, 96,
+                    PixelFormats.Bgr32, null);
                 color_disp_img.Source = kinect_data_manager.ColorStreamBitmap;
                 ske_disp_img.Source = kinect_data_manager.skeletonImageSource;
 

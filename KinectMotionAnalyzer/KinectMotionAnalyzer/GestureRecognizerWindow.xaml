@@ -3,6 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="GestureRecognizerWindow" SizeToContent="Height" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" d:DesignWidth="1242" ResizeMode="NoResize" Closing="Window_Closing" Width="1269">
     <Grid>
+        <GroupBox Header="Display" Height="461" HorizontalAlignment="Left" Margin="31,12,0,0" Name="groupBox3" VerticalAlignment="Top" Width="452" FontSize="16">
+            <Grid>
+                <Image Name="color_disp_img" Stretch="Uniform" Width="413" Height="414" Margin="11,6,16,13" />
+                <Image Name="ske_disp_img" Height="414" Margin="11,6,16,13" Stretch="Uniform" Width="413" />
+            </Grid>
+        </GroupBox>
         <Slider HorizontalAlignment="Left" Interval="1" IsEnabled="False" IsSnapToTickEnabled="True" Margin="75,479,0,159" Name="skeletonVideoSlider" Width="345" ValueChanged="skeletonVideoSlider_ValueChanged" />
         <Label BorderThickness="1" Content="0" FontStretch="Normal" Height="32" HorizontalAlignment="Left" Margin="194,501,0,0" Name="skeletonSliderLabel" VerticalAlignment="Top" Width="126" HorizontalContentAlignment="Center" FontSize="13" VerticalContentAlignment="Center" />
         <StatusBar Background="#FFB49788" FontSize="18" Height="43" HorizontalAlignment="Left" Margin="12,606,0,0" Name="kinectStatusBar" VerticalAlignment="Top" Width="900">
@@ -39,11 +45,5 @@
             </Grid>
         </GroupBox>
         <TextBlock Height="60" HorizontalAlignment="Left" Margin="519,139,0,0" Name="feedback_textblock" Text="User Feedback" VerticalAlignment="Top" Width="330" TextWrapping="Wrap" TextAlignment="Center" FontSize="16" />
-        <GroupBox Header="Display" Height="461" HorizontalAlignment="Left" Margin="31,12,0,0" Name="groupBox3" VerticalAlignment="Top" Width="452" FontSize="16">
-            <Grid>
-                <Image Name="color_disp_img" Stretch="Uniform" Width="413" Height="414" Margin="12,9,16,10" />
-                <Image Name="ske_disp_img" Height="414" Margin="10,10,17,9" Stretch="Uniform" Width="413" />
-            </Grid>
-        </GroupBox>
     </Grid>
 </Window>
