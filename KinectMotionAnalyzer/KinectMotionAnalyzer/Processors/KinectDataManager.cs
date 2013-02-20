@@ -392,12 +392,14 @@ namespace KinectMotionAnalyzer.Processors
                     // draw status
                     if (ifShowJointStatus && cur_joint_status != null)
                     {
+                        //joint.JointType == JointType.ElbowLeft ||
+                        //    joint.JointType == JointType.ElbowRight ||
+                        //    joint.JointType == JointType.KneeLeft ||
+                        //    joint.JointType == JointType.KneeRight ||
+                        //    joint.JointType == JointType.Spine ||
                         // selectively draw joint status
-                        if (joint.JointType == JointType.ElbowLeft ||
-                            joint.JointType == JointType.ElbowRight ||
-                            joint.JointType == JointType.KneeLeft ||
-                            joint.JointType == JointType.KneeRight ||
-                            joint.JointType == JointType.Spine)
+                        if (
+                            joint.JointType == JointType.ShoulderLeft)
                         {
                             FormattedText formattedText = new FormattedText(
                             cur_joint_status[joint.JointType].abs_speed.ToString("F2") + "m/s\n" +
@@ -406,7 +408,7 @@ namespace KinectMotionAnalyzer.Processors
                             FlowDirection.LeftToRight,
                             new Typeface("Verdana"),
                             20,
-                            Brushes.Blue);
+                            Brushes.Yellow);
 
                             drawingContext.DrawText(formattedText, joint2DPos);
                         }

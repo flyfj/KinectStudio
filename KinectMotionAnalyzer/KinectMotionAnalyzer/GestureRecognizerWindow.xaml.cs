@@ -66,6 +66,8 @@ namespace KinectMotionAnalyzer
             gesture_recognizer.LoadAllGestureConfig();
             UpdateGestureComboBox();
 
+            //temp_gesture.data = new List<Skeleton>();
+
         }
 
 
@@ -152,6 +154,9 @@ namespace KinectMotionAnalyzer
                         break;
                     }
                 }
+
+                if (tracked_skeleton == null)
+                    return;
 
                 // if capturing, add to gesture data
                 if (gestureCaptureBtn.Content.ToString() == "Stop Capture")
