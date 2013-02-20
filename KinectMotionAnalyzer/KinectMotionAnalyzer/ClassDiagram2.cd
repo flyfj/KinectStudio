@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="KinectMotionAnalyzer.App" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>App.xaml.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="KinectMotionAnalyzer.GestureConfigWin" Collapsed="true">
+    <Position X="4" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAgAIBAAA=</HashCode>
+      <FileName>GestureConfigWin.xaml.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="KinectMotionAnalyzer.GestureRecognizerWindow" Collapsed="true">
+    <Position X="0.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>SAgCAAgEcAAQIAAQgJAAAAAABAAAAAQAIAAIISAIiBA=</HashCode>
+      <FileName>GestureRecognizerWindow.xaml.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="KinectMotionAnalyzer.MainWindow" Collapsed="true">
+    <Position X="2.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>SAgAACQBQAAQIACQCBIAAAAAAAAAAAIQIEAJABAAAAA=</HashCode>
+      <FileName>MainWindow.xaml.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="KinectMotionAnalyzer.Processors.Gesture" Collapsed="true">
+    <Position X="2.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAQAAAAAAA=</HashCode>
+      <FileName>Processors\GestureRecognizer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="KinectMotionAnalyzer.Processors.GestureTemplateBase" Collapsed="true">
+    <Position X="2.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAACAAAAgA=</HashCode>
+      <FileName>Processors\GestureRecognizer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="KinectMotionAnalyzer.Processors.GestureRecognizer" Collapsed="true">
+    <Position X="5.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAIAAQAQIAgAAAAAISAgABAQQgAAAgQAAIAAAAAAAA=</HashCode>
+      <FileName>Processors\GestureRecognizer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="KinectMotionAnalyzer.Processors.Notifier" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="5.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Processors\KinectDataManager.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="KinectMotionAnalyzer.Processors.KinectDataManager" Collapsed="true">
+    <Position X="5.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AiAKAQAAAABQAgAGAAAAIEgAAIEgBAiQAAIABRFAABE=</HashCode>
+      <FileName>Processors\KinectDataManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="KinectMotionAnalyzer.Processors.KinectRecorder" Collapsed="true">
+    <Position X="0.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAACAAAAAAAAA=</HashCode>
+      <FileName>Processors\KinectRecorder.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="KinectMotionAnalyzer.Processors.JointStatus" Collapsed="true">
+    <Position X="4" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAAAAAAAAAIIAAAAAAAAQAAAAAAAABAAAA=</HashCode>
+      <FileName>Processors\MotionAssessor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="KinectMotionAnalyzer.Processors.MotionAssessor" Collapsed="true">
+    <Position X="4" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAIABAAABAAAAAAABAAAAAAAAAQAABAABAA=</HashCode>
+      <FileName>Processors\MotionAssessor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="KinectMotionAnalyzer.Processors.Tools" Collapsed="true">
+    <Position X="4" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Processors\Tools.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="KinectMotionAnalyzer.Properties.Resources" Collapsed="true">
+    <Position X="0.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAABEAAAAQAAAAAAAAAAAAAAAIA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="KinectMotionAnalyzer.Properties.Settings" Collapsed="true">
+    <Position X="2.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAIAAAAAABAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="KinectMotionAnalyzer.KinectMode" Collapsed="true">
+    <Position X="0.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIQAAAAAAAAI=</HashCode>
+      <FileName>MainWindow.xaml.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

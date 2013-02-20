@@ -1,19 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
+using System.IO;
 using System.Windows;
 using System.Globalization;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Drawing;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Microsoft.Kinect;
 using Microsoft.Win32;
 using System.Diagnostics;
+using Emgu.CV;
+using Emgu.CV.Structure;
 
 
 namespace KinectMotionAnalyzer
@@ -46,6 +51,8 @@ namespace KinectMotionAnalyzer
         private int frame_id = 0;
         List<Skeleton> gesture_capture_data = new List<Skeleton>();
         Gesture temp_gesture = new Gesture();
+        ArrayList frame_rec_buffer = new ArrayList(); // use to store record frames in memory
+        VideoWriter videoWriter;
 
 
         public GestureRecognizerWindow()
@@ -66,7 +73,9 @@ namespace KinectMotionAnalyzer
             gesture_recognizer.LoadAllGestureConfig();
             UpdateGestureComboBox();
 
-            //temp_gesture.data = new List<Skeleton>();
+            // init emgu cv
+            //videoWriter = new VideoWriter("test.avi", 15,
+            //    (int)groupBox3.Width, (int)groupBox3.Height, true);
 
         }
 
@@ -222,6 +231,25 @@ namespace KinectMotionAnalyzer
                 }
 
                 kinect_data_manager.UpdateSkeletonData(skeletons);
+
+                if(isStreaming)
+                {
+                    // write screen shot of display into video file
+                    int width = (int)groupBox3.Width + 20;
+                    int height = (int)groupBox3.Height + 20;
+                    System.Drawing.Rectangle bounds = new System.Drawing.Rectangle(
+                        (int)(Application.Current.MainWindow.Left + groupBox3.Margin.Left),
+                        (int)(Application.Current.MainWindow.Top + groupBox3.Margin.Top),
+                        width, height);
+                    Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height);
+                    using (Graphics g = Graphics.FromImage(bitmap))
+                    {
+                        g.CopyFromScreen(new System.Drawing.Point(bounds.Left, bounds.Top), 
+                            new System.Drawing.Point(-1,-1), bounds.Size);
+                    }
+
+                    frame_rec_buffer.Add(bitmap);
+                }
             }
         }
 
@@ -547,6 +575,8 @@ namespace KinectMotionAnalyzer
                     gestureReplayBtn.IsEnabled = false;
                     previewBtn.Content = "Stop Stream";
 
+                    frame_rec_buffer.Clear();
+
                     kinect_sensor.Start();
                     isStreaming = true;
                     kinect_data_manager.ifShowJointStatus = true;
@@ -555,16 +585,34 @@ namespace KinectMotionAnalyzer
             else
             {
                 if(kinect_sensor != null)
-                {
+                { 
+                    kinect_sensor.Stop();
+                    
                     gestureCaptureBtn.IsEnabled = true;
                     gestureReplayBtn.IsEnabled = true;
                     gestureRecognitionBtn.IsEnabled = true;
                     previewBtn.Content = "Preview Stream";
 
-                    kinect_sensor.Stop();
-
                     isStreaming = false;
                     kinect_data_manager.ifShowJointStatus = false;
+
+                    // save recorded frame to disk
+                    //if (frame_rec_buffer != null)
+                    //{
+                    //    for (int i = 0; i < frame_rec_buffer.Count; i++)
+                    //    {
+                    //        string filename = "D:\\temp\\" + i.ToString() + ".jpeg";
+                    //        Bitmap bitmap = (frame_rec_buffer[i] as Bitmap);
+                    //        bitmap.Save(filename, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    //    }
+                    //}
+
+                    // save tracked elbow speed
+                    FileStream file = File.Open("d:\\temp\\test.txt", FileMode.Create);
+                    StreamWriter writer = new StreamWriter(file);
+                    for (int i = 0; i < motion_assessor.jointStatusSeq.Count; i++)
+                        writer.WriteLine(motion_assessor.jointStatusSeq[i][JointType.HandRight].abs_speed);
+                    writer.Close();
                 }
             }
             

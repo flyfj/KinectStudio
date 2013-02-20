@@ -399,7 +399,7 @@ namespace KinectMotionAnalyzer.Processors
                         //    joint.JointType == JointType.Spine ||
                         // selectively draw joint status
                         if (
-                            joint.JointType == JointType.ShoulderLeft)
+                            joint.JointType == JointType.ElbowRight)
                         {
                             FormattedText formattedText = new FormattedText(
                             cur_joint_status[joint.JointType].abs_speed.ToString("F2") + "m/s\n" +

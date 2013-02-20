@@ -33,7 +33,7 @@ namespace KinectMotionAnalyzer.Processors
     public class MotionAssessor
     {
         // sequence of joint status
-        private List<Dictionary<JointType, JointStatus>> jointStatusSeq = 
+        public List<Dictionary<JointType, JointStatus>> jointStatusSeq = 
             new List<Dictionary<JointType, JointStatus>>();
 
         // maximum number of frames to track
@@ -185,13 +185,14 @@ namespace KinectMotionAnalyzer.Processors
             }
 
             // add to sequence
-            if (jointStatusSeq.Count < MAX_TRACK_LEN)
-                jointStatusSeq.Add(cur_joint_status);
-            else
-            {
-                jointStatusSeq.RemoveAt(0);
-                jointStatusSeq.Add(cur_joint_status);
-            }
+            jointStatusSeq.Add(cur_joint_status);
+            //if (jointStatusSeq.Count < MAX_TRACK_LEN)
+            //    jointStatusSeq.Add(cur_joint_status);
+            //else
+            //{
+            //    jointStatusSeq.RemoveAt(0);
+            //    jointStatusSeq.Add(cur_joint_status);
+            //}
 
         }
 
