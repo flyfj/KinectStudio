@@ -1,7 +1,7 @@
 ﻿<Window x:Class="KinectMotionAnalyzer.GestureRecognizerWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="GestureRecognizerWindow" SizeToContent="Height" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" d:DesignWidth="1242" ResizeMode="NoResize" Closing="Window_Closing" Width="1269">
+        Title="GestureRecognizerWindow" SizeToContent="Height" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" d:DesignWidth="1242" ResizeMode="NoResize" Closing="Window_Closing" Width="1269" Loaded="Window_Loaded">
     <Grid>
         <GroupBox Header="Display" Height="461" HorizontalAlignment="Left" Margin="31,12,0,0" Name="groupBox3" VerticalAlignment="Top" Width="452" FontSize="16">
             <Grid>

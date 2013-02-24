@@ -73,10 +73,6 @@ namespace KinectMotionAnalyzer
             gesture_recognizer.LoadAllGestureConfig();
             UpdateGestureComboBox();
 
-            // init emgu cv
-            //videoWriter = new VideoWriter("test.avi", 15,
-            //    (int)groupBox3.Width, (int)groupBox3.Height, true);
-
         }
 
 
@@ -244,8 +240,8 @@ namespace KinectMotionAnalyzer
                     Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height);
                     using (Graphics g = Graphics.FromImage(bitmap))
                     {
-                        g.CopyFromScreen(new System.Drawing.Point(bounds.Left, bounds.Top), 
-                            new System.Drawing.Point(-1,-1), bounds.Size);
+                        g.CopyFromScreen(new System.Drawing.Point(bounds.Left, bounds.Top),
+                            new System.Drawing.Point(-1, -1), bounds.Size);
                     }
 
                     frame_rec_buffer.Add(bitmap);
@@ -597,26 +593,32 @@ namespace KinectMotionAnalyzer
                     kinect_data_manager.ifShowJointStatus = false;
 
                     // save recorded frame to disk
-                    //if (frame_rec_buffer != null)
-                    //{
-                    //    for (int i = 0; i < frame_rec_buffer.Count; i++)
-                    //    {
-                    //        string filename = "D:\\temp\\" + i.ToString() + ".jpeg";
-                    //        Bitmap bitmap = (frame_rec_buffer[i] as Bitmap);
-                    //        bitmap.Save(filename, System.Drawing.Imaging.ImageFormat.Jpeg);
-                    //    }
-                    //}
+                    if (frame_rec_buffer != null)
+                    {
+                        for (int i = 0; i < frame_rec_buffer.Count; i++)
+                        {
+                            string filename = "D:\\temp\\" + i.ToString() + ".jpeg";
+                            Bitmap bitmap = (frame_rec_buffer[i] as Bitmap);
+                            bitmap.Save(filename, System.Drawing.Imaging.ImageFormat.Jpeg);
+                        }
+                    }
 
                     // save tracked elbow speed
-                    FileStream file = File.Open("d:\\temp\\test.txt", FileMode.Create);
-                    StreamWriter writer = new StreamWriter(file);
-                    for (int i = 0; i < motion_assessor.jointStatusSeq.Count; i++)
-                        writer.WriteLine(motion_assessor.jointStatusSeq[i][JointType.HandRight].abs_speed);
-                    writer.Close();
+                    //FileStream file = File.Open("d:\\temp\\test.txt", FileMode.Create);
+                    //StreamWriter writer = new StreamWriter(file);
+                    //for (int i = 0; i < motion_assessor.jointStatusSeq.Count; i++)
+                    //    writer.WriteLine(motion_assessor.jointStatusSeq[i][JointType.HandRight].abs_speed);
+                    //writer.Close();
                 }
             }
             
-            
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            // init emgu cv
+            videoWriter = new VideoWriter("test.avi", 15,
+                (int)groupBox3.Width, (int)groupBox3.Height, true);
         } 
 
     }
