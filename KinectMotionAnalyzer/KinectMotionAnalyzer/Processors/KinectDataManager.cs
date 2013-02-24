@@ -20,6 +20,7 @@ namespace KinectMotionAnalyzer.Processors
 
     /// <summary>
     /// notifier class used to notify ui when data is updated
+    /// not useful anymore
     /// </summary>
     public abstract class Notifier: INotifyPropertyChanged
     {
@@ -46,7 +47,8 @@ namespace KinectMotionAnalyzer.Processors
 
 
     /// <summary>
-    /// used to fetch data and update UI
+    /// used to fetch data and update UI display image
+    /// visualization use
     /// </summary>
     public class KinectDataManager
     {

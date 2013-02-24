@@ -17,8 +17,6 @@ using System.Windows.Shapes;
 using Microsoft.Kinect;
 using Microsoft.Win32;
 using System.Diagnostics;
-using Emgu.CV;
-using Emgu.CV.Structure;
 
 
 namespace KinectMotionAnalyzer
@@ -52,7 +50,7 @@ namespace KinectMotionAnalyzer
         List<Skeleton> gesture_capture_data = new List<Skeleton>();
         Gesture temp_gesture = new Gesture();
         ArrayList frame_rec_buffer = new ArrayList(); // use to store record frames in memory
-        VideoWriter videoWriter;
+        //VideoWriter videoWriter;
 
 
         public GestureRecognizerWindow()
@@ -617,8 +615,8 @@ namespace KinectMotionAnalyzer
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // init emgu cv
-            videoWriter = new VideoWriter("test.avi", 15,
-                (int)groupBox3.Width, (int)groupBox3.Height, true);
+            //videoWriter = new VideoWriter("test.avi", 15,
+            //    (int)groupBox3.Width, (int)groupBox3.Height, true);
         } 
 
     }

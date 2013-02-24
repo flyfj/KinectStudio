@@ -17,7 +17,7 @@ namespace KinectMotionAnalyzer.Processors
     {
 
         /// <summary>
-        /// save skeleton data to xml file
+        /// save skeleton data to xml file; assume one skeleton for each frame
         /// </summary>
         /// <param name="filename"></param>
         /// <param name="data">skeleton from each time stamp</param>
@@ -28,7 +28,7 @@ namespace KinectMotionAnalyzer.Processors
             XmlDocument xmldoc = new XmlDocument();
             XmlDeclaration declar = xmldoc.CreateXmlDeclaration("1.0", null, null);
             xmldoc.AppendChild(declar);
-            // create root element
+            // create root element <Skeletons>
             XmlElement root = xmldoc.CreateElement("Skeletons");
             xmldoc.AppendChild(root);
 
@@ -37,7 +37,7 @@ namespace KinectMotionAnalyzer.Processors
             {
                 XmlElement frame_elem = xmldoc.CreateElement("Frame");
                 // good habit to add right after creation to prevent forgetting later
-                root.AppendChild(frame_elem);
+                root.AppendChild(frame_elem);   // <Frame Id=...>
 
                 frame_elem.SetAttribute("Id", i.ToString());
 
@@ -47,7 +47,7 @@ namespace KinectMotionAnalyzer.Processors
 
                 // create each skeleton
                 XmlElement skeleton_elem = xmldoc.CreateElement("Skeleton");
-                frame_elem.AppendChild(skeleton_elem);
+                frame_elem.AppendChild(skeleton_elem);  // <Skeleton>
 
                 skeleton_elem.SetAttribute("Id", ske.TrackingId.ToString());
                 skeleton_elem.SetAttribute("State", ske.TrackingState.ToString());

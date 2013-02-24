@@ -10,6 +10,9 @@ using System.Diagnostics;
 namespace KinectMotionAnalyzer.Processors
 {
 
+    /// <summary>
+    /// parameters associated with each joint at some time stamp
+    /// </summary>
     public class JointStatus 
     {
         public Point3D position;
@@ -30,6 +33,10 @@ namespace KinectMotionAnalyzer.Processors
         }
     }
 
+
+    /// <summary>
+    /// compute joint status given new skeleton at each frame
+    /// </summary>
     public class MotionAssessor
     {
         // sequence of joint status
@@ -39,19 +46,6 @@ namespace KinectMotionAnalyzer.Processors
         // maximum number of frames to track
         private int MAX_TRACK_LEN = 5;
 
-        /// <summary>
-        /// compute angle between vectors
-        /// </summary>
-        /// <returns>degree between 0 and 180</returns>
-        private double ComputeAngle(Point3D vec1, Point3D vec2)
-        {
-            double val = vec1.X * vec2.X + vec1.Y * vec2.Y + vec1.Z * vec2.Z;
-            double vec1_norm = Math.Sqrt(vec1.X * vec1.X + vec1.Y * vec1.Y + vec1.Z * vec1.Z);
-            double vec2_norm = Math.Sqrt(vec2.X * vec2.X + vec2.Y * vec2.Y + vec2.Z * vec2.Z);
-            double angle = Math.Acos(val / (vec1_norm * vec2_norm));
-
-            return angle * 180 / Math.PI;
-        }
 
         private double ComputeJointAngle(Skeleton ske, JointType type)
         {
@@ -62,7 +56,7 @@ namespace KinectMotionAnalyzer.Processors
             SkeletonPoint neighbor_joint_pos1 = new SkeletonPoint();
             SkeletonPoint neighbor_joint_pos2 = new SkeletonPoint();
             bool valid_joint = false;
-            switch (type)
+            switch (type)   // specify which nearby joints are used to compute angle for current joint
             {
                 case JointType.ElbowLeft:
                     neighbor_joint_pos1 = ske.Joints[JointType.WristLeft].Position;
@@ -110,7 +104,7 @@ namespace KinectMotionAnalyzer.Processors
                             neighbor_joint_pos2.Y - cur_joint_pos.Y,
                             neighbor_joint_pos2.Z - cur_joint_pos.Z);
 
-                return ComputeAngle(vec1, vec2);
+                return Tools.ComputeAngle(vec1, vec2);
             }
             else
                 return 0;
@@ -118,6 +112,11 @@ namespace KinectMotionAnalyzer.Processors
 
         }
 
+
+        /// <summary>
+        /// dummy test feedback
+        /// </summary>
+        /// <returns></returns>
         public string GetFeedbackForCurrentStatus()
         {
             // simple feedback test for back angle
@@ -134,6 +133,11 @@ namespace KinectMotionAnalyzer.Processors
             return res;
         }
 
+
+        /// <summary>
+        /// given current skeleton, update status for each joint
+        /// </summary>
+        /// <param name="ske"></param>
         public void UpdateJointStatus(Skeleton ske)
         {
             if (ske == null)
@@ -186,16 +190,13 @@ namespace KinectMotionAnalyzer.Processors
 
             // add to sequence
             jointStatusSeq.Add(cur_joint_status);
-            //if (jointStatusSeq.Count < MAX_TRACK_LEN)
-            //    jointStatusSeq.Add(cur_joint_status);
-            //else
-            //{
-            //    jointStatusSeq.RemoveAt(0);
-            //    jointStatusSeq.Add(cur_joint_status);
-            //}
 
         }
 
+
+        /// <summary>
+        /// getter
+        /// </summary>
         public Dictionary<JointType, JointStatus> GetCurrentJointStatus()
         {
             if (jointStatusSeq.Count > 0)
