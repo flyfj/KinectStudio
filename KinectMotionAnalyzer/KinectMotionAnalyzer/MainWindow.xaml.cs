@@ -86,7 +86,7 @@ namespace KinectMotionAnalyzer
                 // initialize all streams
                 kinect_sensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
                 kinect_sensor.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
-                kinect_sensor.SkeletonStream.Enable();
+                //kinect_sensor.SkeletonStream.Enable();
                 // can't use IR simultaneously with color!
                 //kinect_sensor.ColorStream.Enable(ColorImageFormat.InfraredResolution640x480Fps30);
 

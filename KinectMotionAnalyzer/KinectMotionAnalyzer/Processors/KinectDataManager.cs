@@ -13,6 +13,9 @@ using System.Windows.Media;
 using System.Windows;
 using Microsoft.Kinect;
 using System.Linq.Expressions;
+using Emgu.CV;
+using Emgu.Util;
+using Emgu.CV.Structure;
 
 
 namespace KinectMotionAnalyzer.Processors
@@ -166,9 +169,13 @@ namespace KinectMotionAnalyzer.Processors
 
             frame.CopyDepthImagePixelDataTo(depthPixels);
 
+
             // Get the min and max reliable depth for the current frame
             int minDepth = frame.MinDepth;
             int maxDepth = frame.MaxDepth;
+
+            Image<Gray, byte> cv_img =
+                new Image<Gray, byte>(frame.Width, frame.Height);
 
             // Convert the depth to RGB
             int colorPixelIndex = 0;
@@ -197,11 +204,15 @@ namespace KinectMotionAnalyzer.Processors
                 // Write out red byte                        
                 depthPixelData[colorPixelIndex++] = intensity;
 
+                cv_img[colorPixelIndex / frame.Height, colorPixelIndex / frame.Width] = new Gray(intensity);
+
                 // We're outputting BGR, the last byte in the 32 bits is unused so skip it
                 // If we were outputting BGRA, we would write alpha here.
                 ++colorPixelIndex;
             }
 
+            Image<Bgr, Byte> color_depth = new Image<Bgr, Byte>(frame.Width, frame.Height);
+            CvInvoke.cvCvtColor(cv_img, color_depth, Emgu.CV.CvEnum.COLOR_CONVERSION.CV_GRAY2BGR);
 
             if (DepthStreamBitmap == null)
             {
@@ -212,7 +223,9 @@ namespace KinectMotionAnalyzer.Processors
             // write to bitmap
             int stride = frame.Width * sizeof(int);
             Int32Rect drawRect = new Int32Rect(0, 0, frame.Width, frame.Height);
-            DepthStreamBitmap.WritePixels(drawRect, depthPixelData, stride, 0);
+            DepthStreamBitmap.WritePixels(drawRect, color_depth.Bytes, stride, 0);
+
+            
         }
 
         public void UpdateSkeletonData(SkeletonFrame frame, bool ifRecording = false)
