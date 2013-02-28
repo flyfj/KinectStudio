@@ -18,6 +18,7 @@ using Microsoft.Kinect;
 using Microsoft.Win32;
 using System.Diagnostics;
 using Emgu.CV;
+using Emgu.CV.Structure;
 using Emgu.Util;
 
 
@@ -81,6 +82,7 @@ namespace KinectMotionAnalyzer
         /// </summary>
         private bool InitKinect()
         {
+
             // enumerate and fetch an available sensor
             foreach (var potentialsensor in KinectSensor.KinectSensors)
             {
