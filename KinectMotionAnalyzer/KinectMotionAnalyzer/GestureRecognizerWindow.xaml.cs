@@ -59,21 +59,6 @@ namespace KinectMotionAnalyzer
         public GestureRecognizerWindow()
         {
             InitializeComponent();
-
-            if (!InitKinect())
-            {
-                statusbarLabel.Content = "Kinect not connected";
-                MessageBox.Show("Kinect not found.");
-            }
-            else
-                statusbarLabel.Content = "Kinect initialized";
-
-            DeactivateReplay();
-
-            // load gesture config and update ui
-            gesture_recognizer.LoadAllGestureConfig();
-            UpdateGestureComboBox();
-
         }
 
 
@@ -240,13 +225,17 @@ namespace KinectMotionAnalyzer
                         (int)(Application.Current.MainWindow.Top + groupBox3.Margin.Top),
                         width, height);
                     Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height);
+
                     using (Graphics g = Graphics.FromImage(bitmap))
                     {
                         g.CopyFromScreen(new System.Drawing.Point(bounds.Left, bounds.Top),
                             new System.Drawing.Point(-1, -1), bounds.Size);
                     }
 
-                    frame_rec_buffer.Add(bitmap);
+                    // write to video file
+                    Emgu.CV.Image<Bgr, byte> cvImg = new Emgu.CV.Image<Bgr, byte>(bitmap);
+                    if(videoWriter != null)
+                        videoWriter.WriteFrame<Bgr, byte>(cvImg);
                 }
             }
         }
@@ -594,16 +583,19 @@ namespace KinectMotionAnalyzer
                     isStreaming = false;
                     kinect_data_manager.ifShowJointStatus = false;
 
-                    // save recorded frame to disk
-                    if (frame_rec_buffer != null)
-                    {
-                        for (int i = 0; i < frame_rec_buffer.Count; i++)
-                        {
-                            string filename = "D:\\temp\\" + i.ToString() + ".jpeg";
-                            Bitmap bitmap = (frame_rec_buffer[i] as Bitmap);
-                            bitmap.Save(filename, System.Drawing.Imaging.ImageFormat.Jpeg);
-                        }
-                    }
+                    if (videoWriter != null)
+                        videoWriter.Dispose();
+
+                    //// save recorded frame to disk
+                    //if (frame_rec_buffer != null)
+                    //{
+                    //    for (int i = 0; i < frame_rec_buffer.Count; i++)
+                    //    {
+                    //        string filename = "D:\\temp\\" + i.ToString() + ".jpeg";
+                    //        Bitmap bitmap = (frame_rec_buffer[i] as Bitmap);
+                    //        bitmap.Save(filename, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    //    }
+                    //}
 
                     // save tracked elbow speed
                     //FileStream file = File.Open("d:\\temp\\test.txt", FileMode.Create);
@@ -618,9 +610,30 @@ namespace KinectMotionAnalyzer
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            // init emgu cv
-            //videoWriter = new VideoWriter("test.avi", 15,
-            //    (int)groupBox3.Width, (int)groupBox3.Height, true);
+            // do initialization here
+            if (!InitKinect())
+            {
+                statusbarLabel.Content = "Kinect not connected";
+                MessageBox.Show("Kinect not found.");
+            }
+            else
+                statusbarLabel.Content = "Kinect initialized";
+
+            DeactivateReplay();
+
+            // load gesture config and update ui
+            gesture_recognizer.LoadAllGestureConfig();
+            UpdateGestureComboBox();
+            
+            // init video writer
+            int width = (int)groupBox3.Width + 20;
+            int height = (int)groupBox3.Height + 20;
+            // init video writer
+            if (videoWriter == null)
+            {
+                videoWriter = new VideoWriter("test.avi", CvInvoke.CV_FOURCC('M', 'J', 'P', 'G'), 15,
+                    width, height, true);
+            }
         } 
 
     }
