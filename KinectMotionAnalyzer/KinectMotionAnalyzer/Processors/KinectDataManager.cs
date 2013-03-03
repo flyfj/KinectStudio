@@ -130,7 +130,6 @@ namespace KinectMotionAnalyzer.Processors
         }
 
 
-
 #region visualization_functions
 
         public void UpdateColorData(ColorImageFrame frame)
@@ -414,9 +413,17 @@ namespace KinectMotionAnalyzer.Processors
                         if (
                             joint.JointType == JointType.ElbowRight)
                         {
+                            //FormattedText formattedText = new FormattedText(
+                            //cur_joint_status[joint.JointType].abs_speed.ToString("F2") + "m/s\n" +
+                            //cur_joint_status[joint.JointType].angle.ToString("F2") + "°",
+                            //CultureInfo.GetCultureInfo("en-us"),
+                            //FlowDirection.LeftToRight,
+                            //new Typeface("Verdana"),
+                            //20,
+                            //Brushes.Yellow);
+
                             FormattedText formattedText = new FormattedText(
-                            cur_joint_status[joint.JointType].abs_speed.ToString("F2") + "m/s\n" +
-                            cur_joint_status[joint.JointType].angle.ToString("F2") + "°",
+                            cur_joint_status[joint.JointType].axisAngles[JointType.WristRight][AxisName.YAsix].ToString("F2") + "°",
                             CultureInfo.GetCultureInfo("en-us"),
                             FlowDirection.LeftToRight,
                             new Typeface("Verdana"),

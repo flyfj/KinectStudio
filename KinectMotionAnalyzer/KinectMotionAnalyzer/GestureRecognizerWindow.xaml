@@ -18,7 +18,7 @@
         <Button Content="Set End" Height="34" HorizontalAlignment="Left" Margin="261,547,0,0" Name="replay_setEndBtn" VerticalAlignment="Top" Width="92" FontSize="14" Click="replay_setEndBtn_Click" />
         <Label BorderThickness="1" Content="0" FontSize="13" FontStretch="Normal" Height="32" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="362,549,0,0" Name="replay_endLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="68" />
         <Label BorderThickness="1" Content="0" FontSize="13" FontStretch="Normal" Height="32" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="179,549,0,0" Name="replay_startLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="65" />
-        <Button Content="Preview Stream" FontSize="15" Height="40" HorizontalAlignment="Left" Margin="600,62,0,0" Name="previewBtn" VerticalAlignment="Top" Width="182" Click="previewBtn_Click" />
+        <Button Content="Preview Stream" FontSize="15" Height="40" HorizontalAlignment="Left" Margin="525,62,0,0" Name="previewBtn" VerticalAlignment="Top" Width="182" Click="previewBtn_Click" />
         <GroupBox Header="Gesture Management" Height="316" HorizontalAlignment="Left" Margin="513,232,0,0" Name="groupBox1" VerticalAlignment="Top" Width="342" FontSize="16">
             <Grid>
                 <ComboBox Height="34" HorizontalAlignment="Left" Margin="41,22,0,0" Name="gestureComboBox" VerticalAlignment="Top" Width="222" Text="" SnapsToDevicePixels="True" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15">
@@ -44,6 +44,7 @@
                 <Label Content="Matching Distance" Height="46" HorizontalAlignment="Left" Margin="23,263,0,0" Name="recDistLabel" VerticalAlignment="Top" Width="158" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" Grid.Column="1" />
             </Grid>
         </GroupBox>
-        <TextBlock Height="60" HorizontalAlignment="Left" Margin="519,139,0,0" Name="feedback_textblock" Text="User Feedback" VerticalAlignment="Top" Width="330" TextWrapping="Wrap" TextAlignment="Center" FontSize="16" />
+        <TextBlock Height="60" HorizontalAlignment="Left" Margin="525,146,0,0" Name="feedback_textblock" Text="User Feedback" VerticalAlignment="Top" Width="330" TextWrapping="Wrap" TextAlignment="Center" FontSize="16" />
+        <CheckBox Content="Save video" Height="27" HorizontalAlignment="Left" Margin="737,68,0,0" Name="saveVideoCheckBox" VerticalAlignment="Top" Width="112" FontSize="16" />
     </Grid>
 </Window>

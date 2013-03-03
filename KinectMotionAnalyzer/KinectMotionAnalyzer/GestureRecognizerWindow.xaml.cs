@@ -35,7 +35,6 @@ namespace KinectMotionAnalyzer
     {
         // tools
         private KinectDataManager kinect_data_manager;
-        private KinectDataManager replay_data_manager;
         private KinectSensor kinect_sensor;
         private MotionAssessor motion_assessor = new MotionAssessor();
 
@@ -47,13 +46,13 @@ namespace KinectMotionAnalyzer
         bool isReplay = false;
         bool isRecognition = false;
         bool isStreaming = false;
+        bool ifDoSmoothing = true;
         
         // record params
         private int frame_id = 0;
         List<Skeleton> gesture_capture_data = new List<Skeleton>();
         Gesture temp_gesture = new Gesture();
         ArrayList frame_rec_buffer = new ArrayList(); // use to store record frames in memory
-        VideoWriter videoWriter;
 
 
         public GestureRecognizerWindow()
@@ -87,7 +86,45 @@ namespace KinectMotionAnalyzer
 
                 // initialize stream
                 kinect_sensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
-                kinect_sensor.SkeletonStream.Enable();
+                if (ifDoSmoothing)
+                {
+                    TransformSmoothParameters smoothingParam = new TransformSmoothParameters();
+                    {
+                        // Some smoothing with little latency (defaults).
+                        // Only filters out small jitters.
+                        // Good for gesture recognition in games.
+                        smoothingParam.Smoothing = 0.5f;
+                        smoothingParam.Correction = 0.5f;
+                        smoothingParam.Prediction = 0.5f;
+                        smoothingParam.JitterRadius = 0.05f;
+                        smoothingParam.MaxDeviationRadius = 0.04f;
+
+                        // Smoothed with some latency.
+                        // Filters out medium jitters.
+                        // Good for a menu system that needs to be smooth but
+                        // doesn't need the reduced latency as much as gesture recognition does.
+                        //smoothingParam.Smoothing = 0.5f;
+                        //smoothingParam.Correction = 0.1f;
+                        //smoothingParam.Prediction = 0.5f;
+                        //smoothingParam.JitterRadius = 0.1f;
+                        //smoothingParam.MaxDeviationRadius = 0.1f;
+
+                        //// Very smooth, but with a lot of latency.
+                        //// Filters out large jitters.
+                        //// Good for situations where smooth data is absolutely required
+                        //// and latency is not an issue.
+                        //smoothingParam.Smoothing = 0.7f;
+                        //smoothingParam.Correction = 0.3f;
+                        //smoothingParam.Prediction = 1.0f;
+                        //smoothingParam.JitterRadius = 1.0f;
+                        //smoothingParam.MaxDeviationRadius = 1.0f;
+                    };
+
+                    kinect_sensor.SkeletonStream.Enable(smoothingParam);
+                }
+                else
+                    kinect_sensor.SkeletonStream.Enable();
+
 
                 // set source (must after source has been initialized otherwise it's null forever)
                 kinect_data_manager.ColorStreamBitmap = new WriteableBitmap(
@@ -210,12 +247,12 @@ namespace KinectMotionAnalyzer
                     kinect_data_manager.cur_joint_status = motion_assessor.GetCurrentJointStatus();
 
                     // show feedback
-                    feedback_textblock.Text = motion_assessor.GetFeedbackForCurrentStatus();
+                    //feedback_textblock.Text = motion_assessor.GetFeedbackForCurrentStatus();
                 }
 
-                kinect_data_manager.UpdateSkeletonData(skeletons);
+                kinect_data_manager.UpdateSkeletonData(tracked_skeleton);
 
-                if(isStreaming)
+                if (saveVideoCheckBox.IsChecked.Value)
                 {
                     // write screen shot of display into video file
                     int width = (int)groupBox3.Width + 20;
@@ -232,10 +269,7 @@ namespace KinectMotionAnalyzer
                             new System.Drawing.Point(-1, -1), bounds.Size);
                     }
 
-                    // write to video file
-                    Emgu.CV.Image<Bgr, byte> cvImg = new Emgu.CV.Image<Bgr, byte>(bitmap);
-                    if(videoWriter != null)
-                        videoWriter.WriteFrame<Bgr, byte>(cvImg);
+                    frame_rec_buffer.Add(bitmap);
                 }
             }
         }
@@ -583,19 +617,29 @@ namespace KinectMotionAnalyzer
                     isStreaming = false;
                     kinect_data_manager.ifShowJointStatus = false;
 
-                    if (videoWriter != null)
-                        videoWriter.Dispose();
+                    // save recorded frame to disk
+                    if (frame_rec_buffer != null)
+                    {
+                        // create video writer
+                        int fwidth = (int)groupBox3.Width + 20;
+                        int fheight = (int)groupBox3.Height + 20;
+                        VideoWriter videoWriter = 
+                            new VideoWriter("test.avi", CvInvoke.CV_FOURCC('M', 'J', 'P', 'G'), 15,
+                                fwidth, fheight, true);
 
-                    //// save recorded frame to disk
-                    //if (frame_rec_buffer != null)
-                    //{
-                    //    for (int i = 0; i < frame_rec_buffer.Count; i++)
-                    //    {
-                    //        string filename = "D:\\temp\\" + i.ToString() + ".jpeg";
-                    //        Bitmap bitmap = (frame_rec_buffer[i] as Bitmap);
-                    //        bitmap.Save(filename, System.Drawing.Imaging.ImageFormat.Jpeg);
-                    //    }
-                    //}
+                        for (int i = 0; i < frame_rec_buffer.Count; i++)
+                        {
+                            // write to video file
+                            Emgu.CV.Image<Bgr, byte> cvImg = 
+                                new Emgu.CV.Image<Bgr, byte>(frame_rec_buffer[i] as Bitmap);
+
+                            videoWriter.WriteFrame<Bgr, byte>(cvImg);
+                        }
+
+                        videoWriter.Dispose();
+                    }
+
+                    frame_rec_buffer.Clear();
 
                     // save tracked elbow speed
                     //FileStream file = File.Open("d:\\temp\\test.txt", FileMode.Create);
@@ -624,16 +668,6 @@ namespace KinectMotionAnalyzer
             // load gesture config and update ui
             gesture_recognizer.LoadAllGestureConfig();
             UpdateGestureComboBox();
-            
-            // init video writer
-            int width = (int)groupBox3.Width + 20;
-            int height = (int)groupBox3.Height + 20;
-            // init video writer
-            if (videoWriter == null)
-            {
-                videoWriter = new VideoWriter("test.avi", CvInvoke.CV_FOURCC('M', 'J', 'P', 'G'), 15,
-                    width, height, true);
-            }
         } 
 
     }
