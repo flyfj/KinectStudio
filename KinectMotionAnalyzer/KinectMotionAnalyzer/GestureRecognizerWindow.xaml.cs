@@ -594,13 +594,13 @@ namespace KinectMotionAnalyzer
                     gestureCaptureBtn.IsEnabled = false;
                     gestureRecognitionBtn.IsEnabled = false;
                     gestureReplayBtn.IsEnabled = false;
-                    previewBtn.Content = "Stop Stream";
+                    previewBtn.Content = "Stop Stream"; 
+                    isStreaming = true;
+                    kinect_data_manager.ifShowJointStatus = true;
 
                     frame_rec_buffer.Clear();
 
-                    kinect_sensor.Start();
-                    isStreaming = true;
-                    kinect_data_manager.ifShowJointStatus = true;
+                    kinect_sensor.Start();  
                 }
             }
             else
@@ -618,25 +618,41 @@ namespace KinectMotionAnalyzer
                     kinect_data_manager.ifShowJointStatus = false;
 
                     // save recorded frame to disk
-                    if (frame_rec_buffer != null)
+                    if (frame_rec_buffer != null && saveVideoCheckBox.IsChecked.Value)
                     {
                         // create video writer
                         int fwidth = (int)groupBox3.Width + 20;
                         int fheight = (int)groupBox3.Height + 20;
-                        VideoWriter videoWriter = 
-                            new VideoWriter("test.avi", CvInvoke.CV_FOURCC('M', 'J', 'P', 'G'), 15,
+
+                        SaveFileDialog saveDialog = new SaveFileDialog();
+                        saveDialog.Filter = "avi files (*.avi)|*.avi";
+                        saveDialog.FilterIndex = 2;
+                        saveDialog.RestoreDirectory = true;
+                        saveDialog.ShowDialog();
+
+                        if (saveDialog.FileName != null)
+                        {
+                            string videofile = saveDialog.FileName.ToString();
+                            VideoWriter videoWriter = new VideoWriter(videofile, CvInvoke.CV_FOURCC('M', 'J', 'P', 'G'), 15,
                                 fwidth, fheight, true);
 
-                        for (int i = 0; i < frame_rec_buffer.Count; i++)
-                        {
-                            // write to video file
-                            Emgu.CV.Image<Bgr, byte> cvImg = 
-                                new Emgu.CV.Image<Bgr, byte>(frame_rec_buffer[i] as Bitmap);
+                            if (videoWriter == null)
+                                MessageBox.Show("Fail to save video. Check if codec has been installed.");
+                            else
+                            {
+                                for (int i = 0; i < frame_rec_buffer.Count; i++)
+                                {
+                                    // write to video file
+                                    Emgu.CV.Image<Bgr, byte> cvImg =
+                                        new Emgu.CV.Image<Bgr, byte>(frame_rec_buffer[i] as Bitmap);
 
-                            videoWriter.WriteFrame<Bgr, byte>(cvImg);
+                                    videoWriter.WriteFrame<Bgr, byte>(cvImg);
+                                }
+
+                                videoWriter.Dispose();
+                            }
                         }
 
-                        videoWriter.Dispose();
                     }
 
                     frame_rec_buffer.Clear();
