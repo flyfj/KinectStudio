@@ -507,7 +507,6 @@ namespace KinectMotionAnalyzer.UI
 
                     gestureCaptureBtn.IsEnabled = true;
                     gestureReplayBtn.IsEnabled = true;
-                    previewBtn.Content = "Preview Stream";
 
                     isStreaming = false;
                     kinect_data_manager.ifShowJointStatus = false;
@@ -515,6 +514,8 @@ namespace KinectMotionAnalyzer.UI
                     // save recorded frame to disk
                     if (frame_rec_buffer != null && saveVideoCheckBox.IsChecked.Value)
                     {
+                        statusbarLabel.Content = "Saving video...";
+
                         // create video writer
                         int fwidth = (int)groupBox3.Width + 20;
                         int fheight = (int)groupBox3.Height + 20;
@@ -545,12 +546,16 @@ namespace KinectMotionAnalyzer.UI
                                 }
 
                                 videoWriter.Dispose();
+
+                                statusbarLabel.Content = "Video saved to " + videofile;
                             }
                         }
 
                     }
 
                     frame_rec_buffer.Clear();
+
+                    previewBtn.Content = "Preview Stream";
 
                     // save tracked elbow speed
                     //FileStream file = File.Open("d:\\temp\\test.txt", FileMode.Create);
