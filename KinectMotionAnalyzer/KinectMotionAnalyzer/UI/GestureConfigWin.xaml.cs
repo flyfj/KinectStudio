@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Microsoft.Kinect;
 
-namespace KinectMotionAnalyzer
+namespace KinectMotionAnalyzer.UI
 {
     using KinectMotionAnalyzer.Processors;
 

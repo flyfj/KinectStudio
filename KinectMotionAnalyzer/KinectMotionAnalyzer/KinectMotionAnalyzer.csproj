@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{C4F6EF01-B07D-4466-AC6F-6B92582855F5}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>KinectMotionAnalyzer</RootNamespace>
     <AssemblyName>KinectMotionAnalyzer</AssemblyName>
@@ -57,7 +57,7 @@
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject />
+    <StartupObject>KinectMotionAnalyzer.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Emgu.CV">
@@ -94,32 +94,26 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="GestureConfigWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="GestureRecognizerWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="GestureConfigWin.xaml.cs">
-      <DependentUpon>GestureConfigWin.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Processors\GestureRecognizer.cs" />
-    <Compile Include="GestureRecognizerWindow.xaml.cs">
-      <DependentUpon>GestureRecognizerWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Processors\KinectRecorder.cs" />
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="UI\GestureConfigWin.xaml.cs">
+      <DependentUpon>GestureConfigWin.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UI\GestureRecognizerWindow.xaml.cs">
+      <DependentUpon>GestureRecognizerWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UI\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UI\MotionAnalyzerWindow.xaml.cs">
+      <DependentUpon>MotionAnalyzerWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -145,7 +139,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
-    <None Include="ClassDiagram2.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -154,6 +147,24 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\kinect_skeleton.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="UI\GestureConfigWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\GestureRecognizerWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\MotionAnalyzerWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

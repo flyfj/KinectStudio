@@ -22,7 +22,7 @@ using Emgu.CV.Structure;
 using Emgu.Util;
 
 
-namespace KinectMotionAnalyzer
+namespace KinectMotionAnalyzer.UI
 { 
     
     using KinectMotionAnalyzer.Processors;

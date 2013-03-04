@@ -17,7 +17,7 @@ using Microsoft.Win32;
 using Microsoft.Kinect;
 
 
-namespace KinectMotionAnalyzer
+namespace KinectMotionAnalyzer.UI
 {
     using KinectMotionAnalyzer.Processors;
 

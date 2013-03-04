@@ -1,7 +1,6 @@
-﻿<Window x:Class="KinectMotionAnalyzer.MainWindow"
+﻿<Window x:Class="KinectMotionAnalyzer.UI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:local="clr-namespace:KinectMotionAnalyzer.Processors"
         Title="KinectPreview" Height="674" Width="1224" Closing="Window_Closing">
     <Grid ShowGridLines="False" Height="598" Width="1185">
         <Grid.ColumnDefinitions>

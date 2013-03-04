@@ -1,4 +1,4 @@
-﻿<Window x:Class="KinectMotionAnalyzer.GestureConfigWin"
+﻿<Window x:Class="KinectMotionAnalyzer.UI.GestureConfigWin"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Add New Gesture" Height="691" Width="567" ResizeMode="NoResize">
