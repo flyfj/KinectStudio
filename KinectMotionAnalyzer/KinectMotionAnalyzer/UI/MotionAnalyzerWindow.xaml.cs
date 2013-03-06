@@ -51,7 +51,8 @@ namespace KinectMotionAnalyzer.UI
         private int frame_id = 0;
         List<Skeleton> gesture_capture_data = new List<Skeleton>();
         Gesture temp_gesture = new Gesture();
-        ArrayList frame_rec_buffer = new ArrayList(); // use to store record frames in memory
+        ArrayList overlap_frame_rec_buffer = new ArrayList(); // use to store record frames in memory
+        ArrayList color_frame_rec_buffer = new ArrayList();
 
 
         public MotionAnalyzerWindow()
@@ -157,6 +158,9 @@ namespace KinectMotionAnalyzer.UI
                     return;
 
                 kinect_data_manager.UpdateColorData(frame);
+
+                if (saveVideoCheckBox.IsChecked.Value)
+                    color_frame_rec_buffer.Add(kinect_data_manager.ColorStreamBitmap);
             }
         }
 
@@ -207,22 +211,25 @@ namespace KinectMotionAnalyzer.UI
 
                 if (saveVideoCheckBox.IsChecked.Value)
                 {
-                    // write screen shot of display into video file
-                    int width = (int)groupBox3.Width + 20;
-                    int height = (int)groupBox3.Height + 20;
-                    System.Drawing.Rectangle bounds = new System.Drawing.Rectangle(
-                        (int)(Application.Current.MainWindow.Left + groupBox3.Margin.Left),
-                        (int)(Application.Current.MainWindow.Top + groupBox3.Margin.Top),
-                        width, height);
-                    Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height);
+                    // save skeleton data
+                    //gesture_capture_data.Add(tracked_skeleton);
 
-                    using (Graphics g = Graphics.FromImage(bitmap))
-                    {
-                        g.CopyFromScreen(new System.Drawing.Point(bounds.Left, bounds.Top),
-                            new System.Drawing.Point(-1, -1), bounds.Size);
-                    }
+                    //// write screen shot of display into video file
+                    //int width = (int)groupBox3.Width + 20;
+                    //int height = (int)groupBox3.Height + 20;
+                    //System.Drawing.Rectangle bounds = new System.Drawing.Rectangle(
+                    //    (int)(Application.Current.MainWindow.Left + groupBox3.Margin.Left),
+                    //    (int)(Application.Current.MainWindow.Top + groupBox3.Margin.Top),
+                    //    width, height);
+                    //Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height);
 
-                    frame_rec_buffer.Add(bitmap);
+                    //using (Graphics g = Graphics.FromImage(bitmap))
+                    //{
+                    //    g.CopyFromScreen(new System.Drawing.Point(bounds.Left, bounds.Top),
+                    //        new System.Drawing.Point(-1, -1), bounds.Size);
+                    //}
+
+                    //overlap_frame_rec_buffer.Add(bitmap);
                 }
             }
         }
@@ -284,8 +291,11 @@ namespace KinectMotionAnalyzer.UI
             string time = System.DateTime.Now.ToString("hh'-'mm'-'ss", CultureInfo.CurrentUICulture.DateTimeFormat);
 
             string gesture_name = (gestureComboBox.SelectedItem as ComboBoxItem).Content.ToString();
-            string myPhotos = "D:"; //Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-            string skeletonpath = myPhotos + "\\gdata\\" + gesture_name + "\\Kinect_skeleton_" + time + ".xml";
+            string savedir = "C:\\gdata\\"; //Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+            if(!Directory.Exists(savedir))
+                Directory.CreateDirectory(savedir);
+
+            string skeletonpath = savedir + gesture_name + "\\Kinect_skeleton_" + time + ".xml";
 
             // save data from start label to end label
             int start_id = int.Parse(replay_startLabel.Content.ToString());
@@ -494,7 +504,7 @@ namespace KinectMotionAnalyzer.UI
                     isStreaming = true;
                     kinect_data_manager.ifShowJointStatus = true;
 
-                    frame_rec_buffer.Clear();
+                    overlap_frame_rec_buffer.Clear();
 
                     kinect_sensor.Start();
                 }
@@ -511,8 +521,8 @@ namespace KinectMotionAnalyzer.UI
                     isStreaming = false;
                     kinect_data_manager.ifShowJointStatus = false;
 
-                    // save recorded frame to disk
-                    if (frame_rec_buffer != null && saveVideoCheckBox.IsChecked.Value)
+                    // save recorded frame to disk and save skeleton data
+                    if (overlap_frame_rec_buffer.Count > 0 && gesture_capture_data.Count > 0 && saveVideoCheckBox.IsChecked.Value)
                     {
                         statusbarLabel.Content = "Saving video...";
 
@@ -532,15 +542,16 @@ namespace KinectMotionAnalyzer.UI
                             VideoWriter videoWriter = new VideoWriter(videofile, CvInvoke.CV_FOURCC('M', 'J', 'P', 'G'), 15,
                                 fwidth, fheight, true);
 
+                            // save video
                             if (videoWriter == null)
                                 MessageBox.Show("Fail to save video. Check if codec has been installed.");
                             else
                             {
-                                for (int i = 0; i < frame_rec_buffer.Count; i++)
+                                for (int i = 0; i < overlap_frame_rec_buffer.Count; i++)
                                 {
                                     // write to video file
                                     Emgu.CV.Image<Bgr, byte> cvImg =
-                                        new Emgu.CV.Image<Bgr, byte>(frame_rec_buffer[i] as Bitmap);
+                                        new Emgu.CV.Image<Bgr, byte>(overlap_frame_rec_buffer[i] as Bitmap);
 
                                     videoWriter.WriteFrame<Bgr, byte>(cvImg);
                                 }
@@ -549,11 +560,16 @@ namespace KinectMotionAnalyzer.UI
 
                                 statusbarLabel.Content = "Video saved to " + videofile;
                             }
+
+                            // save skeleton
+                            string skeletonpath = videofile + ".xml";
+                            KinectRecorder.WriteToSkeletonFile(skeletonpath, gesture_capture_data);
                         }
 
                     }
 
-                    frame_rec_buffer.Clear();
+                    gesture_capture_data.Clear();
+                    overlap_frame_rec_buffer.Clear();
 
                     previewBtn.Content = "Preview Stream";
 
