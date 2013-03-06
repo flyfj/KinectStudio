@@ -118,6 +118,14 @@ namespace KinectMotionAnalyzer.Processors
                     valid_joint = true;
                     break;
 
+                case JointType.HipCenter:
+                    neighbor_joint_pos1 = ske.Joints[JointType.HipRight].Position;
+                    neighbor_jointtype1 = JointType.HipRight;
+                    neighbor_joint_pos2 = ske.Joints[JointType.ShoulderCenter].Position;
+                    neighbor_jointtype2 = JointType.ShoulderCenter;
+                    valid_joint = true;
+                    break;
+
                 case JointType.Spine:
                     neighbor_joint_pos1 = ske.Joints[JointType.ShoulderCenter].Position;
                     neighbor_jointtype1 = JointType.ShoulderCenter;

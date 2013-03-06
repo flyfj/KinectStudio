@@ -91,7 +91,7 @@ namespace KinectMotionAnalyzer.Processors
         private const float RenderWidth = 640.0f;
         private const float RenderHeight = 480.0f;
 
-        private const double JointThickness = 3;
+        private const double JointThickness = 2;
         private const double BodyCenterThickness = 10;
         private const double ClipBoundsThickness = 10;
 
@@ -99,7 +99,7 @@ namespace KinectMotionAnalyzer.Processors
         private readonly Brush trackedJointBrush = new SolidColorBrush(Color.FromArgb(255, 68, 192, 68));
         private readonly Brush inferredJointBrush = Brushes.Yellow;
 
-        private readonly Pen trackedBonePen = new Pen(Brushes.Green, 6);
+        private readonly Pen trackedBonePen = new Pen(Brushes.Green, 3);
         private readonly Pen inferredBonePen = new Pen(Brushes.Gray, 1);
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace KinectMotionAnalyzer.Processors
             Int32Rect drawRect = new Int32Rect(0, 0, ColorStreamBitmap.PixelWidth, ColorStreamBitmap.PixelHeight);
             ColorStreamBitmap.WritePixels(drawRect, colorPixelData, stride, 0);
 
-            ColorBitmap = new System.Drawing.Bitmap(frame.Width, frame.Height, stride, System.Drawing.Imaging.PixelFormat.Format32bppRgb, colorPixelData);
+            //ColorBitmap = new System.Drawing.Bitmap(frame.Width, frame.Height, stride, System.Drawing.Imaging.PixelFormat.Format32bppRgb, colorPixelData);
         }
 
         public void UpdateDepthData(DepthImageFrame frame)
@@ -379,9 +379,9 @@ namespace KinectMotionAnalyzer.Processors
             this.DrawBone(skeleton, drawingContext, JointType.AnkleLeft, JointType.FootLeft);
 
             // Right Leg
-            this.DrawBone(skeleton, drawingContext, JointType.HipRight, JointType.KneeRight);
-            this.DrawBone(skeleton, drawingContext, JointType.KneeRight, JointType.AnkleRight);
-            this.DrawBone(skeleton, drawingContext, JointType.AnkleRight, JointType.FootRight);
+            //this.DrawBone(skeleton, drawingContext, JointType.HipRight, JointType.KneeRight);
+            //this.DrawBone(skeleton, drawingContext, JointType.KneeRight, JointType.AnkleRight);
+            //this.DrawBone(skeleton, drawingContext, JointType.AnkleRight, JointType.FootRight);
 
             // Render Joints
             foreach (Joint joint in skeleton.Joints)
@@ -414,7 +414,8 @@ namespace KinectMotionAnalyzer.Processors
                         //    joint.JointType == JointType.Spine ||
                         // selectively draw joint status
                         if (
-                            joint.JointType == JointType.ElbowRight)
+                            joint.JointType == JointType.HipCenter)
+            
                         {
                             //FormattedText formattedText = new FormattedText(
                             //cur_joint_status[joint.JointType].abs_speed.ToString("F2") + "m/s\n" +
@@ -426,7 +427,7 @@ namespace KinectMotionAnalyzer.Processors
                             //Brushes.Yellow);
 
                             FormattedText formattedText = new FormattedText(
-                            cur_joint_status[joint.JointType].axisAngles[JointType.WristRight][AxisName.YAsix].ToString("F2") + "°",
+                            cur_joint_status[joint.JointType].planeAngles[JointType.ShoulderCenter][PlaneName.XZPlane].ToString("F2") + "° \n",
                             CultureInfo.GetCultureInfo("en-us"),
                             FlowDirection.LeftToRight,
                             new Typeface("Verdana"),
@@ -435,6 +436,35 @@ namespace KinectMotionAnalyzer.Processors
 
                             drawingContext.DrawText(formattedText, joint2DPos);
                         }
+
+                        if(joint.JointType == JointType.KneeLeft)
+                        {
+                            FormattedText formattedText = new FormattedText(
+                            cur_joint_status[joint.JointType].planeAngles[JointType.HipLeft][PlaneName.XZPlane].ToString("F2") + "° \n" 
+                            + cur_joint_status[joint.JointType].angle.ToString("F2") + "°",
+                            CultureInfo.GetCultureInfo("en-us"),
+                            FlowDirection.LeftToRight,
+                            new Typeface("Verdana"),
+                            20,
+                            Brushes.Yellow);
+
+                            drawingContext.DrawText(formattedText, joint2DPos);
+                        }
+
+                        //if (joint.JointType == JointType.KneeRight)
+                        //{
+                        //    FormattedText formattedText = new FormattedText(
+                        //    cur_joint_status[joint.JointType].planeAngles[JointType.HipRight][PlaneName.XZPlane].ToString("F2") + "°\n"
+                        //    + cur_joint_status[joint.JointType].angle.ToString("F2") + "°",
+                        //    CultureInfo.GetCultureInfo("en-us"),
+                        //    FlowDirection.LeftToRight,
+                        //    new Typeface("Verdana"),
+                        //    20,
+                        //    Brushes.Yellow);
+
+                        //    drawingContext.DrawText(formattedText, joint2DPos);
+                        //}
+
                     }
                 }
             }

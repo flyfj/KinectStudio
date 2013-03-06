@@ -158,9 +158,6 @@ namespace KinectMotionAnalyzer.UI
                     return;
 
                 kinect_data_manager.UpdateColorData(frame);
-                
-                
-                
             }
         }
 
@@ -212,24 +209,24 @@ namespace KinectMotionAnalyzer.UI
                 if (saveVideoCheckBox.IsChecked.Value)
                 {
                     // save skeleton data
-                    //gesture_capture_data.Add(tracked_skeleton);
+                    gesture_capture_data.Add(tracked_skeleton);
 
-                    //// write screen shot of display into video file
-                    //int width = (int)groupBox3.Width + 20;
-                    //int height = (int)groupBox3.Height + 20;
-                    //System.Drawing.Rectangle bounds = new System.Drawing.Rectangle(
-                    //    (int)(Application.Current.MainWindow.Left + groupBox3.Margin.Left),
-                    //    (int)(Application.Current.MainWindow.Top + groupBox3.Margin.Top),
-                    //    width, height);
-                    //Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height);
+                    // write screen shot of display into video file
+                    int width = (int)groupBox3.Width + 20;
+                    int height = (int)groupBox3.Height + 20;
+                    System.Drawing.Rectangle bounds = new System.Drawing.Rectangle(
+                        (int)(Application.Current.MainWindow.Left + groupBox3.Margin.Left),
+                        (int)(Application.Current.MainWindow.Top + groupBox3.Margin.Top),
+                        width, height);
+                    Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height);
 
-                    //using (Graphics g = Graphics.FromImage(bitmap))
-                    //{
-                    //    g.CopyFromScreen(new System.Drawing.Point(bounds.Left, bounds.Top),
-                    //        new System.Drawing.Point(-1, -1), bounds.Size);
-                    //}
+                    using (Graphics g = Graphics.FromImage(bitmap))
+                    {
+                        g.CopyFromScreen(new System.Drawing.Point(bounds.Left, bounds.Top),
+                            new System.Drawing.Point(-1, -1), bounds.Size);
+                    }
 
-                    //overlap_frame_rec_buffer.Add(bitmap);
+                    overlap_frame_rec_buffer.Add(bitmap);
                 }
             }
         }
@@ -522,7 +519,7 @@ namespace KinectMotionAnalyzer.UI
                     kinect_data_manager.ifShowJointStatus = false;
 
                     // save recorded frame to disk and save skeleton data
-                    if (overlap_frame_rec_buffer.Count > 0 && gesture_capture_data.Count > 0 && saveVideoCheckBox.IsChecked.Value)
+                    if (overlap_frame_rec_buffer!=null && gesture_capture_data!=null && saveVideoCheckBox.IsChecked.Value)
                     {
                         statusbarLabel.Content = "Saving video...";
 
@@ -553,7 +550,6 @@ namespace KinectMotionAnalyzer.UI
                                     Emgu.CV.Image<Bgr, byte> cvImg =
                                         new Emgu.CV.Image<Bgr, byte>(overlap_frame_rec_buffer[i] as Bitmap);
 
-                                    
                                     videoWriter.WriteFrame<Bgr, byte>(cvImg);
                                 }
 
