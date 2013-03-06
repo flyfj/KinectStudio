@@ -158,9 +158,9 @@ namespace KinectMotionAnalyzer.UI
                     return;
 
                 kinect_data_manager.UpdateColorData(frame);
-
-                if (saveVideoCheckBox.IsChecked.Value)
-                    color_frame_rec_buffer.Add(kinect_data_manager.ColorStreamBitmap);
+                
+                
+                
             }
         }
 
@@ -553,6 +553,7 @@ namespace KinectMotionAnalyzer.UI
                                     Emgu.CV.Image<Bgr, byte> cvImg =
                                         new Emgu.CV.Image<Bgr, byte>(overlap_frame_rec_buffer[i] as Bitmap);
 
+                                    
                                     videoWriter.WriteFrame<Bgr, byte>(cvImg);
                                 }
 
