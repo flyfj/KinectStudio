@@ -531,9 +531,8 @@ namespace KinectMotionAnalyzer.UI
                         saveDialog.Filter = "avi files (*.avi)|*.avi";
                         saveDialog.FilterIndex = 2;
                         saveDialog.RestoreDirectory = true;
-                        saveDialog.ShowDialog();
 
-                        if (saveDialog.FileName != null)
+                        if (saveDialog.ShowDialog().Value)
                         {
                             string videofile = saveDialog.FileName.ToString();
                             VideoWriter videoWriter = new VideoWriter(videofile, CvInvoke.CV_FOURCC('M', 'J', 'P', 'G'), 15,
@@ -562,7 +561,6 @@ namespace KinectMotionAnalyzer.UI
                             string skeletonpath = videofile + ".xml";
                             KinectRecorder.WriteToSkeletonFile(skeletonpath, gesture_capture_data);
                         }
-
                     }
 
                     gesture_capture_data.Clear();

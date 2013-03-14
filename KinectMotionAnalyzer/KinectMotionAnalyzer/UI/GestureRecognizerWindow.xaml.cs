@@ -620,8 +620,6 @@ namespace KinectMotionAnalyzer.UI
                     // save recorded frame to disk
                     if (frame_rec_buffer != null && saveVideoCheckBox.IsChecked.Value)
                     {
-                        statusbarLabel.Content = "Saving video...";
-
                         // create video writer
                         int fwidth = (int)groupBox3.Width + 20;
                         int fheight = (int)groupBox3.Height + 20;
@@ -630,10 +628,11 @@ namespace KinectMotionAnalyzer.UI
                         saveDialog.Filter = "avi files (*.avi)|*.avi";
                         saveDialog.FilterIndex = 2;
                         saveDialog.RestoreDirectory = true;
-                        saveDialog.ShowDialog();
 
-                        if (saveDialog.FileName != null)
+                        if (saveDialog.ShowDialog().Value)
                         {
+                            statusbarLabel.Content = "Saving video...";
+
                             string videofile = saveDialog.FileName.ToString();
                             VideoWriter videoWriter = new VideoWriter(videofile, CvInvoke.CV_FOURCC('M', 'J', 'P', 'G'), 15,
                                 fwidth, fheight, true);
