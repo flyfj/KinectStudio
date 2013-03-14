@@ -69,7 +69,7 @@ namespace KinectMotionAnalyzer.Processors
     class GestureRecognizer
     {
 
-        private string GESTURE_DATABASE_DIR = "D:\\gdata\\";
+        private string GESTURE_DATABASE_DIR = "gdata\\";
 
         // dynamically generate
         public Dictionary<int, string> GESTURE_LIST = new Dictionary<int, string>();

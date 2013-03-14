@@ -35,11 +35,11 @@ namespace KinectMotionAnalyzer.UI
         // tools
         private KinectDataManager kinect_data_manager;
         private KinectSensor kinect_sensor;
-        private MotionAssessor motion_assessor = new MotionAssessor();
+        private MotionAssessor motion_assessor = null;
 
         // recognition
-        private GestureRecognizer gesture_recognizer = new GestureRecognizer();
-        private string GESTURE_DATABASE_DIR = "D:\\gdata\\";
+        private GestureRecognizer gesture_recognizer = null;
+        private string GESTURE_DATABASE_DIR = "gdata\\";
 
         // sign
         bool isReplay = false;
@@ -66,7 +66,6 @@ namespace KinectMotionAnalyzer.UI
         /// </summary>
         private bool InitKinect()
         {
-
             // enumerate and fetch an available sensor
             foreach (var potentialsensor in KinectSensor.KinectSensors)
             {
@@ -581,6 +580,7 @@ namespace KinectMotionAnalyzer.UI
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            
             // do initialization here
             if (!InitKinect())
             {
@@ -591,6 +591,9 @@ namespace KinectMotionAnalyzer.UI
                 statusbarLabel.Content = "Kinect initialized";
 
             DeactivateReplay();
+
+            gesture_recognizer = new GestureRecognizer();
+            motion_assessor = new MotionAssessor();
 
             // load gesture config and update ui
             gesture_recognizer.LoadAllGestureConfig();
