@@ -54,6 +54,9 @@ namespace KinectMotionAnalyzer.UI
         ArrayList overlap_frame_rec_buffer = new ArrayList(); // use to store record frames in memory
         ArrayList color_frame_rec_buffer = new ArrayList();
 
+        // motion analysis params
+        private List<MeasurementUnit> toMeasureUnits;
+
 
         public MotionAnalyzerWindow()
         {
@@ -198,6 +201,7 @@ namespace KinectMotionAnalyzer.UI
                     // update status
                     motion_assessor.UpdateJointStatus(tracked_skeleton);
                     kinect_data_manager.cur_joint_status = motion_assessor.GetCurrentJointStatus();
+                    kinect_data_manager.toMeasureUnits = this.toMeasureUnits;
 
                     // show feedback
                     //feedback_textblock.Text = motion_assessor.GetFeedbackForCurrentStatus();
@@ -580,8 +584,12 @@ namespace KinectMotionAnalyzer.UI
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            
             // do initialization here
+            gesture_recognizer = new GestureRecognizer();
+            motion_assessor = new MotionAssessor();
+            toMeasureUnits = new List<MeasurementUnit>();
+
+            // init kinect
             if (!InitKinect())
             {
                 statusbarLabel.Content = "Kinect not connected";
@@ -592,12 +600,19 @@ namespace KinectMotionAnalyzer.UI
 
             DeactivateReplay();
 
-            gesture_recognizer = new GestureRecognizer();
-            motion_assessor = new MotionAssessor();
-
             // load gesture config and update ui
             gesture_recognizer.LoadAllGestureConfig();
             UpdateGestureComboBox();
+        }
+
+        private void measureConfigBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MeasurementConfigWin measureConfigWin = new MeasurementConfigWin();
+            //measureConfigWin.measureUnits = this.toMeasureUnits;    // restore previously selected ones
+            
+            if (measureConfigWin.ShowDialog().Value == true)
+                toMeasureUnits = measureConfigWin.measureUnits;
+            
         }
 
     }

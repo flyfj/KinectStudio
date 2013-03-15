@@ -32,28 +32,6 @@ namespace KinectMotionAnalyzer.UI
         public GestureConfigWin()
         {
             InitializeComponent();
-
-            // add all checkbox to collection
-            joint_checkbox_collection.Add(head_checkbox);
-            joint_checkbox_collection.Add(shoulder_center_checkbox);
-            joint_checkbox_collection.Add(shoulder_left_checkbox);
-            joint_checkbox_collection.Add(shoulder_right_checkbox);
-            joint_checkbox_collection.Add(hand_left_checkbox);
-            joint_checkbox_collection.Add(hand_right_checkbox);
-            joint_checkbox_collection.Add(wrist_left_checkbox);
-            joint_checkbox_collection.Add(wrist_right_checkbox);
-            joint_checkbox_collection.Add(elbow_left_checkbox);
-            joint_checkbox_collection.Add(elbow_right_checkbox);
-            joint_checkbox_collection.Add(spine_checkbox);
-            joint_checkbox_collection.Add(hip_center_checkbox);
-            joint_checkbox_collection.Add(hip_left_checkbox);
-            joint_checkbox_collection.Add(hip_right_checkbox);
-            joint_checkbox_collection.Add(knee_left_checkbox);
-            joint_checkbox_collection.Add(knee_right_checkbox);
-            joint_checkbox_collection.Add(ankle_left_checkbox);
-            joint_checkbox_collection.Add(ankle_right_checkbox);
-            joint_checkbox_collection.Add(foot_left_checkbox);
-            joint_checkbox_collection.Add(foot_right_checkbox);
         }
 
         private void select_all_btn_Click(object sender, RoutedEventArgs e)
@@ -97,6 +75,30 @@ namespace KinectMotionAnalyzer.UI
             this.DialogResult = true;
         }
 
+        private void Window_Loaded_1(object sender, RoutedEventArgs e)
+        {
+            // add all checkbox to collection
+            joint_checkbox_collection.Add(head_checkbox);
+            joint_checkbox_collection.Add(shoulder_center_checkbox);
+            joint_checkbox_collection.Add(shoulder_left_checkbox);
+            joint_checkbox_collection.Add(shoulder_right_checkbox);
+            joint_checkbox_collection.Add(hand_left_checkbox);
+            joint_checkbox_collection.Add(hand_right_checkbox);
+            joint_checkbox_collection.Add(wrist_left_checkbox);
+            joint_checkbox_collection.Add(wrist_right_checkbox);
+            joint_checkbox_collection.Add(elbow_left_checkbox);
+            joint_checkbox_collection.Add(elbow_right_checkbox);
+            joint_checkbox_collection.Add(spine_checkbox);
+            joint_checkbox_collection.Add(hip_center_checkbox);
+            joint_checkbox_collection.Add(hip_left_checkbox);
+            joint_checkbox_collection.Add(hip_right_checkbox);
+            joint_checkbox_collection.Add(knee_left_checkbox);
+            joint_checkbox_collection.Add(knee_right_checkbox);
+            joint_checkbox_collection.Add(ankle_left_checkbox);
+            joint_checkbox_collection.Add(ankle_right_checkbox);
+            joint_checkbox_collection.Add(foot_left_checkbox);
+            joint_checkbox_collection.Add(foot_right_checkbox);
+        }
         
     }
 }

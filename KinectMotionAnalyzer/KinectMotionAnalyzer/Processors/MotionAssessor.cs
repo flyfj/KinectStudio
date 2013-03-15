@@ -24,6 +24,25 @@ namespace KinectMotionAnalyzer.Processors
         YZPlane
     }
 
+    public class MeasurementUnit
+    {
+        public bool ifSingleJoint;
+        
+        // joint angle
+        public JointType singleJoint;  
+
+        // bone plane angle
+        public JointType boneJoint1;
+        public JointType boneJoint2;
+        public PlaneName plane;
+
+        public MeasurementUnit()
+        {
+            ifSingleJoint = true;
+            singleJoint = JointType.ElbowRight;
+        }
+    }
+
     /// <summary>
     /// parameters associated with each joint at some time stamp
     /// </summary>
@@ -192,7 +211,7 @@ namespace KinectMotionAnalyzer.Processors
                 Point3D xzplane1 = new Point3D(vec1.X, 0, vec1.Z);
                 status.planeAngles[neighbor_jointtype1][PlaneName.XZPlane] = Tools.ComputeAngle(vec1, xzplane1);
                 Point3D xzplane2 = new Point3D(vec2.X, 0, vec2.Z);
-                status.planeAngles[neighbor_jointtype1][PlaneName.XZPlane] = Tools.ComputeAngle(vec2, xzplane2);
+                status.planeAngles[neighbor_jointtype2][PlaneName.XZPlane] = Tools.ComputeAngle(vec2, xzplane2);
 
             }
             else

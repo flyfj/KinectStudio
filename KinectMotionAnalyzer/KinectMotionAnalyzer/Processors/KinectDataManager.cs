@@ -81,8 +81,9 @@ namespace KinectMotionAnalyzer.Processors
         public Skeleton[] skeletons;
 
         // current joint status dictionary
-        public Dictionary<JointType, JointStatus> cur_joint_status;
+        public Dictionary<JointType, JointStatus> cur_joint_status = null;
         public bool ifShowJointStatus = false;
+        public List<MeasurementUnit> toMeasureUnits = null;
 
 
         /// <summary>
@@ -379,9 +380,9 @@ namespace KinectMotionAnalyzer.Processors
             this.DrawBone(skeleton, drawingContext, JointType.AnkleLeft, JointType.FootLeft);
 
             // Right Leg
-            //this.DrawBone(skeleton, drawingContext, JointType.HipRight, JointType.KneeRight);
-            //this.DrawBone(skeleton, drawingContext, JointType.KneeRight, JointType.AnkleRight);
-            //this.DrawBone(skeleton, drawingContext, JointType.AnkleRight, JointType.FootRight);
+            this.DrawBone(skeleton, drawingContext, JointType.HipRight, JointType.KneeRight);
+            this.DrawBone(skeleton, drawingContext, JointType.KneeRight, JointType.AnkleRight);
+            this.DrawBone(skeleton, drawingContext, JointType.AnkleRight, JointType.FootRight);
 
             // Render Joints
             foreach (Joint joint in skeleton.Joints)
@@ -403,71 +404,65 @@ namespace KinectMotionAnalyzer.Processors
                     drawingContext.DrawEllipse(
                         drawBrush, null, joint2DPos, 
                         JointThickness, JointThickness);
+                }
+            }
 
-                    // draw status
-                    if (ifShowJointStatus && cur_joint_status != null)
+            // display measurement results
+            if (toMeasureUnits != null && ifShowJointStatus && cur_joint_status != null)
+            {
+                foreach (MeasurementUnit unit in toMeasureUnits)
+                {
+                    if (unit.ifSingleJoint)
                     {
-                        //joint.JointType == JointType.ElbowLeft ||
-                        //    joint.JointType == JointType.ElbowRight ||
-                        //    joint.JointType == JointType.KneeLeft ||
-                        //    joint.JointType == JointType.KneeRight ||
-                        //    joint.JointType == JointType.Spine ||
-                        // selectively draw joint status
-                        if (
-                            joint.JointType == JointType.HipCenter)
-            
+                        // draw status for only joint
+                        if (cur_joint_status.ContainsKey(unit.singleJoint))
                         {
-                            //FormattedText formattedText = new FormattedText(
-                            //cur_joint_status[joint.JointType].abs_speed.ToString("F2") + "m/s\n" +
-                            //cur_joint_status[joint.JointType].angle.ToString("F2") + "°",
-                            //CultureInfo.GetCultureInfo("en-us"),
-                            //FlowDirection.LeftToRight,
-                            //new Typeface("Verdana"),
-                            //20,
-                            //Brushes.Yellow);
-
                             FormattedText formattedText = new FormattedText(
-                            cur_joint_status[joint.JointType].planeAngles[JointType.ShoulderCenter][PlaneName.XZPlane].ToString("F2") + "° \n",
+                                cur_joint_status[unit.singleJoint].angle.ToString("F2") + "°",
+                                CultureInfo.GetCultureInfo("en-us"),
+                                FlowDirection.LeftToRight,
+                                new Typeface("Verdana"),
+                                20,
+                                Brushes.Yellow);
+
+                            Point joint2DPos = SkeletonPointToScreen(skeleton.Joints[unit.singleJoint].Position);
+                            drawingContext.DrawText(formattedText, joint2DPos);
+                        }
+                    }
+                    else
+                    {
+                        // show bone plane angle
+                        if (cur_joint_status[unit.boneJoint1].planeAngles.ContainsKey(unit.boneJoint2))
+                        {
+                            FormattedText formattedText = new FormattedText(
+                                cur_joint_status[unit.boneJoint1].planeAngles[unit.boneJoint2][unit.plane].ToString("F2") + "°",
+                                CultureInfo.GetCultureInfo("en-us"),
+                                FlowDirection.LeftToRight,
+                                new Typeface("Verdana"),
+                                20,
+                                Brushes.Yellow);
+
+                            Point joint2DPos = SkeletonPointToScreen(skeleton.Joints[unit.boneJoint1].Position);
+                            drawingContext.DrawText(formattedText, joint2DPos);
+                        }
+                        else if (cur_joint_status[unit.boneJoint2].planeAngles.ContainsKey(unit.boneJoint1))
+                        {
+                            FormattedText formattedText = new FormattedText(
+                            cur_joint_status[unit.boneJoint2].planeAngles[unit.boneJoint1][unit.plane].ToString("F2") + "°",
                             CultureInfo.GetCultureInfo("en-us"),
                             FlowDirection.LeftToRight,
                             new Typeface("Verdana"),
                             20,
                             Brushes.Yellow);
 
+                            Point joint2DPos = SkeletonPointToScreen(skeleton.Joints[unit.boneJoint2].Position);
                             drawingContext.DrawText(formattedText, joint2DPos);
                         }
-
-                        if(joint.JointType == JointType.KneeLeft)
-                        {
-                            FormattedText formattedText = new FormattedText(
-                            cur_joint_status[joint.JointType].planeAngles[JointType.HipLeft][PlaneName.XZPlane].ToString("F2") + "° \n" 
-                            + cur_joint_status[joint.JointType].angle.ToString("F2") + "°",
-                            CultureInfo.GetCultureInfo("en-us"),
-                            FlowDirection.LeftToRight,
-                            new Typeface("Verdana"),
-                            20,
-                            Brushes.Yellow);
-
-                            drawingContext.DrawText(formattedText, joint2DPos);
-                        }
-
-                        //if (joint.JointType == JointType.KneeRight)
-                        //{
-                        //    FormattedText formattedText = new FormattedText(
-                        //    cur_joint_status[joint.JointType].planeAngles[JointType.HipRight][PlaneName.XZPlane].ToString("F2") + "°\n"
-                        //    + cur_joint_status[joint.JointType].angle.ToString("F2") + "°",
-                        //    CultureInfo.GetCultureInfo("en-us"),
-                        //    FlowDirection.LeftToRight,
-                        //    new Typeface("Verdana"),
-                        //    20,
-                        //    Brushes.Yellow);
-
-                        //    drawingContext.DrawText(formattedText, joint2DPos);
-                        //}
-
+                        
                     }
                 }
             }
+
         }
 
         /// <summary>
