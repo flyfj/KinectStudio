@@ -199,7 +199,7 @@ namespace KinectMotionAnalyzer.UI
                 if (kinect_data_manager.ifShowJointStatus)
                 {
                     // update status
-                    motion_assessor.UpdateJointStatus(tracked_skeleton);
+                    motion_assessor.UpdateJointStatus(tracked_skeleton, toMeasureUnits);
                     kinect_data_manager.cur_joint_status = motion_assessor.GetCurrentJointStatus();
                     kinect_data_manager.toMeasureUnits = this.toMeasureUnits;
 

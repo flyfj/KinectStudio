@@ -80,82 +80,73 @@ namespace KinectMotionAnalyzer.Processors
         public List<Dictionary<JointType, JointStatus>> jointStatusSeq = 
             new List<Dictionary<JointType, JointStatus>>();
 
+        private Dictionary<JointType, List<JointType>> jointNeighbors = 
+            new Dictionary<JointType, List<JointType>>();
+
         // maximum number of frames to track
         private int MAX_TRACK_LEN = 5;
 
+        public MotionAssessor()
+        {
+            // add default joint neighbors
+            foreach (JointType joint in Enum.GetValues(typeof(JointType)))
+            {
+                List<JointType> neighborJoints = new List<JointType>();
 
-        private void ComputeJointAngles(Skeleton ske, JointType type, ref JointStatus status)
+                if (joint == JointType.ElbowLeft)
+                { 
+                    neighborJoints.Add(JointType.WristLeft);
+                    neighborJoints.Add(JointType.ShoulderLeft);
+                }
+                if (joint == JointType.ElbowRight)
+                {
+                    neighborJoints.Add(JointType.WristRight);
+                    neighborJoints.Add(JointType.ShoulderRight);
+                }
+                if (joint == JointType.KneeLeft)
+                {
+                    neighborJoints.Add(JointType.HipLeft);
+                    neighborJoints.Add(JointType.AnkleLeft);
+                }
+                if (joint == JointType.KneeRight)
+                {
+                    neighborJoints.Add(JointType.HipRight);
+                    neighborJoints.Add(JointType.AnkleRight);
+                }
+                if (joint == JointType.ShoulderLeft)
+                {
+                    neighborJoints.Add(JointType.HipLeft);
+                    neighborJoints.Add(JointType.ElbowLeft);
+                }
+                if (joint == JointType.HipCenter)
+                {
+                    neighborJoints.Add(JointType.HipRight);
+                    neighborJoints.Add(JointType.ShoulderCenter);
+                }
+                if (joint == JointType.Spine)
+                {
+                    neighborJoints.Add(JointType.ShoulderCenter);
+                    neighborJoints.Add(JointType.HipCenter);
+                }
+
+                jointNeighbors.Add(joint, neighborJoints);
+            }
+        }
+
+        // compute all angles associated with input joint (must have two neighbors)
+        private void ComputeJointAllAngles(Skeleton ske, JointType type, ref JointStatus status)
         {
             if (ske == null)
                 return;
 
-            SkeletonPoint cur_joint_pos = ske.Joints[type].Position;
-            SkeletonPoint neighbor_joint_pos1 = new SkeletonPoint();
-            SkeletonPoint neighbor_joint_pos2 = new SkeletonPoint();
-            JointType neighbor_jointtype1 = new JointType();
-            JointType neighbor_jointtype2 = new JointType();
-            bool valid_joint = false;
-            switch (type)   // specify which nearby joints are used to compute angle for current joint
+            if (jointNeighbors.ContainsKey(type) && jointNeighbors[type].Count == 2)
             {
-                case JointType.ElbowLeft:
-                    neighbor_joint_pos1 = ske.Joints[JointType.WristLeft].Position;
-                    neighbor_jointtype1 = JointType.WristLeft;
-                    neighbor_joint_pos2 = ske.Joints[JointType.ShoulderLeft].Position;
-                    neighbor_jointtype2 = JointType.ShoulderLeft;
-                    valid_joint = true;
-                    break;
+                SkeletonPoint cur_joint_pos = ske.Joints[type].Position;
+                JointType neighbor_jointtype1 = jointNeighbors[type][0];
+                JointType neighbor_jointtype2 = jointNeighbors[type][1];
+                SkeletonPoint neighbor_joint_pos1 = ske.Joints[neighbor_jointtype1].Position;
+                SkeletonPoint neighbor_joint_pos2 = ske.Joints[neighbor_jointtype2].Position;
 
-                case JointType.ElbowRight:
-                    neighbor_joint_pos1 = ske.Joints[JointType.WristRight].Position;
-                    neighbor_jointtype1 = JointType.WristRight;
-                    neighbor_joint_pos2 = ske.Joints[JointType.ShoulderRight].Position;
-                    neighbor_jointtype2 = JointType.ShoulderRight;
-                    valid_joint = true;
-                    break;
-
-                case JointType.KneeLeft:
-                    neighbor_joint_pos1 = ske.Joints[JointType.HipLeft].Position;
-                    neighbor_jointtype1 = JointType.HipLeft;
-                    neighbor_joint_pos2 = ske.Joints[JointType.AnkleLeft].Position;
-                    neighbor_jointtype2 = JointType.AnkleLeft;
-                    valid_joint = true;
-                    break;
-
-                case JointType.KneeRight:
-                    neighbor_joint_pos1 = ske.Joints[JointType.HipRight].Position;
-                    neighbor_jointtype1 = JointType.HipRight;
-                    neighbor_joint_pos2 = ske.Joints[JointType.AnkleRight].Position;
-                    neighbor_jointtype2 = JointType.AnkleRight;
-                    valid_joint = true;
-                    break;
-
-                case JointType.ShoulderLeft:
-                    neighbor_joint_pos1 = ske.Joints[JointType.HipLeft].Position;
-                    neighbor_jointtype1 = JointType.HipLeft;
-                    neighbor_joint_pos2 = ske.Joints[JointType.ElbowLeft].Position;
-                    neighbor_jointtype2 = JointType.ElbowLeft;
-                    valid_joint = true;
-                    break;
-
-                case JointType.HipCenter:
-                    neighbor_joint_pos1 = ske.Joints[JointType.HipRight].Position;
-                    neighbor_jointtype1 = JointType.HipRight;
-                    neighbor_joint_pos2 = ske.Joints[JointType.ShoulderCenter].Position;
-                    neighbor_jointtype2 = JointType.ShoulderCenter;
-                    valid_joint = true;
-                    break;
-
-                case JointType.Spine:
-                    neighbor_joint_pos1 = ske.Joints[JointType.ShoulderCenter].Position;
-                    neighbor_jointtype1 = JointType.ShoulderCenter;
-                    neighbor_joint_pos2 = ske.Joints[JointType.HipCenter].Position;
-                    neighbor_jointtype2 = JointType.HipCenter;
-                    valid_joint = true;
-                    break;
-            }
-
-            if (valid_joint)
-            {
                 // compute bone-bone angle
                 Point3D vec1 = new Point3D(neighbor_joint_pos1.X - cur_joint_pos.X,
                         neighbor_joint_pos1.Y - cur_joint_pos.Y,
@@ -172,7 +163,7 @@ namespace KinectMotionAnalyzer.Processors
                 axis_temp.Add(AxisName.XAxis, 0);
                 axis_temp.Add(AxisName.YAsix, 0);
                 axis_temp.Add(AxisName.ZAsix, 0);
-                if(!status.axisAngles.ContainsKey(neighbor_jointtype1))
+                if (!status.axisAngles.ContainsKey(neighbor_jointtype1))
                     status.axisAngles.Add(neighbor_jointtype1, axis_temp);
                 if (!status.axisAngles.ContainsKey(neighbor_jointtype2))
                     status.axisAngles.Add(neighbor_jointtype2, axis_temp);
@@ -198,7 +189,7 @@ namespace KinectMotionAnalyzer.Processors
                 Point3D zaxis = new Point3D(0, 0, 1);
                 status.axisAngles[neighbor_jointtype1][AxisName.ZAsix] = Tools.ComputeAngle(vec1, zaxis);
                 status.axisAngles[neighbor_jointtype2][AxisName.ZAsix] = Tools.ComputeAngle(vec2, zaxis);
-                
+
                 // compute plane angle
                 Point3D xyplane1 = new Point3D(vec1.X, vec1.Y, 0);  // projection of vec1 to xy plane
                 status.planeAngles[neighbor_jointtype1][PlaneName.XYPlane] = Tools.ComputeAngle(vec1, xyplane1);
@@ -215,11 +206,67 @@ namespace KinectMotionAnalyzer.Processors
 
             }
             else
-                status.angle = 0;
-            
+                status.angle = -1;
 
         }
 
+        // compute angle in measure unit
+        private void ComputeJointAngle(Skeleton ske, MeasurementUnit unit, ref JointStatus status)
+        {
+            if (ske == null)
+                return;
+
+            if (unit.ifSingleJoint)
+            {
+                // compute bone-bone angle centered in single joint
+                if (jointNeighbors.ContainsKey(unit.singleJoint) &&
+                    jointNeighbors[unit.singleJoint].Count == 2)
+                {
+                    SkeletonPoint cur_joint_pos = ske.Joints[unit.singleJoint].Position;
+                    JointType neighbor_jointtype1 = jointNeighbors[unit.singleJoint][0];
+                    JointType neighbor_jointtype2 = jointNeighbors[unit.singleJoint][1];
+                    SkeletonPoint neighbor_joint_pos1 = ske.Joints[neighbor_jointtype1].Position;
+                    SkeletonPoint neighbor_joint_pos2 = ske.Joints[neighbor_jointtype2].Position;
+
+                    // compute bone-bone angle
+                    Point3D vec1 = new Point3D(neighbor_joint_pos1.X - cur_joint_pos.X,
+                            neighbor_joint_pos1.Y - cur_joint_pos.Y,
+                            neighbor_joint_pos1.Z - cur_joint_pos.Z);
+                    Point3D vec2 = new Point3D(neighbor_joint_pos2.X - cur_joint_pos.X,
+                                neighbor_joint_pos2.Y - cur_joint_pos.Y,
+                                neighbor_joint_pos2.Z - cur_joint_pos.Z);
+
+                    status.angle = Tools.ComputeAngle(vec1, vec2);
+                }
+            }
+            else
+            {
+                // compute bone angle
+                SkeletonPoint cur_joint_pos = ske.Joints[unit.boneJoint1].Position;
+                SkeletonPoint neighbor_joint_pos1 = ske.Joints[unit.boneJoint2].Position;
+
+                if (!status.planeAngles.ContainsKey(unit.boneJoint2))
+                {
+                    Dictionary<PlaneName, double> plane_temp = new Dictionary<PlaneName, double>();
+                    plane_temp.Add(PlaneName.XYPlane, 0);
+                    plane_temp.Add(PlaneName.YZPlane, 0);
+                    plane_temp.Add(PlaneName.XZPlane, 0);
+                    status.planeAngles.Add(unit.boneJoint2, plane_temp);
+                }
+
+                Point3D vec1 = new Point3D(neighbor_joint_pos1.X - cur_joint_pos.X,
+                        neighbor_joint_pos1.Y - cur_joint_pos.Y,
+                        neighbor_joint_pos1.Z - cur_joint_pos.Z);
+
+                Point3D xyplane1 = new Point3D(vec1.X, vec1.Y, 0);  // projection of vec1 to xy plane
+                status.planeAngles[unit.boneJoint2][PlaneName.XYPlane] = Tools.ComputeAngle(vec1, xyplane1);
+                Point3D yzplane1 = new Point3D(0, vec1.Y, vec1.Z);
+                status.planeAngles[unit.boneJoint2][PlaneName.YZPlane] = Tools.ComputeAngle(vec1, yzplane1);
+                Point3D xzplane1 = new Point3D(vec1.X, 0, vec1.Z);
+                status.planeAngles[unit.boneJoint2][PlaneName.XZPlane] = Tools.ComputeAngle(vec1, xzplane1);
+            }
+
+        }
 
         /// <summary>
         /// dummy test feedback
@@ -246,11 +293,11 @@ namespace KinectMotionAnalyzer.Processors
         /// given current skeleton, update status for each joint
         /// </summary>
         /// <param name="ske"></param>
-        public void UpdateJointStatus(Skeleton ske)
+        public void UpdateJointStatus(Skeleton ske, List<MeasurementUnit> toMeasureUnits)
         {
             if (ske == null)
             {
-                // gradually remove buffer
+                // gradually remove buffer to track latest skeleton only
                 if (jointStatusSeq.Count > 0)
                     jointStatusSeq.RemoveAt(0);
 
@@ -263,38 +310,95 @@ namespace KinectMotionAnalyzer.Processors
                 return;
             }
 
-            // extract information for each joint
+            // extract information for specified joint
             Dictionary<JointType, JointStatus> cur_joint_status = new Dictionary<JointType, JointStatus>();
-            foreach (Joint joint in ske.Joints)
+            foreach (MeasurementUnit unit in toMeasureUnits)
             {
-                JointStatus stat = new JointStatus();
+                JointStatus stat = null;
 
-                // position
-                stat.position.X = joint.Position.X;
-                stat.position.Y = joint.Position.Y;
-                stat.position.Z = joint.Position.Z;
-
-                // angle
-                ComputeJointAngles(ske, joint.JointType, ref stat);
-
-                // compute speed using last frame data
-                if(jointStatusSeq.Count > 0)
+                if (unit.ifSingleJoint)
                 {
-                    stat.speed.X = stat.position.X - 
-                        jointStatusSeq[jointStatusSeq.Count - 1][joint.JointType].position.X;
-                    stat.speed.Y = stat.position.Y -
-                        jointStatusSeq[jointStatusSeq.Count - 1][joint.JointType].position.Y;
-                    stat.speed.Z = stat.position.Z -
-                        jointStatusSeq[jointStatusSeq.Count - 1][joint.JointType].position.Z;
+                    if (cur_joint_status.ContainsKey(unit.singleJoint))
+                        stat = cur_joint_status[unit.singleJoint];
+                    else
+                        stat = new JointStatus();
 
-                    stat.abs_speed = 30 * Math.Sqrt(Math.Pow(stat.speed.X, 2) +
-                        Math.Pow(stat.speed.Y, 2) + Math.Pow(stat.speed.Z, 2));
+                    // position
+                    stat.position.X = ske.Joints[unit.singleJoint].Position.X;
+                    stat.position.Y = ske.Joints[unit.singleJoint].Position.Y;
+                    stat.position.Z = ske.Joints[unit.singleJoint].Position.Z;
+
+                    // angle
+                    ComputeJointAngle(ske, unit, ref stat);
+
+                    // speed
+                    if (jointStatusSeq.Count > 0 &&
+                        jointStatusSeq[jointStatusSeq.Count - 1].ContainsKey(unit.singleJoint))
+                    {
+                        stat.speed.X = stat.position.X -
+                        jointStatusSeq[jointStatusSeq.Count - 1][unit.singleJoint].position.X;
+                        stat.speed.Y = stat.position.Y -
+                            jointStatusSeq[jointStatusSeq.Count - 1][unit.singleJoint].position.Y;
+                        stat.speed.Z = stat.position.Z -
+                            jointStatusSeq[jointStatusSeq.Count - 1][unit.singleJoint].position.Z;
+
+                        stat.abs_speed = 30 * Math.Sqrt(Math.Pow(stat.speed.X, 2) +
+                            Math.Pow(stat.speed.Y, 2) + Math.Pow(stat.speed.Z, 2));
+                    }
+
+                    // add to dict
+                    cur_joint_status.Add(unit.singleJoint, stat);
                 }
+                else
+                {
+                    // centered at bonejoint1
+                    if (cur_joint_status.ContainsKey(unit.boneJoint1))
+                        stat = cur_joint_status[unit.boneJoint1];
+                    else
+                        stat = new JointStatus();
 
-                // add to dict
-                cur_joint_status.Add(joint.JointType, stat);
+                    // position
+                    stat.position.X = ske.Joints[unit.boneJoint1].Position.X;
+                    stat.position.Y = ske.Joints[unit.boneJoint1].Position.Y;
+                    stat.position.Z = ske.Joints[unit.boneJoint1].Position.Z;
 
+                    // angle
+                    ComputeJointAngle(ske, unit, ref stat);
+
+                    // add to dict
+                    cur_joint_status.Add(unit.boneJoint1, stat);
+                }
             }
+
+            //foreach (Joint joint in ske.Joints)
+            //{
+            //    JointStatus stat = new JointStatus();
+
+            //    // position
+            //    stat.position.X = joint.Position.X;
+            //    stat.position.Y = joint.Position.Y;
+            //    stat.position.Z = joint.Position.Z;
+
+            //    // angle
+            //    ComputeJointAllAngles(ske, joint.JointType, ref stat);
+
+            //    // compute speed using last frame data
+            //    if(jointStatusSeq.Count > 0)
+            //    {
+            //        stat.speed.X = stat.position.X - 
+            //            jointStatusSeq[jointStatusSeq.Count - 1][joint.JointType].position.X;
+            //        stat.speed.Y = stat.position.Y -
+            //            jointStatusSeq[jointStatusSeq.Count - 1][joint.JointType].position.Y;
+            //        stat.speed.Z = stat.position.Z -
+            //            jointStatusSeq[jointStatusSeq.Count - 1][joint.JointType].position.Z;
+
+            //        stat.abs_speed = 30 * Math.Sqrt(Math.Pow(stat.speed.X, 2) +
+            //            Math.Pow(stat.speed.Y, 2) + Math.Pow(stat.speed.Z, 2));
+            //    }
+
+            //    // add to dict
+            //    cur_joint_status.Add(joint.JointType, stat);
+            //}
 
             // add to sequence
             if (jointStatusSeq.Count == MAX_TRACK_LEN)

@@ -92,9 +92,9 @@ namespace KinectMotionAnalyzer.Processors
         private const float RenderWidth = 640.0f;
         private const float RenderHeight = 480.0f;
 
-        private const double JointThickness = 2;
-        private const double BodyCenterThickness = 10;
-        private const double ClipBoundsThickness = 10;
+        private const double JointThickness = 4;
+        private const double BodyCenterThickness = 12;
+        private const double ClipBoundsThickness = 12;
 
         private readonly Brush centerPointBrush = Brushes.Blue;
         private readonly Brush trackedJointBrush = new SolidColorBrush(Color.FromArgb(255, 68, 192, 68));
@@ -355,84 +355,84 @@ namespace KinectMotionAnalyzer.Processors
         /// </summary>
         private void DrawBonesAndJoints(Skeleton skeleton, DrawingContext drawingContext)
         {
-            // Render Torso
-            this.DrawBone(skeleton, drawingContext, JointType.Head, JointType.ShoulderCenter);
-            this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderLeft);
-            this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderRight);
-            this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.Spine);
-            this.DrawBone(skeleton, drawingContext, JointType.Spine, JointType.HipCenter);
-            this.DrawBone(skeleton, drawingContext, JointType.HipCenter, JointType.HipLeft);
-            this.DrawBone(skeleton, drawingContext, JointType.HipCenter, JointType.HipRight);
-
-            // Left Arm
-            this.DrawBone(skeleton, drawingContext, JointType.ShoulderLeft, JointType.ElbowLeft);
-            this.DrawBone(skeleton, drawingContext, JointType.ElbowLeft, JointType.WristLeft);
-            this.DrawBone(skeleton, drawingContext, JointType.WristLeft, JointType.HandLeft);
-
-            // Right Arm
-            this.DrawBone(skeleton, drawingContext, JointType.ShoulderRight, JointType.ElbowRight);
-            this.DrawBone(skeleton, drawingContext, JointType.ElbowRight, JointType.WristRight);
-            this.DrawBone(skeleton, drawingContext, JointType.WristRight, JointType.HandRight);
-
-            // Left Leg
-            this.DrawBone(skeleton, drawingContext, JointType.HipLeft, JointType.KneeLeft);
-            this.DrawBone(skeleton, drawingContext, JointType.KneeLeft, JointType.AnkleLeft);
-            this.DrawBone(skeleton, drawingContext, JointType.AnkleLeft, JointType.FootLeft);
-
-            // Right Leg
-            this.DrawBone(skeleton, drawingContext, JointType.HipRight, JointType.KneeRight);
-            this.DrawBone(skeleton, drawingContext, JointType.KneeRight, JointType.AnkleRight);
-            this.DrawBone(skeleton, drawingContext, JointType.AnkleRight, JointType.FootRight);
-
-            // Render Joints
-            foreach (Joint joint in skeleton.Joints)
+            // nothing to measure, display whole skeleton
+            if (toMeasureUnits == null || toMeasureUnits.Count == 0) 
             {
-                Brush drawBrush = null;
+                // Render Torso
+                this.DrawBone(skeleton, drawingContext, JointType.Head, JointType.ShoulderCenter);
+                this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderLeft);
+                this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderRight);
+                this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.Spine);
+                this.DrawBone(skeleton, drawingContext, JointType.Spine, JointType.HipCenter);
+                this.DrawBone(skeleton, drawingContext, JointType.HipCenter, JointType.HipLeft);
+                this.DrawBone(skeleton, drawingContext, JointType.HipCenter, JointType.HipRight);
 
-                if (joint.TrackingState == JointTrackingState.Tracked)
-                {
-                    drawBrush = this.trackedJointBrush;
-                }
-                else if (joint.TrackingState == JointTrackingState.Inferred)
-                {
-                    drawBrush = this.inferredJointBrush;
-                }
+                // Left Arm
+                this.DrawBone(skeleton, drawingContext, JointType.ShoulderLeft, JointType.ElbowLeft);
+                this.DrawBone(skeleton, drawingContext, JointType.ElbowLeft, JointType.WristLeft);
+                this.DrawBone(skeleton, drawingContext, JointType.WristLeft, JointType.HandLeft);
 
-                if (drawBrush != null)
+                // Right Arm
+                this.DrawBone(skeleton, drawingContext, JointType.ShoulderRight, JointType.ElbowRight);
+                this.DrawBone(skeleton, drawingContext, JointType.ElbowRight, JointType.WristRight);
+                this.DrawBone(skeleton, drawingContext, JointType.WristRight, JointType.HandRight);
+
+                // Left Leg
+                this.DrawBone(skeleton, drawingContext, JointType.HipLeft, JointType.KneeLeft);
+                this.DrawBone(skeleton, drawingContext, JointType.KneeLeft, JointType.AnkleLeft);
+                this.DrawBone(skeleton, drawingContext, JointType.AnkleLeft, JointType.FootLeft);
+
+                // Right Leg
+                this.DrawBone(skeleton, drawingContext, JointType.HipRight, JointType.KneeRight);
+                this.DrawBone(skeleton, drawingContext, JointType.KneeRight, JointType.AnkleRight);
+                this.DrawBone(skeleton, drawingContext, JointType.AnkleRight, JointType.FootRight);
+
+                // Render Joints
+                foreach (Joint joint in skeleton.Joints)
                 {
-                    Point joint2DPos = SkeletonPointToScreen(joint.Position);
-                    drawingContext.DrawEllipse(
-                        drawBrush, null, joint2DPos, 
-                        JointThickness, JointThickness);
+                    DrawJoint(joint, drawingContext);
                 }
             }
-
-            // display measurement results
-            if (toMeasureUnits != null && ifShowJointStatus && cur_joint_status != null)
+            else
             {
+                // show skeleton related to measurements
                 foreach (MeasurementUnit unit in toMeasureUnits)
                 {
                     if (unit.ifSingleJoint)
                     {
-                        // draw status for only joint
-                        if (cur_joint_status.ContainsKey(unit.singleJoint))
-                        {
-                            FormattedText formattedText = new FormattedText(
-                                cur_joint_status[unit.singleJoint].angle.ToString("F2") + "°",
-                                CultureInfo.GetCultureInfo("en-us"),
-                                FlowDirection.LeftToRight,
-                                new Typeface("Verdana"),
-                                20,
-                                Brushes.Yellow);
+                        // draw joint
+                        Joint joint = skeleton.Joints[unit.singleJoint];
+                        DrawJoint(joint, drawingContext);   
 
-                            Point joint2DPos = SkeletonPointToScreen(skeleton.Joints[unit.singleJoint].Position);
-                            drawingContext.DrawText(formattedText, joint2DPos);
+                        // show measurement results if available
+                        if (ifShowJointStatus && cur_joint_status != null)
+                        {
+                            if (cur_joint_status.ContainsKey(unit.singleJoint))
+                            {
+                                FormattedText formattedText = new FormattedText(
+                                    cur_joint_status[unit.singleJoint].angle.ToString("F2") + "°",
+                                    CultureInfo.GetCultureInfo("en-us"),
+                                    FlowDirection.LeftToRight,
+                                    new Typeface("Verdana"),
+                                    20,
+                                    Brushes.Yellow);
+
+                                Point joint2DPos = SkeletonPointToScreen(skeleton.Joints[unit.singleJoint].Position);
+                                drawingContext.DrawText(formattedText, joint2DPos);
+                            }
                         }
                     }
                     else
                     {
+                        // draw bone joints
+                        DrawJoint(skeleton.Joints[unit.boneJoint1], drawingContext);
+                        DrawJoint(skeleton.Joints[unit.boneJoint2], drawingContext);
+
+                        // draw bone
+                        this.DrawBone(skeleton, drawingContext, unit.boneJoint1, unit.boneJoint2);
+
                         // show bone plane angle
-                        if (cur_joint_status[unit.boneJoint1].planeAngles.ContainsKey(unit.boneJoint2))
+                        if (cur_joint_status.ContainsKey(unit.boneJoint1))
                         {
                             FormattedText formattedText = new FormattedText(
                                 cur_joint_status[unit.boneJoint1].planeAngles[unit.boneJoint2][unit.plane].ToString("F2") + "°",
@@ -445,25 +445,11 @@ namespace KinectMotionAnalyzer.Processors
                             Point joint2DPos = SkeletonPointToScreen(skeleton.Joints[unit.boneJoint1].Position);
                             drawingContext.DrawText(formattedText, joint2DPos);
                         }
-                        else if (cur_joint_status[unit.boneJoint2].planeAngles.ContainsKey(unit.boneJoint1))
-                        {
-                            FormattedText formattedText = new FormattedText(
-                            cur_joint_status[unit.boneJoint2].planeAngles[unit.boneJoint1][unit.plane].ToString("F2") + "°",
-                            CultureInfo.GetCultureInfo("en-us"),
-                            FlowDirection.LeftToRight,
-                            new Typeface("Verdana"),
-                            20,
-                            Brushes.Yellow);
-
-                            Point joint2DPos = SkeletonPointToScreen(skeleton.Joints[unit.boneJoint2].Position);
-                            drawingContext.DrawText(formattedText, joint2DPos);
-                        }
-                        
                     }
                 }
             }
-
         }
+
 
         /// <summary>
         /// Maps a SkeletonPoint to lie within our render space and converts to Point
@@ -475,6 +461,28 @@ namespace KinectMotionAnalyzer.Processors
             DepthImagePoint depthPoint = sensor_ref.CoordinateMapper.MapSkeletonPointToDepthPoint(
                 skelpoint, DepthImageFormat.Resolution640x480Fps30);
             return new Point(depthPoint.X, depthPoint.Y);
+        }
+
+        private void DrawJoint(Joint joint, DrawingContext drawingContext)
+        {
+            Brush drawBrush = null;
+
+            if (joint.TrackingState == JointTrackingState.Tracked)
+            {
+                drawBrush = this.trackedJointBrush;
+            }
+            else if (joint.TrackingState == JointTrackingState.Inferred)
+            {
+                drawBrush = this.inferredJointBrush;
+            }
+
+            if (drawBrush != null)
+            {
+                Point joint2DPos = SkeletonPointToScreen(joint.Position);
+                drawingContext.DrawEllipse(
+                    drawBrush, null, joint2DPos,
+                    JointThickness, JointThickness);
+            }
         }
 
         /// <summary>
