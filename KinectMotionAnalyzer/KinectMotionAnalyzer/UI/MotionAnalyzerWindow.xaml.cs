@@ -14,6 +14,7 @@ using System.Drawing;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Threading;
 using Microsoft.Kinect;
 using Microsoft.Win32;
 using System.Diagnostics;
@@ -46,6 +47,7 @@ namespace KinectMotionAnalyzer.UI
         bool isRecognition = false;
         bool isStreaming = false;
         bool ifDoSmoothing = true;
+        bool isCalculating = false; // a lock param for multithreading
 
         // record params
         private int frame_id = 0;
@@ -198,6 +200,12 @@ namespace KinectMotionAnalyzer.UI
 
                 if (kinect_data_manager.ifShowJointStatus)
                 {
+                    //if (!isCalculating)
+                    //{
+                    //    // start new thread to do processing
+                    //    Thread thread = new Thread(motion_assessor.UpdateJointStatus);
+                    //    thread.Start(
+                    //}
                     // update status
                     motion_assessor.UpdateJointStatus(tracked_skeleton, toMeasureUnits);
                     kinect_data_manager.cur_joint_status = motion_assessor.GetCurrentJointStatus();
