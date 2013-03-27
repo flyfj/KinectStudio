@@ -32,6 +32,6 @@
             </Grid>
         </GroupBox>
         <CheckBox Content="Save video" Height="27" HorizontalAlignment="Left" Margin="560,125,0,0" Name="saveVideoCheckBox" VerticalAlignment="Top" Width="112" FontSize="16" />
-        <Button x:Name="measureConfigBtn" Content="Configure Measurements" HorizontalAlignment="Left" Margin="736,62,0,0" VerticalAlignment="Top" Width="176" Height="40" FontSize="14" Click="measureConfigBtn_Click"/>
+        <Button x:Name="measureConfigBtn" Content="Configuration" HorizontalAlignment="Left" Margin="736,62,0,0" VerticalAlignment="Top" Width="176" Height="40" FontSize="14" Click="measureConfigBtn_Click"/>
     </Grid>
 </Window>

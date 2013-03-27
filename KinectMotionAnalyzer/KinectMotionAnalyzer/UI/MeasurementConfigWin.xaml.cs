@@ -27,11 +27,15 @@ namespace KinectMotionAnalyzer.UI
         private ArrayList joint_checkbox_collection = new ArrayList();
         private Dictionary<string, JointType> checkbox_name_jointtype_mapping = null;
         public List<MeasurementUnit> measureUnits = null;
+        private string defaultInstructionText;
 
 
         public MeasurementConfigWin()
         {
             InitializeComponent();
+
+            defaultInstructionText = "Input instruction here";
+            measureInstructionTextBox.Text = defaultInstructionText;
         }
 
         private void select_all_btn_Click(object sender, RoutedEventArgs e)
@@ -100,11 +104,25 @@ namespace KinectMotionAnalyzer.UI
                 // add to units
                 measureUnits.Add(unit);
 
+                // propose a text box to allow user to input intuitive instruction
+                // may need to create a new window
+
                 // add to display list
-                measureUnitList.Items.Add(
-                    unit.boneJoint1.ToString() + " " +
-                    unit.boneJoint2.ToString() + " " +
-                    unit.plane.ToString());
+                if (measureInstructionTextBox.Text != string.Empty && measureInstructionTextBox.Text != defaultInstructionText)
+                {
+                    measureUnitList.Items.Add(measureInstructionTextBox.Text);
+
+                    // reset text
+                    measureInstructionTextBox.Text = defaultInstructionText;
+                }
+                else
+                {
+                    measureUnitList.Items.Add(
+                       unit.boneJoint1.ToString() + " " +
+                       unit.boneJoint2.ToString() + " " +
+                       unit.plane.ToString());
+                }
+                
             }
             else
                 MessageBox.Show("Invalid selection. Only one or two joints are supported.");
@@ -166,6 +184,14 @@ namespace KinectMotionAnalyzer.UI
         {
             this.DialogResult = true;
         }
+
+        private void measureInstructionTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            measureInstructionTextBox.Text = string.Empty;
+        }
+
+
+        
 
         
     }

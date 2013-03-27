@@ -3,10 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Configuration" Height="657" Width="726" ResizeMode="NoResize" Loaded="Window_Loaded">
     <Grid>
-        <Button Content="Add" Height="23" HorizontalAlignment="Left" Margin="529,378,0,0" x:Name="addBtn" VerticalAlignment="Top" Width="75" Click="addBtn_Click" />
-        <Button Content="Clear All" Height="23" HorizontalAlignment="Right" Margin="0,575,360,0" Name="clear_all_btn" VerticalAlignment="Top" Width="75" Click="clear_all_btn_Click" />
-        <Button Content="Select All" Height="23" HorizontalAlignment="Left" Margin="157,575,0,0" Name="select_all_btn" VerticalAlignment="Top" Width="75" Click="select_all_btn_Click" />
-        <GroupBox Header="Skeleton Graph" Height="520" HorizontalAlignment="Left" Margin="46,27,0,0" Name="skeletonGroupBox" VerticalAlignment="Top" Width="462">
+        <Button Content="Add" Height="23" HorizontalAlignment="Left" Margin="529,393,0,0" x:Name="addBtn" VerticalAlignment="Top" Width="75" Click="addBtn_Click" />
+        <Button Content="Clear All" Height="34" HorizontalAlignment="Right" Margin="0,564,357,0" Name="clear_all_btn" VerticalAlignment="Top" Width="88" Click="clear_all_btn_Click" />
+        <Button Content="Select All" Height="34" HorizontalAlignment="Left" Margin="126,564,0,0" Name="select_all_btn" VerticalAlignment="Top" Width="86" Click="select_all_btn_Click" />
+        <GroupBox Header="Skeleton Graph" Height="520" HorizontalAlignment="Left" Margin="27,24,0,0" Name="skeletonGroupBox" VerticalAlignment="Top" Width="462">
             <Grid>
                 <Image Height="469" HorizontalAlignment="Left" Margin="18,15,0,0" Name="skeleton_img" Stretch="Fill" VerticalAlignment="Top" Width="412" Source="/KinectMotionAnalyzer;component/Resources/kinect_skeleton.png" />
                 <CheckBox Height="16" HorizontalAlignment="Left" Margin="168,64,0,0" Name="head_checkbox" VerticalAlignment="Top" Uid="3" />
@@ -32,14 +32,15 @@
             </Grid>
         </GroupBox>
         <ListBox x:Name="measureUnitList" HorizontalAlignment="Left" Height="164" Margin="529,434,0,0" VerticalAlignment="Top" Width="163"/>
-        <GroupBox Header="Planes" HorizontalAlignment="Left" Margin="557,52,0,0" VerticalAlignment="Top" Height="119" Width="91">
+        <GroupBox Header="Planes" HorizontalAlignment="Left" Margin="557,37,0,0" VerticalAlignment="Top" Height="119" Width="91">
             <Grid HorizontalAlignment="Left" Height="96" VerticalAlignment="Top" Width="81" Margin="0,0,-2,0">
                 <RadioButton x:Name="XYRadioBtn" Content="XY" HorizontalAlignment="Left" Margin="27,10,0,0" VerticalAlignment="Top"/>
                 <RadioButton x:Name="YZRadioBtn" Content="YZ" HorizontalAlignment="Left" Margin="28,41,0,0" VerticalAlignment="Top"/>
                 <RadioButton x:Name="XZRadioBtn" Content="XZ" HorizontalAlignment="Left" Margin="28,75,0,0" VerticalAlignment="Top"/>
             </Grid>
         </GroupBox>
-        <Image x:Name="coordinatesImg" HorizontalAlignment="Left" Height="161" Margin="529,188,0,0" VerticalAlignment="Top" Width="163" Source="/KinectMotionAnalyzer;component/Resources/skeletonCoordinates.png"/>
-        <Button x:Name="okBtn" Content="Ok" HorizontalAlignment="Left" Margin="617,378,0,0" VerticalAlignment="Top" Width="75" Click="okBtn_Click"/>
+        <Image x:Name="coordinatesImg" HorizontalAlignment="Left" Height="161" Margin="529,170,0,0" VerticalAlignment="Top" Width="163" Source="/KinectMotionAnalyzer;component/Resources/skeletonCoordinates.png"/>
+        <Button x:Name="okBtn" Content="Ok" HorizontalAlignment="Left" Margin="617,393,0,0" VerticalAlignment="Top" Width="75" Click="okBtn_Click"/>
+        <TextBox x:Name="measureInstructionTextBox" HorizontalAlignment="Left" Height="23" Margin="529,356,0,0" TextWrapping="Wrap" Text="Input instruction here" VerticalAlignment="Top" Width="163" GotFocus="measureInstructionTextBox_GotFocus"/>
     </Grid>
 </Window>
