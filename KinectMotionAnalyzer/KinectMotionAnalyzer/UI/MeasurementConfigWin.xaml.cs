@@ -122,7 +122,6 @@ namespace KinectMotionAnalyzer.UI
                        unit.boneJoint2.ToString() + " " +
                        unit.plane.ToString());
                 }
-                
             }
             else
                 MessageBox.Show("Invalid selection. Only one or two joints are supported.");

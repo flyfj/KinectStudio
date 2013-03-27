@@ -424,7 +424,6 @@ namespace KinectMotionAnalyzer.UI
 
                 isReplay = true;
             }
-
         }
 
         private void ActivateReplay(List<Skeleton> gesture)
