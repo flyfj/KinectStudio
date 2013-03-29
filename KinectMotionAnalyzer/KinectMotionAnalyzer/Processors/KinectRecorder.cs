@@ -22,7 +22,7 @@ namespace KinectMotionAnalyzer.Processors
         /// <param name="filename"></param>
         /// <param name="data">skeleton from each time stamp</param>
         /// <returns></returns>
-        static public bool WriteToSkeletonFile(string filename, List<Skeleton> data)
+        static public bool WriteToSkeletonXMLFile(string filename, List<Skeleton> data)
         {
 
             XmlDocument xmldoc = new XmlDocument();
@@ -94,13 +94,13 @@ namespace KinectMotionAnalyzer.Processors
             return true;
         }
 
-        static public List<Skeleton> ReadFromSkeletonFile(string filename)
+        static public bool ReadFromSkeletonXMLFile(string filename, out List<Skeleton> skeletonsCollection)
         {
 
             XmlDocument doc = new XmlDocument();
             doc.Load(filename);
 
-            List<Skeleton> skeletonsCollection = new List<Skeleton>();
+            skeletonsCollection = new List<Skeleton>();
             XmlElement root = doc.DocumentElement;
             
 
@@ -176,7 +176,122 @@ namespace KinectMotionAnalyzer.Processors
             }
             #endregion
 
-            return skeletonsCollection;
+            return true;
+        }
+
+        static public bool WriteToSkeletonFile(string filename, List<Skeleton> data)
+        {
+            if (data == null)
+                return false;
+
+            using (var file = File.OpenWrite(filename + ".ske"))
+            {
+                // output skeleton joints
+                BinaryWriter writer = new BinaryWriter(file);
+                writer.Write(data.Count);
+                foreach (Skeleton ske in data)
+                {
+                    foreach (JointType type in ske.Joints)
+                    {
+                        writer.Write(ske.Joints[type].Position.X);
+                        writer.Write(ske.Joints[type].Position.Y);
+                        writer.Write(ske.Joints[type].Position.Z);
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        static public bool ReadFromSkeletonFile(string filename, out List<Skeleton> skeletonsCollection)
+        {
+            byte[] bytes = File.ReadAllBytes(filename);
+            int frameNum = BitConverter.ToInt32(bytes, 0);
+            skeletonsCollection = new List<Skeleton>(frameNum);
+
+            int count = 4;
+            foreach (Skeleton ske in skeletonsCollection)
+            {
+                foreach (JointType type in ske.Joints)
+                {
+                    Joint joint = new Joint();
+                    SkeletonPoint pt = new SkeletonPoint();
+                    pt.X = BitConverter.ToSingle(bytes, count);
+                    count += 4;
+                    pt.Y = BitConverter.ToSingle(bytes, count);
+                    count += 4;
+                    pt.Z = BitConverter.ToSingle(bytes, count);
+                    count += 4;
+                    joint.Position = pt;
+                    ske.Joints[type] = joint;
+                }
+            }
+
+            return true;
+        }
+
+        static public bool WriteToColorImageFile(string filename, List<byte[]> colorData)
+        {
+            if (colorData == null)
+                return false;
+
+            using (var file = File.OpenWrite(filename + ".img"))
+            {
+                // width and height and frame number
+                BinaryWriter writer = new BinaryWriter(file);
+                writer.Write(640);
+                writer.Write(480);
+                writer.Write(colorData.Count);
+                foreach (byte[] colorFrame in colorData)
+                {
+                    foreach (byte val in colorFrame)
+                        writer.Write(val);
+                }
+            }
+
+            return true;
+        }
+
+        static public bool ReadFromColorImageFile(string filename, out List<byte[]> colorData)
+        {
+            var bytes = File.ReadAllBytes(filename + ".img");
+            int width = BitConverter.ToInt32(bytes, 0);
+            int height = BitConverter.ToInt32(bytes, 4);
+            int frameNum = BitConverter.ToInt32(bytes, 8);
+            colorData = new List<byte[]>();
+            for (int i = 0; i < frameNum; i++)
+            {
+                // read color data from file
+                colorData.Add(Enumerable.Range(width * height * i + 12, width * height).Select(x => bytes[x]).ToArray());
+            }
+
+            return true;
+        }
+
+        static public bool SaveAllToFile(string filename, List<byte[]> colorData, List<Skeleton> skeData)
+        {
+            // save data for each frame to individual files (color and skeleton) for now (may merge to one file later)
+            if (!WriteToColorImageFile(filename, colorData))
+                return false;
+
+            if (!WriteToSkeletonXMLFile(filename, skeData))
+                return false;
+
+            return true;
+        }
+
+        static public bool ReadAllFromFile(string filename, out List<byte[]> colorData, out List<Skeleton> skeData)
+        {
+            colorData = null;
+            skeData = null;
+
+            if (!ReadFromColorImageFile(filename, out colorData))
+                return false;
+
+            if (!ReadFromSkeletonXMLFile(filename, out skeData))
+                return false;
+
+            return true;
         }
     }
 }

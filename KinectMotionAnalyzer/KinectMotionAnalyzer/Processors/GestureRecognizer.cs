@@ -267,7 +267,7 @@ namespace KinectMotionAnalyzer.Processors
                 foreach (string filename in gesture_files)
                 {
                     Gesture gtemp = new Gesture();
-                    gtemp.data = KinectRecorder.ReadFromSkeletonFile(filename);
+                    KinectRecorder.ReadFromSkeletonXMLFile(filename, out gtemp.data);
                     gtemp.name = GESTURE_LIST[gid];
 
                     if (gtemp.data.Count > gesture_max_len)

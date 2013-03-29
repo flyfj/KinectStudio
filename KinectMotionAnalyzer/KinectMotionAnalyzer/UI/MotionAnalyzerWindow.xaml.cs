@@ -54,7 +54,7 @@ namespace KinectMotionAnalyzer.UI
         Gesture temp_gesture = new Gesture();
         ArrayList overlap_frame_rec_buffer = new ArrayList(); // use to store record frames in memory
         List<Skeleton> skeleton_rec_buffer = new List<Skeleton>(); // record skeleton data
-        ArrayList color_frame_rec_buffer = new ArrayList(); // record video frames
+        List<byte[]> color_frame_rec_buffer = new List<byte[]>(); // record video frames
 
         // motion analysis params
         private List<MeasurementUnit> toMeasureUnits;
@@ -311,7 +311,7 @@ namespace KinectMotionAnalyzer.UI
             string time = System.DateTime.Now.ToString("hh'-'mm'-'ss", CultureInfo.CurrentUICulture.DateTimeFormat);
 
             string gesture_name = (gestureComboBox.SelectedItem as ComboBoxItem).Content.ToString();
-            string savedir = "C:\\gdata\\"; //Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+            string savedir = "gdata\\"; //Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
             if(!Directory.Exists(savedir))
                 Directory.CreateDirectory(savedir);
 
@@ -323,7 +323,7 @@ namespace KinectMotionAnalyzer.UI
             // remove end part first so front id will not change
             skeleton_rec_buffer.RemoveRange(end_id + 1, skeleton_rec_buffer.Count - end_id - 1);
             skeleton_rec_buffer.RemoveRange(0, start_id);
-            KinectRecorder.WriteToSkeletonFile(skeletonpath, skeleton_rec_buffer);
+            KinectRecorder.WriteToSkeletonXMLFile(skeletonpath, skeleton_rec_buffer);
 
             skeleton_rec_buffer.Clear();
             frame_id = 0;
@@ -428,7 +428,7 @@ namespace KinectMotionAnalyzer.UI
             {
                 string filename = dialog.FileName;
                 // test: read skeleton data and display
-                skeleton_rec_buffer = KinectRecorder.ReadFromSkeletonFile(filename);
+                KinectRecorder.ReadFromSkeletonXMLFile(filename, out skeleton_rec_buffer);
 
                 statusbarLabel.Content = "Load gesture file from " + filename;
 
@@ -438,7 +438,7 @@ namespace KinectMotionAnalyzer.UI
             }
         }
 
-        private void ActivateReplay(ArrayList colorData, List<Skeleton> gesture)
+        private void ActivateReplay(List<byte[]> colorData, List<Skeleton> gesture)
         {
             if (gesture == null || gesture.Count == 0 || colorData == null || colorData.Count == 0)
             {
@@ -586,7 +586,7 @@ namespace KinectMotionAnalyzer.UI
 
                             // save skeleton
                             string skeletonpath = videofile + ".xml";
-                            KinectRecorder.WriteToSkeletonFile(skeletonpath, skeleton_rec_buffer);
+                            KinectRecorder.WriteToSkeletonXMLFile(skeletonpath, skeleton_rec_buffer);
                         }
                     }
 

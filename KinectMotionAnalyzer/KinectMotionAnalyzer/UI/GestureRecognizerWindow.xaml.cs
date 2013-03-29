@@ -343,7 +343,7 @@ namespace KinectMotionAnalyzer.UI
             // remove end part first so front id will not change
             gesture_capture_data.RemoveRange(end_id + 1, gesture_capture_data.Count - end_id - 1);
             gesture_capture_data.RemoveRange(0, start_id);
-            KinectRecorder.WriteToSkeletonFile(skeletonpath, gesture_capture_data);
+            KinectRecorder.WriteToSkeletonXMLFile(skeletonpath, gesture_capture_data);
 
             gesture_capture_data.Clear();
             frame_id = 0;
@@ -448,7 +448,7 @@ namespace KinectMotionAnalyzer.UI
             {
                 string filename = dialog.FileName;
                 // test: read skeleton data and display
-                gesture_capture_data = KinectRecorder.ReadFromSkeletonFile(filename);
+                KinectRecorder.ReadFromSkeletonXMLFile(filename, out gesture_capture_data);
 
                 statusbarLabel.Content = "Load gesture file from " + filename;
 

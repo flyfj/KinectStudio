@@ -300,7 +300,7 @@ namespace KinectMotionAnalyzer.UI
             {
                 List<Skeleton> skeletonCollection = new List<Skeleton>();
                 //skeletonCollection.Add(1, kinect_data_manager.skeletons);
-                KinectRecorder.WriteToSkeletonFile(skeletonpath, skeletonCollection);
+                KinectRecorder.WriteToSkeletonXMLFile(skeletonpath, skeletonCollection);
                 statusbarLabel.Content = "Save skeletons to file: " + skeletonpath;
             }
              //kinect_data_manager.SaveKinectData(kinect_data_manager.skeletons, skeletonpath, "SKELETON");
@@ -329,8 +329,8 @@ namespace KinectMotionAnalyzer.UI
             {
                 string filename = dialog.FileName;
                 // test: read skeleton data and display
-                List<Skeleton> skeleton_data = 
-                    KinectRecorder.ReadFromSkeletonFile(filename);
+                List<Skeleton> skeleton_data = null;
+                KinectRecorder.ReadFromSkeletonXMLFile(filename, out skeleton_data);
                 // save to data manager object
                 kinect_data_manager.gesture = skeleton_data;
 
@@ -386,7 +386,7 @@ namespace KinectMotionAnalyzer.UI
             string myPhotos = "D:"; //Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
             string skeletonpath = myPhotos + "\\Kinect_skeleton_" + time + ".xml";
 
-            KinectRecorder.WriteToSkeletonFile(skeletonpath, kinect_data_manager.gesture);
+            KinectRecorder.WriteToSkeletonXMLFile(skeletonpath, kinect_data_manager.gesture);
 
             statusbarLabel.Content = "Save skeletons to file: " + skeletonpath;
 
