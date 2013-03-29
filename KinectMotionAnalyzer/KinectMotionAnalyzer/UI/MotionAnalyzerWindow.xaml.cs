@@ -51,10 +51,10 @@ namespace KinectMotionAnalyzer.UI
 
         // record params
         private int frame_id = 0;
-        List<Skeleton> gesture_capture_data = new List<Skeleton>();
         Gesture temp_gesture = new Gesture();
         ArrayList overlap_frame_rec_buffer = new ArrayList(); // use to store record frames in memory
-        ArrayList color_frame_rec_buffer = new ArrayList();
+        List<Skeleton> skeleton_rec_buffer = new List<Skeleton>(); // record skeleton data
+        ArrayList color_frame_rec_buffer = new ArrayList(); // record video frames
 
         // motion analysis params
         private List<MeasurementUnit> toMeasureUnits;
@@ -161,7 +161,19 @@ namespace KinectMotionAnalyzer.UI
                 if (frame == null)
                     return;
 
-                kinect_data_manager.UpdateColorData(frame);
+                if (gestureCaptureBtn.Content.ToString() == "Stop Capture")
+                {
+                    // consistent with skeleton data
+                    if (skeleton_rec_buffer.Count > 0)
+                    {
+                        byte[] colorData = new byte[frame.PixelDataLength];
+                        frame.CopyPixelDataTo(colorData);
+                        // just add first tracked skeleton, assume only one person is present
+                        color_frame_rec_buffer.Add(colorData);
+                    }
+                }
+
+                kinect_data_manager.UpdateColorData(frame); 
             }
         }
 
@@ -195,7 +207,7 @@ namespace KinectMotionAnalyzer.UI
                 if (gestureCaptureBtn.Content.ToString() == "Stop Capture")
                 {
                     // just add first tracked skeleton, assume only one person is present
-                    gesture_capture_data.Add(tracked_skeleton);
+                    skeleton_rec_buffer.Add(tracked_skeleton);
                 }
 
                 if (kinect_data_manager.ifShowJointStatus)
@@ -220,7 +232,7 @@ namespace KinectMotionAnalyzer.UI
                 if (saveVideoCheckBox.IsChecked.Value)
                 {
                     // save skeleton data
-                    gesture_capture_data.Add(tracked_skeleton);
+                    skeleton_rec_buffer.Add(tracked_skeleton);
 
                     // write screen shot of display into video file
                     int width = (int)groupBox3.Width + 20;
@@ -257,7 +269,7 @@ namespace KinectMotionAnalyzer.UI
 
                 // reset
                 frame_id = 0;
-                gesture_capture_data.Clear();
+                skeleton_rec_buffer.Clear();
                 gestureCaptureBtn.Content = "Stop Capture";
                 previewBtn.IsEnabled = false;
 
@@ -280,9 +292,9 @@ namespace KinectMotionAnalyzer.UI
                 kinect_sensor.Stop();
 
                 // prepare for replay
-                if (gesture_capture_data != null)
+                if (skeleton_rec_buffer != null)
                 {
-                    ActivateReplay(gesture_capture_data);
+                    ActivateReplay(color_frame_rec_buffer, skeleton_rec_buffer);
                     saveGestureBtn.IsEnabled = true;
                 }
 
@@ -309,11 +321,11 @@ namespace KinectMotionAnalyzer.UI
             int start_id = int.Parse(replay_startLabel.Content.ToString());
             int end_id = int.Parse(replay_endLabel.Content.ToString());
             // remove end part first so front id will not change
-            gesture_capture_data.RemoveRange(end_id + 1, gesture_capture_data.Count - end_id - 1);
-            gesture_capture_data.RemoveRange(0, start_id);
-            KinectRecorder.WriteToSkeletonFile(skeletonpath, gesture_capture_data);
+            skeleton_rec_buffer.RemoveRange(end_id + 1, skeleton_rec_buffer.Count - end_id - 1);
+            skeleton_rec_buffer.RemoveRange(0, start_id);
+            KinectRecorder.WriteToSkeletonFile(skeletonpath, skeleton_rec_buffer);
 
-            gesture_capture_data.Clear();
+            skeleton_rec_buffer.Clear();
             frame_id = 0;
 
             statusbarLabel.Content = "Save skeletons to file: " + skeletonpath;
@@ -384,14 +396,14 @@ namespace KinectMotionAnalyzer.UI
         private void skeletonVideoSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             // valid only when kinect is stopped so no new data will come
-            if (isReplay && gesture_capture_data.Count > 0)
+            if (isReplay && skeleton_rec_buffer.Count > 0)
             {
                 // load new skeleton data
                 int cur_frame_id = (int)skeletonVideoSlider.Value;
-                if (gesture_capture_data.Count > cur_frame_id)
+                if (skeleton_rec_buffer.Count > cur_frame_id && color_frame_rec_buffer.Count > cur_frame_id)
                 {
-                    kinect_data_manager.UpdateSkeletonData(gesture_capture_data[cur_frame_id]);
-                    //replay_data_manager.UpdateSkeletonData(gesture_capture_data[cur_frame_id]);
+                    kinect_data_manager.UpdateColorData(color_frame_rec_buffer[cur_frame_id] as byte[], 640, 480);
+                    kinect_data_manager.UpdateSkeletonData(skeleton_rec_buffer[cur_frame_id]);
                 }
 
                 // update label
@@ -416,19 +428,19 @@ namespace KinectMotionAnalyzer.UI
             {
                 string filename = dialog.FileName;
                 // test: read skeleton data and display
-                gesture_capture_data = KinectRecorder.ReadFromSkeletonFile(filename);
+                skeleton_rec_buffer = KinectRecorder.ReadFromSkeletonFile(filename);
 
                 statusbarLabel.Content = "Load gesture file from " + filename;
 
-                ActivateReplay(gesture_capture_data);
+                ActivateReplay(color_frame_rec_buffer, skeleton_rec_buffer);
 
                 isReplay = true;
             }
         }
 
-        private void ActivateReplay(List<Skeleton> gesture)
+        private void ActivateReplay(ArrayList colorData, List<Skeleton> gesture)
         {
-            if (gesture == null || gesture.Count == 0)
+            if (gesture == null || gesture.Count == 0 || colorData == null || colorData.Count == 0)
             {
                 statusbarLabel.Content = "Replay gesture is empty.";
                 return;
@@ -450,10 +462,13 @@ namespace KinectMotionAnalyzer.UI
             replay_setEndBtn.IsEnabled = true;
             replay_endLabel.Content = max_frame_id;
 
+            keyframeConfigBtn.IsEnabled = true;
+
             isReplay = true;
 
+            // update view
+            kinect_data_manager.UpdateColorData(colorData[min_frame_id] as byte[], 640, 480);
             kinect_data_manager.UpdateSkeletonData(gesture[min_frame_id]);
-            //replay_data_manager.UpdateSkeletonData(gesture[min_frame_id]);
         }
 
         private void DeactivateReplay()
@@ -469,6 +484,8 @@ namespace KinectMotionAnalyzer.UI
             replay_startLabel.Content = "0";
             replay_setEndBtn.IsEnabled = false;
             replay_endLabel.Content = "0";
+
+            keyframeConfigBtn.IsEnabled = false;
 
             isReplay = false;
         }
@@ -529,7 +546,7 @@ namespace KinectMotionAnalyzer.UI
                     kinect_data_manager.ifShowJointStatus = false;
 
                     // save recorded frame to disk and save skeleton data
-                    if (overlap_frame_rec_buffer!=null && gesture_capture_data!=null && saveVideoCheckBox.IsChecked.Value)
+                    if (overlap_frame_rec_buffer!=null && skeleton_rec_buffer!=null && saveVideoCheckBox.IsChecked.Value)
                     {
                         statusbarLabel.Content = "Saving video...";
 
@@ -569,11 +586,11 @@ namespace KinectMotionAnalyzer.UI
 
                             // save skeleton
                             string skeletonpath = videofile + ".xml";
-                            KinectRecorder.WriteToSkeletonFile(skeletonpath, gesture_capture_data);
+                            KinectRecorder.WriteToSkeletonFile(skeletonpath, skeleton_rec_buffer);
                         }
                     }
 
-                    gesture_capture_data.Clear();
+                    skeleton_rec_buffer.Clear();
                     overlap_frame_rec_buffer.Clear();
 
                     previewBtn.Content = "Preview Stream";

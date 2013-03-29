@@ -157,6 +157,22 @@ namespace KinectMotionAnalyzer.Processors
             //ColorBitmap = new System.Drawing.Bitmap(frame.Width, frame.Height, stride, System.Drawing.Imaging.PixelFormat.Format32bppRgb, colorPixelData);
         }
 
+        public void UpdateColorData(byte[] colorPixelData, int width, int height)
+        {
+            if (colorPixelData == null)
+                return;
+
+            if (ColorStreamBitmap == null)
+            {
+                ColorStreamBitmap = new WriteableBitmap(width, height, 96, 96,
+                    PixelFormats.Bgr32, null);
+            }
+
+            int stride = ColorStreamBitmap.PixelWidth * sizeof(int);
+            Int32Rect drawRect = new Int32Rect(0, 0, ColorStreamBitmap.PixelWidth, ColorStreamBitmap.PixelHeight);
+            ColorStreamBitmap.WritePixels(drawRect, colorPixelData, stride, 0);
+        }
+
         public void UpdateDepthData(DepthImageFrame frame)
         {
 
