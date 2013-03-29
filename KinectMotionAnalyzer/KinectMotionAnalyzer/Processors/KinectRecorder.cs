@@ -205,7 +205,7 @@ namespace KinectMotionAnalyzer.Processors
 
         static public bool ReadFromSkeletonFile(string filename, out List<Skeleton> skeletonsCollection)
         {
-            byte[] bytes = File.ReadAllBytes(filename);
+            byte[] bytes = File.ReadAllBytes(filename + ".ske");
             int frameNum = BitConverter.ToInt32(bytes, 0);
             skeletonsCollection = new List<Skeleton>(frameNum);
 
@@ -274,7 +274,7 @@ namespace KinectMotionAnalyzer.Processors
             if (!WriteToColorImageFile(filename, colorData))
                 return false;
 
-            if (!WriteToSkeletonXMLFile(filename, skeData))
+            if (!WriteToSkeletonFile(filename, skeData))
                 return false;
 
             return true;
@@ -288,9 +288,14 @@ namespace KinectMotionAnalyzer.Processors
             if (!ReadFromColorImageFile(filename, out colorData))
                 return false;
 
-            if (!ReadFromSkeletonXMLFile(filename, out skeData))
+            if (!ReadFromSkeletonFile(filename, out skeData))
                 return false;
 
+            return true;
+        }
+
+        static public bool WriteToConfigFile(string filename)
+        {
             return true;
         }
     }
