@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using Microsoft.Kinect;
-
+using KinectMotionAnalyzer.Model;
 
 namespace KinectMotionAnalyzer.Processors
 {
@@ -296,6 +296,31 @@ namespace KinectMotionAnalyzer.Processors
 
         static public bool WriteToConfigFile(string filename)
         {
+            return true;
+        }
+
+        //////////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// database access  
+        /// </summary>
+        static public bool WriteActionToDatabase(List<ColorFrameData> colorData, List<SkeletonData> SkeData)
+        {
+            KinectAction action = new KinectAction { ColorFrames = colorData, Skeletons = SkeData };
+
+            using (MotionDBContext motionContext = new MotionDBContext("KinectMotionDB"))
+            {
+                motionContext.Actions.Add(action);
+                motionContext.SaveChanges();
+
+                var query = from ac in motionContext.Actions
+                            select ac;
+
+                foreach (var q in query)
+                {
+                    Console.WriteLine((q as KinectAction).Id);
+                }
+            }
+
             return true;
         }
     }
