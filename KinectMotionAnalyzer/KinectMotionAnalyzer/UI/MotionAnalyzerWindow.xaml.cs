@@ -21,6 +21,7 @@ using System.Diagnostics;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using Emgu.Util;
+using KinectMotionAnalyzer.Model;
 
 
 namespace KinectMotionAnalyzer.UI
@@ -55,6 +56,7 @@ namespace KinectMotionAnalyzer.UI
         ArrayList overlap_frame_rec_buffer = new ArrayList(); // use to store record frames in memory
         List<Skeleton> skeleton_rec_buffer = new List<Skeleton>(); // record skeleton data
         List<byte[]> color_frame_rec_buffer = new List<byte[]>(); // record video frames
+        KinectAction rec_action = new KinectAction();   // buffer for recording an action
 
         // motion analysis params
         private List<MeasurementUnit> toMeasureUnits;
@@ -272,6 +274,9 @@ namespace KinectMotionAnalyzer.UI
                 skeleton_rec_buffer.Clear();
                 gestureCaptureBtn.Content = "Stop Capture";
                 previewBtn.IsEnabled = false;
+                
+                // init new action buffer
+                rec_action.ActionName = (gestureComboBox.SelectedItem as ComboBoxItem).Content.ToString();
 
                 // start kinect
                 if (kinect_sensor == null)
