@@ -15,6 +15,6 @@ namespace KinectMotionAnalyzer.Model
 
         public int Status { get; set; }
 
-        public Skeleton JointsData { get; set; }
+        public List<SingleJoint> JointsData { get; set; }
     }
 }

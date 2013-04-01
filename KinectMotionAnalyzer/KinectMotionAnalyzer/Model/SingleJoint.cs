@@ -15,6 +15,10 @@ namespace KinectMotionAnalyzer.Model
 
         public int Type { get; set; }
 
-        public SkeletonPoint Pos { get; set; }
+        public float PosX { get; set; }
+
+        public float PosY { get; set; }
+
+        public float PosZ { get; set; }
     }
 }
