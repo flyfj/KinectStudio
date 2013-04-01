@@ -425,13 +425,21 @@ namespace KinectMotionAnalyzer.Processors
                         {
                             if (cur_joint_status.ContainsKey(unit.singleJoint))
                             {
+                                string displaytext = cur_joint_status[unit.singleJoint].angle.ToString("F2") + "°";
+                                SolidColorBrush textColor = Brushes.Yellow;
+                                if (Math.Abs(cur_joint_status[unit.singleJoint].angle - unit.standard_angle_value) > unit.tolerance)
+                                {
+                                    displaytext += "\n " + unit.instruction_text;
+                                    textColor = Brushes.Red;
+                                }
+
                                 FormattedText formattedText = new FormattedText(
-                                    cur_joint_status[unit.singleJoint].angle.ToString("F2") + "°",
+                                    displaytext,
                                     CultureInfo.GetCultureInfo("en-us"),
                                     FlowDirection.LeftToRight,
                                     new Typeface("Verdana"),
                                     20,
-                                    Brushes.Yellow);
+                                    textColor);
 
                                 Point joint2DPos = SkeletonPointToScreen(skeleton.Joints[unit.singleJoint].Position);
                                 drawingContext.DrawText(formattedText, joint2DPos);
@@ -450,13 +458,21 @@ namespace KinectMotionAnalyzer.Processors
                         // show bone plane angle
                         if (cur_joint_status.ContainsKey(unit.boneJoint1))
                         {
+                            string displaytext = cur_joint_status[unit.boneJoint1].planeAngles[unit.boneJoint2][unit.plane].ToString("F2") + "°";
+                            SolidColorBrush textColor = Brushes.Yellow;
+                            if (Math.Abs(cur_joint_status[unit.boneJoint1].planeAngles[unit.boneJoint2][unit.plane] - unit.standard_angle_value) > unit.tolerance)
+                            {
+                                displaytext += "\n " + unit.instruction_text;
+                                textColor = Brushes.Red;
+                            }
+
                             FormattedText formattedText = new FormattedText(
-                                cur_joint_status[unit.boneJoint1].planeAngles[unit.boneJoint2][unit.plane].ToString("F2") + "°",
+                                displaytext,
                                 CultureInfo.GetCultureInfo("en-us"),
                                 FlowDirection.LeftToRight,
                                 new Typeface("Verdana"),
                                 20,
-                                Brushes.Yellow);
+                                textColor);
 
                             Point joint2DPos = SkeletonPointToScreen(skeleton.Joints[unit.boneJoint1].Position);
                             drawingContext.DrawText(formattedText, joint2DPos);

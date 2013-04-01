@@ -57,6 +57,14 @@ namespace KinectMotionAnalyzer.UI
 
         private void addBtn_Click(object sender, RoutedEventArgs e)
         {
+            // check if valid angle is input
+            double aval = 0;
+            if (!double.TryParse(angleInputBox.Text, out aval))
+            {
+                MessageBox.Show("Input valid angle number.");
+                return;
+            }
+
             // check if any of the checkbox is clicked
             List<JointType> checkedJoints = new List<JointType>();
             for (int i = 0; i < joint_checkbox_collection.Count; i++)
@@ -71,65 +79,85 @@ namespace KinectMotionAnalyzer.UI
                 MessageBox.Show("No joint selected");
                 return;
             }
-            else if (checkedJoints.Count == 1)
+            else if(checkedJoints.Count > 2)
             {
-                MeasurementUnit unit = new MeasurementUnit();
-                unit.ifSingleJoint = true;
-                unit.singleJoint = checkedJoints[0];
-                measureUnits.Add(unit);
-
-                // display on list
-                measureUnitList.Items.Add(unit.singleJoint.ToString());
+                MessageBox.Show("Invalid selection. Only one or two joints are supported.");
+                return;
             }
-            else if (checkedJoints.Count == 2)
+            else
             {
                 MeasurementUnit unit = new MeasurementUnit();
-                unit.ifSingleJoint = false;
-                unit.boneJoint1 = checkedJoints[0];
-                unit.boneJoint2 = checkedJoints[1];
 
-                // check if plane is selected
-                if (XYRadioBtn.IsChecked.Value)
-                    unit.plane = PlaneName.XYPlane;
-                else if (YZRadioBtn.IsChecked.Value)
-                    unit.plane = PlaneName.YZPlane;
-                else if (XZRadioBtn.IsChecked.Value)
-                    unit.plane = PlaneName.XZPlane;
-                else
+                if (checkedJoints.Count == 1)
                 {
-                    MessageBox.Show("Select plane first");
-                    return;
-                }
+                    unit.ifSingleJoint = true;
+                    unit.singleJoint = checkedJoints[0];
+                    unit.standard_angle_value = double.Parse(angleInputBox.Text);
 
-                // add to units
-                measureUnits.Add(unit);
+                    // allow user to input intuitive instruction
+                    if (measureInstructionTextBox.Text != string.Empty && measureInstructionTextBox.Text != defaultInstructionText)
+                    {
+                        // valid instruction
+                        unit.instruction_text = measureInstructionTextBox.Text;
 
-                // propose a text box to allow user to input intuitive instruction
-                // may need to create a new window
-
-                // add to display list
-                if (measureInstructionTextBox.Text != string.Empty && measureInstructionTextBox.Text != defaultInstructionText)
-                {
-                    measureUnitList.Items.Add(measureInstructionTextBox.Text);
+                        // add to display list
+                        measureUnitList.Items.Add(measureInstructionTextBox.Text);
+                    }
+                    else
+                        measureUnitList.Items.Add(unit.singleJoint.ToString());
 
                     // reset text
                     measureInstructionTextBox.Text = defaultInstructionText;
                 }
-                else
+                if (checkedJoints.Count == 2)
                 {
-                    measureUnitList.Items.Add(
-                       unit.boneJoint1.ToString() + " " +
-                       unit.boneJoint2.ToString() + " " +
-                       unit.plane.ToString());
+                    // check if plane is selected
+                    if (XYRadioBtn.IsChecked.Value)
+                        unit.plane = PlaneName.XYPlane;
+                    else if (YZRadioBtn.IsChecked.Value)
+                        unit.plane = PlaneName.YZPlane;
+                    else if (XZRadioBtn.IsChecked.Value)
+                        unit.plane = PlaneName.XZPlane;
+                    else
+                    {
+                        MessageBox.Show("Select plane first");
+                        return;
+                    }
+
+                    // set params
+                    unit.ifSingleJoint = false;
+                    unit.boneJoint1 = checkedJoints[0];
+                    unit.boneJoint2 = checkedJoints[1];
+                    unit.standard_angle_value = double.Parse(angleInputBox.Text);
+
+                    // allow user to input intuitive instruction
+                    if (measureInstructionTextBox.Text != string.Empty && measureInstructionTextBox.Text != defaultInstructionText)
+                    {
+                        unit.instruction_text = measureInstructionTextBox.Text;
+
+                        // add to display list
+                        measureUnitList.Items.Add(measureInstructionTextBox.Text);
+                    }
+                    else
+                    {
+                        measureUnitList.Items.Add(
+                            unit.boneJoint1.ToString() + " " +
+                            unit.boneJoint2.ToString() + " " +
+                            unit.plane.ToString());
+                    }
+
+                    // reset text
+                    measureInstructionTextBox.Text = defaultInstructionText;
                 }
+
+                // add to units
+                measureUnits.Add(unit);
             }
-            else
-                MessageBox.Show("Invalid selection. Only one or two joints are supported.");
         }
+
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-
             measureUnits = new List<MeasurementUnit>();
 
             // add all checkbox to collection

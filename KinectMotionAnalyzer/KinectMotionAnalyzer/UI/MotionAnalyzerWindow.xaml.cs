@@ -56,7 +56,7 @@ namespace KinectMotionAnalyzer.UI
         ArrayList overlap_frame_rec_buffer = new ArrayList(); // use to store record frames in memory
         List<Skeleton> skeleton_rec_buffer = new List<Skeleton>(); // record skeleton data
         List<byte[]> color_frame_rec_buffer = new List<byte[]>(); // record video frames
-        KinectAction rec_action = new KinectAction();   // buffer for recording an action
+        KinectAction rec_action;   // buffer for recording an action
 
         // motion analysis params
         private List<MeasurementUnit> toMeasureUnits;
@@ -166,12 +166,14 @@ namespace KinectMotionAnalyzer.UI
                 if (gestureCaptureBtn.Content.ToString() == "Stop Capture")
                 {
                     // consistent with skeleton data
-                    if (skeleton_rec_buffer.Count > 0)
+                    if (rec_action.Skeletons.Count > 0)
                     {
-                        byte[] colorData = new byte[frame.PixelDataLength];
-                        frame.CopyPixelDataTo(colorData);
-                        // just add first tracked skeleton, assume only one person is present
-                        color_frame_rec_buffer.Add(colorData);
+                        ColorFrameData colorData = new ColorFrameData();
+                        colorData.FrameData = new byte[frame.PixelDataLength];
+                        frame.CopyPixelDataTo(colorData.FrameData);
+                        colorData.FrameWidth = frame.Width;
+                        colorData.FrameHeight = frame.Height;
+                        rec_action.ColorFrames.Add(colorData);
                     }
                 }
 
@@ -209,7 +211,18 @@ namespace KinectMotionAnalyzer.UI
                 if (gestureCaptureBtn.Content.ToString() == "Stop Capture")
                 {
                     // just add first tracked skeleton, assume only one person is present
-                    skeleton_rec_buffer.Add(tracked_skeleton);
+                    SkeletonData ske = new SkeletonData();
+                    ske.Status = (int)SkeletonTrackingState.Tracked;
+                    ske.JointsData = tracked_skeleton;
+                    //foreach (JointType type in Enum.GetValues(typeof(JointType)))
+                    //{
+                    //    SingleJoint cur_joint = new SingleJoint();
+                    //    cur_joint.Type = (int)type;
+                    //    cur_joint.Pos = tracked_skeleton.Joints[type].Position;
+                    //    ske.JointsData.Add(cur_joint);
+                    //}
+
+                    rec_action.Skeletons.Add(ske);
                 }
 
                 if (kinect_data_manager.ifShowJointStatus)
@@ -290,7 +303,6 @@ namespace KinectMotionAnalyzer.UI
 
                     kinect_sensor.Start();
                 }
-
             }
             else
             {
@@ -299,7 +311,7 @@ namespace KinectMotionAnalyzer.UI
                 // prepare for replay
                 if (skeleton_rec_buffer != null)
                 {
-                    ActivateReplay(color_frame_rec_buffer, skeleton_rec_buffer);
+                    ActivateReplay(rec_action);
                     saveGestureBtn.IsEnabled = true;
                 }
 
@@ -312,28 +324,42 @@ namespace KinectMotionAnalyzer.UI
 
         private void saveGestureBtn_Click(object sender, RoutedEventArgs e)
         {
-            // save to file
-            string time = System.DateTime.Now.ToString("hh'-'mm'-'ss", CultureInfo.CurrentUICulture.DateTimeFormat);
+            //// save to file
+            //string time = System.DateTime.Now.ToString("hh'-'mm'-'ss", CultureInfo.CurrentUICulture.DateTimeFormat);
 
-            string gesture_name = (gestureComboBox.SelectedItem as ComboBoxItem).Content.ToString();
-            string savedir = "gdata\\"; //Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-            if(!Directory.Exists(savedir))
-                Directory.CreateDirectory(savedir);
+            //string gesture_name = (gestureComboBox.SelectedItem as ComboBoxItem).Content.ToString();
+            //string savedir = "gdata\\"; //Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+            //if(!Directory.Exists(savedir))
+            //    Directory.CreateDirectory(savedir);
 
-            string skeletonpath = savedir + gesture_name + "\\Kinect_skeleton_" + time + ".xml";
+            //string skeletonpath = savedir + gesture_name + "\\Kinect_skeleton_" + time + ".xml";
+
+            // save to database
 
             // save data from start label to end label
             int start_id = int.Parse(replay_startLabel.Content.ToString());
             int end_id = int.Parse(replay_endLabel.Content.ToString());
             // remove end part first so front id will not change
-            skeleton_rec_buffer.RemoveRange(end_id + 1, skeleton_rec_buffer.Count - end_id - 1);
-            skeleton_rec_buffer.RemoveRange(0, start_id);
-            KinectRecorder.WriteToSkeletonXMLFile(skeletonpath, skeleton_rec_buffer);
+            if (rec_action.ColorFrames.Count > 0 && rec_action.Skeletons.Count > 0)
+            {
+                rec_action.ColorFrames.RemoveRange(end_id + 1, rec_action.ColorFrames.Count - end_id - 1);
+                rec_action.ColorFrames.RemoveRange(0, start_id);
 
-            skeleton_rec_buffer.Clear();
-            frame_id = 0;
+                rec_action.Skeletons.RemoveRange(end_id + 1, rec_action.Skeletons.Count - end_id - 1);
+                rec_action.Skeletons.RemoveRange(0, start_id);
 
-            statusbarLabel.Content = "Save skeletons to file: " + skeletonpath;
+                KinectRecorder.WriteActionToDatabase(rec_action);
+            }
+            
+            //KinectRecorder.WriteToSkeletonXMLFile(skeletonpath, skeleton_rec_buffer);
+            //skeleton_rec_buffer.Clear();
+            //frame_id = 0; 
+            //statusbarLabel.Content = "Save skeletons to file: " + skeletonpath;
+
+            rec_action.ColorFrames.Clear();
+            rec_action.Skeletons.Clear();
+
+            statusbarLabel.Content = "Save action to database.";
 
             DeactivateReplay();
             saveGestureBtn.IsEnabled = false;
@@ -401,14 +427,14 @@ namespace KinectMotionAnalyzer.UI
         private void skeletonVideoSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             // valid only when kinect is stopped so no new data will come
-            if (isReplay && skeleton_rec_buffer.Count > 0)
+            if (isReplay && rec_action.Skeletons.Count > 0)
             {
                 // load new skeleton data
                 int cur_frame_id = (int)skeletonVideoSlider.Value;
-                if (skeleton_rec_buffer.Count > cur_frame_id && color_frame_rec_buffer.Count > cur_frame_id)
+                if (rec_action.Skeletons.Count > cur_frame_id && rec_action.ColorFrames.Count > cur_frame_id)
                 {
-                    kinect_data_manager.UpdateColorData(color_frame_rec_buffer[cur_frame_id] as byte[], 640, 480);
-                    kinect_data_manager.UpdateSkeletonData(skeleton_rec_buffer[cur_frame_id]);
+                    kinect_data_manager.UpdateColorData(rec_action.ColorFrames[cur_frame_id].FrameData, 640, 480);
+                    kinect_data_manager.UpdateSkeletonData(rec_action.Skeletons[cur_frame_id].JointsData);
                 }
 
                 // update label
@@ -418,7 +444,6 @@ namespace KinectMotionAnalyzer.UI
 
         private void gestureReplayBtn_Click(object sender, RoutedEventArgs e)
         {
-
             if (kinect_sensor != null && kinect_sensor.IsRunning)
                 return;
 
@@ -437,15 +462,16 @@ namespace KinectMotionAnalyzer.UI
 
                 statusbarLabel.Content = "Load gesture file from " + filename;
 
-                ActivateReplay(color_frame_rec_buffer, skeleton_rec_buffer);
+                ActivateReplay(rec_action);
 
                 isReplay = true;
             }
         }
 
-        private void ActivateReplay(List<byte[]> colorData, List<Skeleton> gesture)
+        private void ActivateReplay(KinectAction cur_action)
         {
-            if (gesture == null || gesture.Count == 0 || colorData == null || colorData.Count == 0)
+            if (cur_action.ColorFrames == null || cur_action.ColorFrames.Count == 0 || 
+                cur_action.Skeletons == null || cur_action.Skeletons.Count == 0)
             {
                 statusbarLabel.Content = "Replay gesture is empty.";
                 return;
@@ -454,7 +480,7 @@ namespace KinectMotionAnalyzer.UI
             //gesture_data = gesture;
 
             int min_frame_id = 0;
-            int max_frame_id = gesture.Count - 1;
+            int max_frame_id = Math.Min(cur_action.ColorFrames.Count, cur_action.Skeletons.Count) - 1;
 
             skeletonVideoSlider.IsEnabled = true;
             skeletonVideoSlider.Minimum = min_frame_id;
@@ -472,8 +498,8 @@ namespace KinectMotionAnalyzer.UI
             isReplay = true;
 
             // update view
-            kinect_data_manager.UpdateColorData(colorData[min_frame_id] as byte[], 640, 480);
-            kinect_data_manager.UpdateSkeletonData(gesture[min_frame_id]);
+            kinect_data_manager.UpdateColorData(cur_action.ColorFrames[min_frame_id].FrameData, 640, 480);
+            kinect_data_manager.UpdateSkeletonData(cur_action.Skeletons[min_frame_id].JointsData);
         }
 
         private void DeactivateReplay()
@@ -521,7 +547,7 @@ namespace KinectMotionAnalyzer.UI
 
         private void previewBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (previewBtn.Content.ToString() == "Preview Stream")
+            if (previewBtn.Content.ToString() == "Start Test")
             {
                 if (kinect_sensor != null)
                 {
@@ -529,7 +555,7 @@ namespace KinectMotionAnalyzer.UI
                     DeactivateReplay();
                     gestureCaptureBtn.IsEnabled = false;
                     gestureReplayBtn.IsEnabled = false;
-                    previewBtn.Content = "Stop Stream";
+                    previewBtn.Content = "Stop Test";
                     isStreaming = true;
                     kinect_data_manager.ifShowJointStatus = true;
 
@@ -598,7 +624,7 @@ namespace KinectMotionAnalyzer.UI
                     skeleton_rec_buffer.Clear();
                     overlap_frame_rec_buffer.Clear();
 
-                    previewBtn.Content = "Preview Stream";
+                    previewBtn.Content = "Start Test";
 
                     // save tracked elbow speed
                     //FileStream file = File.Open("d:\\temp\\test.txt", FileMode.Create);
@@ -617,6 +643,9 @@ namespace KinectMotionAnalyzer.UI
             gesture_recognizer = new GestureRecognizer();
             motion_assessor = new MotionAssessor();
             toMeasureUnits = new List<MeasurementUnit>();
+            rec_action = new KinectAction();
+            rec_action.ColorFrames = new List<ColorFrameData>();
+            rec_action.Skeletons = new List<SkeletonData>();
 
             // init kinect
             if (!InitKinect())

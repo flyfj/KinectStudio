@@ -303,10 +303,9 @@ namespace KinectMotionAnalyzer.Processors
         /// <summary>
         /// database access  
         /// </summary>
-        static public bool WriteActionToDatabase(List<ColorFrameData> colorData, List<SkeletonData> SkeData)
+        static public bool WriteActionToDatabase(KinectAction action)
         {
-            KinectAction action = new KinectAction { ColorFrames = colorData, Skeletons = SkeData };
-
+            // get database context
             using (MotionDBContext motionContext = new MotionDBContext("KinectMotionDB"))
             {
                 motionContext.Actions.Add(action);

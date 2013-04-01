@@ -32,7 +32,7 @@
             </Grid>
         </GroupBox>
         <ListBox x:Name="measureUnitList" HorizontalAlignment="Left" Height="164" Margin="529,434,0,0" VerticalAlignment="Top" Width="163"/>
-        <GroupBox Header="Planes" HorizontalAlignment="Left" Margin="557,37,0,0" VerticalAlignment="Top" Height="119" Width="91">
+        <GroupBox Header="Planes" HorizontalAlignment="Left" Margin="513,36,0,0" VerticalAlignment="Top" Height="119" Width="91">
             <Grid HorizontalAlignment="Left" Height="96" VerticalAlignment="Top" Width="81" Margin="0,0,-2,0">
                 <RadioButton x:Name="XYRadioBtn" Content="XY" HorizontalAlignment="Left" Margin="27,10,0,0" VerticalAlignment="Top"/>
                 <RadioButton x:Name="YZRadioBtn" Content="YZ" HorizontalAlignment="Left" Margin="28,41,0,0" VerticalAlignment="Top"/>
@@ -42,5 +42,8 @@
         <Image x:Name="coordinatesImg" HorizontalAlignment="Left" Height="161" Margin="529,170,0,0" VerticalAlignment="Top" Width="163" Source="/KinectMotionAnalyzer;component/Resources/skeletonCoordinates.png"/>
         <Button x:Name="okBtn" Content="Ok" HorizontalAlignment="Left" Margin="617,393,0,0" VerticalAlignment="Top" Width="75" Click="okBtn_Click"/>
         <TextBox x:Name="measureInstructionTextBox" HorizontalAlignment="Left" Height="23" Margin="529,356,0,0" TextWrapping="Wrap" Text="Input instruction here" VerticalAlignment="Top" Width="163" GotFocus="measureInstructionTextBox_GotFocus"/>
+        <GroupBox Header="Angel" HorizontalAlignment="Left" Margin="617,36,0,0" VerticalAlignment="Top" Height="82" Width="75">
+            <TextBox x:Name="angleInputBox" HorizontalAlignment="Center" Height="27" TextWrapping="Wrap" VerticalAlignment="Center" Width="63" Margin="0,23,0,0" Text="0" TextAlignment="Center"/>
+        </GroupBox>
     </Grid>
 </Window>

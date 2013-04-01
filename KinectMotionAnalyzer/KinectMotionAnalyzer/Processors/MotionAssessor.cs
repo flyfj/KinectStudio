@@ -36,10 +36,19 @@ namespace KinectMotionAnalyzer.Processors
         public JointType boneJoint2;
         public PlaneName plane;
 
+        // assessment quality
+        public double tolerance;    // max different allowed for measurement
+        public double standard_angle_value;
+
+        // instruction
+        public string instruction_text;
+
         public MeasurementUnit()
         {
             ifSingleJoint = true;
             singleJoint = JointType.ElbowRight;
+            tolerance = 10;
+            standard_angle_value = 0;
         }
     }
 
@@ -316,6 +325,8 @@ namespace KinectMotionAnalyzer.Processors
             {
                 JointStatus stat = null;
 
+
+
                 if (unit.ifSingleJoint)
                 {
                     if (cur_joint_status.ContainsKey(unit.singleJoint))
@@ -368,6 +379,7 @@ namespace KinectMotionAnalyzer.Processors
                     // add to dict
                     cur_joint_status.Add(unit.boneJoint1, stat);
                 }
+
             }
 
             //foreach (Joint joint in ske.Joints)
