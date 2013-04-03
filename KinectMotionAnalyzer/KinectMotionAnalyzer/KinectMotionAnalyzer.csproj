@@ -122,6 +122,15 @@
     <Compile Include="Model\SkeletonData.cs" />
     <Compile Include="Processors\GestureRecognizer.cs" />
     <Compile Include="Processors\KinectRecorder.cs" />
+    <Compile Include="UI\EnterWindow.xaml.cs">
+      <DependentUpon>EnterWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\MotionAnalyzerWindow_User.xaml.cs">
+      <DependentUpon>MotionAnalyzerWindow_User.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\MotionAnalyzerWindow_Trainer.xaml.cs">
+      <DependentUpon>MotionAnalyzerWindow_Trainer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\MeasurementConfigWin.xaml.cs">
       <DependentUpon>MeasurementConfigWin.xaml</DependentUpon>
     </Compile>
@@ -175,6 +184,18 @@
     <Resource Include="Resources\kinect_skeleton.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="UI\EnterWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\MotionAnalyzerWindow_User.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\MotionAnalyzerWindow_Trainer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UI\MeasurementConfigWin.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -199,7 +220,9 @@
   <ItemGroup>
     <Resource Include="Resources\skeletonCoordinates.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\Logo.jpg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
