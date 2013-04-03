@@ -409,7 +409,8 @@ namespace KinectMotionAnalyzer.Processors
                     DrawJoint(joint, drawingContext);
                 }
             }
-            
+            else
+            {
                 // show skeleton related to measurements
                 foreach (MeasurementUnit unit in toMeasureUnits)
                 {
@@ -417,7 +418,7 @@ namespace KinectMotionAnalyzer.Processors
                     {
                         // draw joint
                         Joint joint = skeleton.Joints[unit.singleJoint];
-                        DrawJoint(joint, drawingContext);   
+                        DrawJoint(joint, drawingContext);
 
                         // show measurement results if available
                         if (ifShowJointStatus && cur_joint_status != null)
@@ -478,6 +479,7 @@ namespace KinectMotionAnalyzer.Processors
                         }
                     }
                 }
+            }
         }
 
 
