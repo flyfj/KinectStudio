@@ -17,6 +17,7 @@ namespace KinectMotionAnalyzer.Processors
         ZAsix
     }
 
+    // plane name (relative to human body itself)
     public enum PlaneName
     {
         XYPlane,
@@ -47,7 +48,7 @@ namespace KinectMotionAnalyzer.Processors
         {
             ifSingleJoint = true;
             singleJoint = JointType.ElbowRight;
-            tolerance = 10;
+            tolerance = 20;
             standard_angle_value = 0;
         }
     }

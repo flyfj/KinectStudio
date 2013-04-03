@@ -372,7 +372,7 @@ namespace KinectMotionAnalyzer.Processors
         private void DrawBonesAndJoints(Skeleton skeleton, DrawingContext drawingContext)
         {
             // nothing to measure, display whole skeleton
-            if (toMeasureUnits == null || toMeasureUnits.Count == 0) 
+            if (toMeasureUnits == null || toMeasureUnits.Count == 0)
             {
                 // Render Torso
                 this.DrawBone(skeleton, drawingContext, JointType.Head, JointType.ShoulderCenter);
@@ -409,8 +409,7 @@ namespace KinectMotionAnalyzer.Processors
                     DrawJoint(joint, drawingContext);
                 }
             }
-            else
-            {
+            
                 // show skeleton related to measurements
                 foreach (MeasurementUnit unit in toMeasureUnits)
                 {
@@ -479,7 +478,6 @@ namespace KinectMotionAnalyzer.Processors
                         }
                     }
                 }
-            }
         }
 
 
