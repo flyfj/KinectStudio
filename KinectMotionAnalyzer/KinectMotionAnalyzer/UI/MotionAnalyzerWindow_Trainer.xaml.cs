@@ -58,7 +58,7 @@ namespace KinectMotionAnalyzer.UI
         List<byte[]> color_frame_rec_buffer; // record video frames
 
         // motion analysis params
-        private List<MeasurementUnit> toMeasureUnits;
+        public List<MeasurementUnit> toMeasureUnits;
 
 
         public MotionAnalyzerWindow_Trainer()
@@ -235,6 +235,9 @@ namespace KinectMotionAnalyzer.UI
 
         private void gestureCaptureBtn_Click(object sender, RoutedEventArgs e)
         {
+            if (kinect_sensor == null)
+                return;
+
             if (gestureCaptureBtn.Content.ToString() == "Capture")
             {
                 // check if type is selected
@@ -251,9 +254,6 @@ namespace KinectMotionAnalyzer.UI
                 gestureCaptureBtn.Content = "Stop Capture";
                 
                 // start kinect
-                if (kinect_sensor == null)
-                    return;
-
                 if (!kinect_sensor.IsRunning)
                 {
                     // can't replay since share same gesture buffer
@@ -265,6 +265,9 @@ namespace KinectMotionAnalyzer.UI
             }
             else
             {
+                if (kinect_sensor == null)
+                    return;
+
                 kinect_sensor.Stop();
 
                 // prepare for replay
