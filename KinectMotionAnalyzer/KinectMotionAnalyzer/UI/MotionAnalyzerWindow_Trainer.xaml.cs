@@ -56,6 +56,7 @@ namespace KinectMotionAnalyzer.UI
         ArrayList overlap_frame_rec_buffer; // use to store record frames in memory
         List<Skeleton> skeleton_rec_buffer; // record skeleton data
         List<byte[]> color_frame_rec_buffer; // record video frames
+        List<DepthImagePixel[]> depth_frame_rec_buffer;
 
         // motion analysis params
         public List<MeasurementUnit> toMeasureUnits;
@@ -91,6 +92,7 @@ namespace KinectMotionAnalyzer.UI
 
                 // initialize stream
                 kinect_sensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
+                kinect_sensor.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
                 if (ifDoSmoothing)
                 {
                     TransformSmoothParameters smoothingParam = new TransformSmoothParameters();
@@ -141,6 +143,7 @@ namespace KinectMotionAnalyzer.UI
                 // bind event handlers
                 kinect_sensor.ColorFrameReady += kinect_colorframe_ready;
                 kinect_sensor.SkeletonFrameReady += kinect_skeletonframe_ready;
+                kinect_sensor.DepthFrameReady += kinect_depthframe_ready;
             }
             else
             {
@@ -156,7 +159,6 @@ namespace KinectMotionAnalyzer.UI
 
         void kinect_colorframe_ready(object sender, ColorImageFrameReadyEventArgs e)
         {
-
             using (ColorImageFrame frame = e.OpenColorImageFrame())
             {
                 if (frame == null)
@@ -174,6 +176,28 @@ namespace KinectMotionAnalyzer.UI
                 }
 
                 kinect_data_manager.UpdateColorData(frame); 
+            }
+        }
+
+        void kinect_depthframe_ready(object sender, DepthImageFrameReadyEventArgs e)
+        {
+            using (DepthImageFrame frame = e.OpenDepthImageFrame())
+            {
+                if (frame == null)
+                    return;
+
+                if (gestureCaptureBtn.Content.ToString() == "Stop Capture")
+                {
+                    // consistent with skeleton data
+                    if (skeleton_rec_buffer.Count > 0)
+                    {
+                        DepthImagePixel[] depthData = new DepthImagePixel[frame.PixelDataLength];
+                        frame.CopyDepthImagePixelDataTo(depthData);
+                        depth_frame_rec_buffer.Add(depthData);
+                    }
+                }
+
+                //kinect_data_manager.UpdateDepthData(frame);
             }
         }
 
@@ -301,7 +325,9 @@ namespace KinectMotionAnalyzer.UI
             int start_id = int.Parse(replay_startLabel.Content.ToString());
             int end_id = int.Parse(replay_endLabel.Content.ToString());
             // remove end part first so front id will not change
-            if (color_frame_rec_buffer.Count > 0 && skeleton_rec_buffer.Count > 0)
+            if (color_frame_rec_buffer.Count > 0 && 
+                skeleton_rec_buffer.Count > 0 && 
+                depth_frame_rec_buffer.Count > 0)
             {
                 // clean data
                 color_frame_rec_buffer.RemoveRange(end_id + 1, color_frame_rec_buffer.Count - end_id - 1);
@@ -310,12 +336,17 @@ namespace KinectMotionAnalyzer.UI
                 skeleton_rec_buffer.RemoveRange(end_id + 1, skeleton_rec_buffer.Count - end_id - 1);
                 skeleton_rec_buffer.RemoveRange(0, start_id);
 
+                depth_frame_rec_buffer.RemoveRange(end_id + 1, depth_frame_rec_buffer.Count - end_id - 1);
+                depth_frame_rec_buffer.RemoveRange(0, start_id);
+
                 // convert to kinect action for saving
                 KinectAction rec_action = new KinectAction();
                 rec_action.ActionName = (gestureComboBox.SelectedItem as ComboBoxItem).Content.ToString();
                 rec_action.ColorFrames = new List<ColorFrameData>();
                 rec_action.Skeletons = new List<SkeletonData>();
+                rec_action.DepthFrames = new List<DepthMapData>();
 
+                // copy color frame
                 for (int i = 0; i < color_frame_rec_buffer.Count; i++)
                 {
                     ColorFrameData colorFrame = new ColorFrameData();
@@ -326,6 +357,21 @@ namespace KinectMotionAnalyzer.UI
 
                     rec_action.ColorFrames.Add(colorFrame);
                 }
+                // copy depth frame
+                for (int i = 0; i < depth_frame_rec_buffer.Count; i++)
+                {
+                    DepthMapData depthFrame = new DepthMapData();
+                    depthFrame.FrameWidth = kinect_sensor.DepthStream.FrameWidth;
+                    depthFrame.FrameHeight = kinect_sensor.DepthStream.FrameHeight;
+                    depthFrame.FrameId = i;
+                    depthFrame.DepthData = new short[depth_frame_rec_buffer[i].Length];
+                    // copy depth
+                    for (int j = 0; j < depth_frame_rec_buffer[i].Length; j++)
+                        depthFrame.DepthData[j] = depth_frame_rec_buffer[i][j].Depth;
+
+                    rec_action.DepthFrames.Add(depthFrame);
+                }
+                // copy skeleton
                 for (int i = 0; i < skeleton_rec_buffer.Count; i++)
                 {
                     SkeletonData skeData = new SkeletonData();

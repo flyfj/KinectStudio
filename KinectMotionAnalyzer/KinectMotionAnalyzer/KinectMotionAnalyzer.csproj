@@ -115,6 +115,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Model\DepthMapData.cs" />
     <Compile Include="Model\KinectAction.cs" />
     <Compile Include="Model\ColorFrameData.cs" />
     <Compile Include="Model\MotionDBContext.cs" />
