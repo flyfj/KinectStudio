@@ -57,6 +57,8 @@ namespace KinectMotionAnalyzer.UI
         List<Skeleton> skeleton_rec_buffer; // record skeleton data
         List<byte[]> color_frame_rec_buffer; // record video frames
         List<DepthImagePixel[]> depth_frame_rec_buffer;
+        // we are not directly using action to store all buffer data since action has different
+        // data type, e.g. skeleton which is harder to visualize
 
         // motion analysis params
         public List<MeasurementUnit> toMeasureUnits;
@@ -416,12 +418,39 @@ namespace KinectMotionAnalyzer.UI
             GestureConfigWin add_win = new GestureConfigWin();
             if (add_win.ShowDialog().Value == true)
             {
-                gesture_recognizer.AddGestureConfig(add_win.new_gesture_config);
+                // add action type to database
+                // check duplicate
+                foreach (string oldname in gestureComboBox.Items)
+                {
+                    if (oldname == add_win.new_gesture_config.name)
+                    {
+                        MessageBox.Show("This action name exists already. Change another name.");
+                        return;
+                    }
+                }
+
+                using (MotionDBContext motionContext = new MotionDBContext("KinectMotionDB"))
+                {
+                    try
+                    {
+                        ActionType new_type = new ActionType();
+                        new_type.Name = add_win.new_gesture_config.name;
+                        motionContext.ActionTypes.Add(new_type);
+                        motionContext.SaveChanges();
+                    }
+                    catch (System.Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                        return;
+                    }
+                }
+
+                //gesture_recognizer.AddGestureConfig(add_win.new_gesture_config);
 
                 // update list
                 UpdateGestureComboBox();
                 // update status bar
-                statusbarLabel.Content = "Add gesture: " + add_win.new_gesture_config.name;
+                statusbarLabel.Content = "Add new action: " + add_win.new_gesture_config.name;
             }
         }
 
@@ -535,8 +564,8 @@ namespace KinectMotionAnalyzer.UI
 
             replay_setStartBtn.IsEnabled = true;
             replay_startLabel.Content = min_frame_id.ToString();
-            replay_setEndBtn.IsEnabled = true;
-            replay_endLabel.Content = max_frame_id;
+            //replay_setEndBtn.IsEnabled = true;
+            //replay_endLabel.Content = max_frame_id;
 
             keyframeConfigBtn.IsEnabled = true;
 
