@@ -74,12 +74,6 @@
     <OutputPath>bin\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Emgu.CV">
-      <HintPath>C:\Emgu\bin\Emgu.CV.dll</HintPath>
-    </Reference>
-    <Reference Include="Emgu.Util">
-      <HintPath>C:\Emgu\bin\Emgu.Util.dll</HintPath>
-    </Reference>
     <Reference Include="EntityFramework">
       <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -115,6 +109,15 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Migrations\201304141650404_new data.cs" />
+    <Compile Include="Migrations\201304141650404_new data.Designer.cs">
+      <DependentUpon>201304141650404_new data.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201304141713194_add action type.cs" />
+    <Compile Include="Migrations\201304141713194_add action type.Designer.cs">
+      <DependentUpon>201304141713194_add action type.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\DepthMapData.cs" />
     <Compile Include="Model\KinectAction.cs" />
     <Compile Include="Model\ColorFrameData.cs" />
@@ -169,6 +172,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="Migrations\201304141650404_new data.resx">
+      <DependentUpon>201304141650404_new data.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201304141713194_add action type.resx">
+      <DependentUpon>201304141713194_add action type.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

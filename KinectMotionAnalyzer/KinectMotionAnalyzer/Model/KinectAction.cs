@@ -19,4 +19,13 @@ namespace KinectMotionAnalyzer.Model
         public List<DepthMapData> DepthFrames { get; set; }
         public List<SkeletonData> Skeletons { get; set; }
     }
+
+    class ActionType
+    {
+        [Key]
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+
+    }
 }

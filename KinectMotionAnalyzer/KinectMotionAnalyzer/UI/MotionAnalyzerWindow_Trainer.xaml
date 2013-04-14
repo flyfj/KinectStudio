@@ -9,13 +9,13 @@
                 <Image Name="ske_disp_img" Height="414" Margin="37,6,37,13" Stretch="Fill" />
             </Grid>
         </GroupBox>
-        <Slider HorizontalAlignment="Left" Interval="1" IsEnabled="False" IsSnapToTickEnabled="True" Margin="77,487,0,199" Name="skeletonVideoSlider" Width="345" ValueChanged="skeletonVideoSlider_ValueChanged" />
+        <Slider HorizontalAlignment="Left" Interval="1" IsEnabled="False" IsSnapToTickEnabled="True" Margin="77,487,0,199" Name="skeletonVideoSlider" Width="345" ValueChanged="skeletonVideoSlider_ValueChanged" IsSelectionRangeEnabled="True" />
         <Label BorderThickness="1" Content="0" FontStretch="Normal" Height="32" HorizontalAlignment="Left" Margin="448,478,0,0" Name="skeletonSliderLabel" VerticalAlignment="Top" Width="89" HorizontalContentAlignment="Center" FontSize="13" VerticalContentAlignment="Center" Background="#FFC5B8B8" />
         <StatusBar Background="#FFB49788" FontSize="18" Height="43" HorizontalAlignment="Left" Margin="10,657,0,0" Name="kinectStatusBar" VerticalAlignment="Top" Width="964">
             <Label Content="Welcome" Name="statusbarLabel" FontStretch="Medium" FontSize="14" />
         </StatusBar>
         <Button Content="Set Start" Height="34" HorizontalAlignment="Left" Margin="125,598,0,0" Name="replay_setStartBtn" VerticalAlignment="Top" Width="92" FontSize="14" Click="replay_setStartBtn_Click" />
-        <Button Content="Set End" Height="34" HorizontalAlignment="Left" Margin="313,599,0,0" Name="replay_setEndBtn" VerticalAlignment="Top" Width="92" FontSize="14" Click="replay_setEndBtn_Click" />
+        <Button Content="Set End" Height="34" HorizontalAlignment="Left" Margin="313,599,0,0" Name="replay_setEndBtn" VerticalAlignment="Top" Width="92" FontSize="14" Click="replay_setEndBtn_Click" IsEnabled="False" />
         <Label BorderThickness="1" Content="0" FontSize="13" FontStretch="Normal" Height="32" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="410,600,0,0" Name="replay_endLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="56" Background="#FFC3B9B9" />
         <Label BorderThickness="1" Content="0" FontSize="13" FontStretch="Normal" Height="32" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="222,600,0,0" Name="replay_startLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="55" Background="#FFCBC0C0" />
         <GroupBox Header="Action Management" Height="316" HorizontalAlignment="Left" Margin="654,87,0,0" Name="groupBox1" VerticalAlignment="Top" Width="342" FontSize="16">

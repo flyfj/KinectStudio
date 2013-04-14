@@ -13,9 +13,9 @@ using System.Windows.Media;
 using System.Windows;
 using Microsoft.Kinect;
 using System.Linq.Expressions;
-using Emgu.CV;
-using Emgu.Util;
-using Emgu.CV.Structure;
+//using Emgu.CV;
+//using Emgu.Util;
+//using Emgu.CV.Structure;
 
 
 namespace KinectMotionAnalyzer.Processors

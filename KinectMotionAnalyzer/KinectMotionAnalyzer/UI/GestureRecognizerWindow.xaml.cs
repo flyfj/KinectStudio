@@ -17,9 +17,9 @@ using System.Windows.Shapes;
 using Microsoft.Kinect;
 using Microsoft.Win32;
 using System.Diagnostics;
-using Emgu.CV;
-using Emgu.CV.Structure;
-using Emgu.Util;
+//using Emgu.CV;
+//using Emgu.CV.Structure;
+//using Emgu.Util;
 
 
 namespace KinectMotionAnalyzer.UI
@@ -629,32 +629,32 @@ namespace KinectMotionAnalyzer.UI
                         saveDialog.FilterIndex = 2;
                         saveDialog.RestoreDirectory = true;
 
-                        if (saveDialog.ShowDialog().Value)
-                        {
-                            statusbarLabel.Content = "Saving video...";
+                        //if (saveDialog.ShowDialog().Value)
+                        //{
+                        //    statusbarLabel.Content = "Saving video...";
 
-                            string videofile = saveDialog.FileName.ToString();
-                            VideoWriter videoWriter = new VideoWriter(videofile, CvInvoke.CV_FOURCC('M', 'J', 'P', 'G'), 15,
-                                fwidth, fheight, true);
+                        //    string videofile = saveDialog.FileName.ToString();
+                        //    VideoWriter videoWriter = new VideoWriter(videofile, CvInvoke.CV_FOURCC('M', 'J', 'P', 'G'), 15,
+                        //        fwidth, fheight, true);
 
-                            if (videoWriter == null)
-                                MessageBox.Show("Fail to save video. Check if codec has been installed.");
-                            else
-                            {
-                                for (int i = 0; i < frame_rec_buffer.Count; i++)
-                                {
-                                    // write to video file
-                                    Emgu.CV.Image<Bgr, byte> cvImg =
-                                        new Emgu.CV.Image<Bgr, byte>(frame_rec_buffer[i] as Bitmap);
+                        //    if (videoWriter == null)
+                        //        MessageBox.Show("Fail to save video. Check if codec has been installed.");
+                        //    else
+                        //    {
+                        //        for (int i = 0; i < frame_rec_buffer.Count; i++)
+                        //        {
+                        //            // write to video file
+                        //            Emgu.CV.Image<Bgr, byte> cvImg =
+                        //                new Emgu.CV.Image<Bgr, byte>(frame_rec_buffer[i] as Bitmap);
 
-                                    videoWriter.WriteFrame<Bgr, byte>(cvImg);
-                                }
+                        //            videoWriter.WriteFrame<Bgr, byte>(cvImg);
+                        //        }
 
-                                videoWriter.Dispose();
+                        //        videoWriter.Dispose();
 
-                                statusbarLabel.Content = "Video saved to " + videofile;
-                            }
-                        }
+                        //        statusbarLabel.Content = "Video saved to " + videofile;
+                        //    }
+                        //}
 
                     }
 

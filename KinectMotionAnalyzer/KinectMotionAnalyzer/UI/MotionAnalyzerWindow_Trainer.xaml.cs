@@ -18,9 +18,9 @@ using System.Threading;
 using Microsoft.Kinect;
 using Microsoft.Win32;
 using System.Diagnostics;
-using Emgu.CV;
-using Emgu.CV.Structure;
-using Emgu.Util;
+//using Emgu.CV;
+//using Emgu.CV.Structure;
+//using Emgu.Util;
 using KinectMotionAnalyzer.Model;
 
 
@@ -48,7 +48,7 @@ namespace KinectMotionAnalyzer.UI
         bool isRecognition = false;
         bool isStreaming = false;
         bool ifDoSmoothing = true;
-        bool isCalculating = false; // a lock param for multithreading
+        bool isCalculating = false; // a lock param for multi-threading
 
         // record params
         private int frame_id = 0;
@@ -320,7 +320,7 @@ namespace KinectMotionAnalyzer.UI
             //string skeletonpath = savedir + gesture_name + "\\Kinect_skeleton_" + time + ".xml";
 
             // save to database
-
+            statusbarLabel.Content = "Saving to database...";
             // save data from start label to end label
             int start_id = int.Parse(replay_startLabel.Content.ToString());
             int end_id = int.Parse(replay_endLabel.Content.ToString());
@@ -390,7 +390,10 @@ namespace KinectMotionAnalyzer.UI
                     rec_action.Skeletons.Add(skeData);
                 }
 
-                KinectRecorder.WriteActionToDatabase(rec_action);
+                if (KinectRecorder.WriteActionToDatabase(rec_action))
+                    statusbarLabel.Content = "Finish saving to database.";
+                else
+                    statusbarLabel.Content = "Fail to save to database.";
             }
             
             //KinectRecorder.WriteToSkeletonXMLFile(skeletonpath, skeleton_rec_buffer);
@@ -565,17 +568,24 @@ namespace KinectMotionAnalyzer.UI
 
         private void replay_setStartBtn_Click(object sender, RoutedEventArgs e)
         {
+            if (!skeletonVideoSlider.IsSelectionRangeEnabled)
+                skeletonVideoSlider.IsSelectionRangeEnabled = true;
+
+            skeletonVideoSlider.SelectionStart = skeletonVideoSlider.Value;
             replay_startLabel.Content = skeletonVideoSlider.Value.ToString();
+
+            replay_setEndBtn.IsEnabled = true;
         }
 
         private void replay_setEndBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (skeletonVideoSlider.Value < double.Parse(replay_startLabel.Content.ToString()))
+            if (skeletonVideoSlider.Value < skeletonVideoSlider.SelectionStart)
             {
                 MessageBox.Show("End frame can't be earlier than start frame.");
                 return;
             }
 
+            skeletonVideoSlider.SelectionEnd = skeletonVideoSlider.Value;
             replay_endLabel.Content = skeletonVideoSlider.Value;
         }
 
@@ -596,6 +606,7 @@ namespace KinectMotionAnalyzer.UI
             overlap_frame_rec_buffer = new ArrayList();
             skeleton_rec_buffer = new List<Skeleton>();
             color_frame_rec_buffer = new List<byte[]>();
+            depth_frame_rec_buffer = new List<DepthImagePixel[]>();
 
             // init kinect
             if (!InitKinect())
@@ -611,6 +622,34 @@ namespace KinectMotionAnalyzer.UI
             // load gesture config and update ui
             gesture_recognizer.LoadAllGestureConfig();
             UpdateGestureComboBox();
+        }
+
+        private void InitFromDatabase()
+        {
+            //using (MotionDBContext motionContext = new MotionDBContext("KinectMotionDB"))
+            //{
+            //    try
+            //    {
+            //        //if (motionContext.Database.Exists())
+            //        //    motionContext.Database.Delete();
+
+            //        motionContext.Actions.Add(action);
+            //        motionContext.SaveChanges();
+            //    }
+            //    catch (System.Exception ex)
+            //    {
+            //        MessageBox.Show(ex.Message);
+            //        return false;
+            //    }
+
+            //    var query = from ac in motionContext.Actions
+            //                select ac;
+
+            //    foreach (var q in query)
+            //    {
+            //        Console.WriteLine((q as KinectAction).Id);
+            //    }
+            //}
         }
 
         private void measureConfigBtn_Click(object sender, RoutedEventArgs e)

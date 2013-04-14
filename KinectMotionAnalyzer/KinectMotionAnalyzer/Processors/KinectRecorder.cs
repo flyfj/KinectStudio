@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.Windows.Forms;
 using Microsoft.Kinect;
 using KinectMotionAnalyzer.Model;
 
@@ -308,8 +309,19 @@ namespace KinectMotionAnalyzer.Processors
             // get database context
             using (MotionDBContext motionContext = new MotionDBContext("KinectMotionDB"))
             {
-                motionContext.Actions.Add(action);
-                motionContext.SaveChanges();
+                try
+                {
+                    //if (motionContext.Database.Exists())
+                    //    motionContext.Database.Delete();
+
+                    motionContext.Actions.Add(action);
+                    motionContext.SaveChanges();
+                }
+                catch (System.Exception ex)
+                {
+                	MessageBox.Show(ex.Message);
+                    return false;
+                }
 
                 var query = from ac in motionContext.Actions
                             select ac;
