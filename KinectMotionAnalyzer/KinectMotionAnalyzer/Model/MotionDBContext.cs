@@ -12,7 +12,7 @@ namespace KinectMotionAnalyzer.Model
         public DbSet<KinectAction> Actions { get; set; }
         public DbSet<ActionType> ActionTypes { get; set; }
 
-        public MotionDBContext() : base("KinectMotionDB") { }
+        public MotionDBContext() : base("MotionDB") { }
         public MotionDBContext(string dbname) : base(dbname) { }
 
     }

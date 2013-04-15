@@ -99,7 +99,6 @@ namespace KinectMotionAnalyzer.UI
                     {
                         // valid instruction
                         unit.instruction_text = measureInstructionTextBox.Text;
-
                         // add to display list
                         measureUnitList.Items.Add(measureInstructionTextBox.Text);
                     }
@@ -217,9 +216,5 @@ namespace KinectMotionAnalyzer.UI
             measureInstructionTextBox.Text = string.Empty;
         }
 
-
-        
-
-        
     }
 }

@@ -18,6 +18,7 @@ using System.Threading;
 using Microsoft.Kinect;
 using Microsoft.Win32;
 using System.Diagnostics;
+using System.Data.Entity;
 //using Emgu.CV;
 //using Emgu.CV.Structure;
 //using Emgu.Util;
@@ -38,6 +39,7 @@ namespace KinectMotionAnalyzer.UI
         private KinectDataManager kinect_data_manager;
         private KinectSensor kinect_sensor;
         private MotionAssessor motion_assessor = null;
+        private MotionDBContext dbcontext = null;  // database connection
 
         // recognition
         private GestureRecognizer gesture_recognizer = null;
@@ -226,9 +228,6 @@ namespace KinectMotionAnalyzer.UI
                     }
                 }
 
-                if (tracked_skeleton == null)
-                    return;
-
                 // if capturing, add to gesture data
                 if (gestureCaptureBtn.Content.ToString() == "Stop Capture")
                 {
@@ -267,7 +266,7 @@ namespace KinectMotionAnalyzer.UI
             if (gestureCaptureBtn.Content.ToString() == "Capture")
             {
                 // check if type is selected
-                if (gestureComboBox.SelectedIndex <= 0)
+                if (actionComboBox.SelectedIndex <= 0)
                 {
                     MessageBox.Show("Select an action type before capturing.");
                     return;
@@ -343,7 +342,7 @@ namespace KinectMotionAnalyzer.UI
 
                 // convert to kinect action for saving
                 KinectAction rec_action = new KinectAction();
-                rec_action.ActionName = (gestureComboBox.SelectedItem as ComboBoxItem).Content.ToString();
+                rec_action.ActionName = (actionComboBox.SelectedItem as ComboBoxItem).Content.ToString();
                 rec_action.ColorFrames = new List<ColorFrameData>();
                 rec_action.Skeletons = new List<SkeletonData>();
                 rec_action.DepthFrames = new List<DepthMapData>();
@@ -377,23 +376,27 @@ namespace KinectMotionAnalyzer.UI
                 for (int i = 0; i < skeleton_rec_buffer.Count; i++)
                 {
                     SkeletonData skeData = new SkeletonData();
-                    skeData.Status = (int)skeleton_rec_buffer[i].TrackingState;
-                    skeData.JointsData = new List<SingleJoint>();
-                    foreach (JointType jtype in Enum.GetValues(typeof(JointType)))
+                    if (skeleton_rec_buffer[i] != null)
                     {
-                        SingleJoint cur_joint = new SingleJoint();
-                        cur_joint.PosX = skeleton_rec_buffer[i].Joints[jtype].Position.X;
-                        cur_joint.PosY = skeleton_rec_buffer[i].Joints[jtype].Position.Y;
-                        cur_joint.PosZ = skeleton_rec_buffer[i].Joints[jtype].Position.Z;
-                        cur_joint.Type = (int)jtype;
-                        skeData.JointsData.Add(cur_joint);
+                        skeData.Status = (int)skeleton_rec_buffer[i].TrackingState;
+                        skeData.JointsData = new List<SingleJoint>();
+                        foreach (JointType jtype in Enum.GetValues(typeof(JointType)))
+                        {
+                            SingleJoint cur_joint = new SingleJoint();
+                            cur_joint.PosX = skeleton_rec_buffer[i].Joints[jtype].Position.X;
+                            cur_joint.PosY = skeleton_rec_buffer[i].Joints[jtype].Position.Y;
+                            cur_joint.PosZ = skeleton_rec_buffer[i].Joints[jtype].Position.Z;
+                            cur_joint.Type = (int)jtype;
+                            skeData.JointsData.Add(cur_joint);
+                        }
                     }
 
                     rec_action.Skeletons.Add(skeData);
                 }
 
                 if (KinectRecorder.WriteActionToDatabase(rec_action))
-                    statusbarLabel.Content = "Finish saving to database.";
+                    statusbarLabel.Content = "Finish saving to database: " + 
+                        color_frame_rec_buffer.Count + "frames";
                 else
                     statusbarLabel.Content = "Fail to save to database.";
             }
@@ -420,16 +423,13 @@ namespace KinectMotionAnalyzer.UI
             {
                 // add action type to database
                 // check duplicate
-                foreach (string oldname in gestureComboBox.Items)
+                if (actionComboBox.Items.Contains(add_win.new_gesture_config.name))
                 {
-                    if (oldname == add_win.new_gesture_config.name)
-                    {
-                        MessageBox.Show("This action name exists already. Change another name.");
-                        return;
-                    }
+                    MessageBox.Show("This action name exists already. Change another name.");
+                    return;
                 }
 
-                using (MotionDBContext motionContext = new MotionDBContext("KinectMotionDB"))
+                using (MotionDBContext motionContext = new MotionDBContext())
                 {
                     try
                     {
@@ -457,20 +457,35 @@ namespace KinectMotionAnalyzer.UI
         private void remove_gesture_btn_Click(object sender, RoutedEventArgs e)
         {
             // remove gesture config of current selected one
-            int gid = gestureComboBox.SelectedIndex;
-            if (gid == 0)    // can't delete default one
+            int gid = actionComboBox.SelectedIndex;
+            // can't delete default one
+            if (gid == 0)
             {
                 MessageBox.Show("Select a valid gesture to remove.");
                 return;
             }
 
-            ComboBoxItem toRemoveItem = gestureComboBox.Items[gid] as ComboBoxItem;
-            gesture_recognizer.RemoveGestureConfig(toRemoveItem.Content.ToString());
+            ComboBoxItem toRemoveItem = actionComboBox.Items[gid] as ComboBoxItem;
+            try
+            {
+                // remove type
+                ActionType toRemoveType = dbcontext.ActionTypes.FirstOrDefault(x => x.Name == toRemoveItem.Content.ToString());
+                dbcontext.ActionTypes.Remove(toRemoveType);
+                // remove actions
+                //var res = dbcontext.Actions.Select(x => x.ActionName == toRemoveItem.Content.ToString());
+                // update
+                dbcontext.SaveChanges();
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            //gesture_recognizer.RemoveGestureConfig(toRemoveItem.Content.ToString());
 
             // update ui
             UpdateGestureComboBox();
             // update status bar
-            statusbarLabel.Content = "Remove gesture: " + toRemoveItem.Content;
+            statusbarLabel.Content = "Remove action: " + toRemoveItem.Content;
         }
 
         #endregion
@@ -478,22 +493,36 @@ namespace KinectMotionAnalyzer.UI
         private void UpdateGestureComboBox()
         {
 
-            gestureComboBox.Items.Clear();
+            actionComboBox.Items.Clear();
             // add prompt item
             ComboBoxItem prompt = new ComboBoxItem();
             prompt.Content = "Choose Gesture";
             prompt.IsEnabled = false;
             prompt.IsSelected = true;
-            gestureComboBox.Items.Add(prompt);
+            actionComboBox.Items.Add(prompt);
 
-            // add item for each gesture type
-            foreach (string gname in gesture_recognizer.GESTURE_LIST.Values)
+            // update from database
+            try
             {
-                ComboBoxItem item = new ComboBoxItem();
-                item.Content = gname;
-                gestureComboBox.Items.Add(item);
+                foreach (ActionType action_type in dbcontext.ActionTypes)
+                {
+                    ComboBoxItem item = new ComboBoxItem();
+                    item.Content = action_type.Name;
+                    actionComboBox.Items.Add(item);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
 
+            //// add item for each gesture type
+            //foreach (string gname in gesture_recognizer.GESTURE_LIST.Values)
+            //{
+            //    ComboBoxItem item = new ComboBoxItem();
+            //    item.Content = gname;
+            //    gestureComboBox.Items.Add(item);
+            //}
         }
 
         #region gesture_replay
@@ -521,25 +550,69 @@ namespace KinectMotionAnalyzer.UI
             if (kinect_sensor != null && kinect_sensor.IsRunning)
                 return;
 
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.DefaultExt = ".xml";
-            dialog.FileName = "Skeleton";
-            dialog.Filter = "Skeleton data file (.xml)|*.xml";
-
-            Nullable<bool> result = dialog.ShowDialog();
-
-            if (result == true)
+            // read action bank from database and populate window control to show
+            ActionDatabasePreview preview_win = new ActionDatabasePreview();
+            preview_win.dbActionTypeList.Items.Clear();
+            try
             {
-                string filename = dialog.FileName;
-                // test: read skeleton data and display
-                KinectRecorder.ReadFromSkeletonXMLFile(filename, out skeleton_rec_buffer);
-
-                statusbarLabel.Content = "Load gesture file from " + filename;
-
-                ActivateReplay(color_frame_rec_buffer, skeleton_rec_buffer);
-
-                isReplay = true;
+                foreach (ActionType cur_type in dbcontext.ActionTypes)
+                {
+                    preview_win.dbActionTypeList.Items.Add(cur_type.Name);
+                }
             }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            if (preview_win.ShowDialog().Value)
+            {
+                // get replay action id
+                if (preview_win.selectedActionId < 0)
+                    return;
+
+                dbcontext.Actions.Load();
+                var query = from ac in dbcontext.Actions
+                                 where ac.Id == preview_win.selectedActionId
+                                 select ac;
+                
+                foreach (var q in query)
+                {
+                    KinectAction sel_action = q as KinectAction;
+                    if (!Tools.ConvertFromKinectAction(
+                            sel_action,
+                            out color_frame_rec_buffer,
+                            out depth_frame_rec_buffer,
+                            out skeleton_rec_buffer))
+                    {
+                        MessageBox.Show("Fail to load database action.");
+                        return;
+                    }
+
+                    break;
+                }
+                                          
+                // activate replay
+                ActivateReplay(color_frame_rec_buffer, skeleton_rec_buffer);
+            }
+
+            // obsolete format
+            //OpenFileDialog dialog = new OpenFileDialog();
+            //dialog.DefaultExt = ".xml";
+            //dialog.FileName = "Skeleton";
+            //dialog.Filter = "Skeleton data file (.xml)|*.xml";
+
+            //Nullable<bool> result = dialog.ShowDialog();
+
+            //if (result == true)
+            //{
+            //    string filename = dialog.FileName;
+            //    // test: read skeleton data and display
+            //    KinectRecorder.ReadFromSkeletonXMLFile(filename, out skeleton_rec_buffer);
+            //    statusbarLabel.Content = "Load gesture file from " + filename;
+            //    ActivateReplay(color_frame_rec_buffer, skeleton_rec_buffer);
+            //    isReplay = true;
+            //}
         }
 
         private void ActivateReplay(List<byte[]> color_frame_rec_buffer, List<Skeleton> skeleton_rec_buffer)
@@ -559,13 +632,15 @@ namespace KinectMotionAnalyzer.UI
             skeletonVideoSlider.IsEnabled = true;
             skeletonVideoSlider.Minimum = min_frame_id;
             skeletonVideoSlider.Maximum = max_frame_id;
+            skeletonVideoSlider.SelectionStart = min_frame_id;
+            skeletonVideoSlider.SelectionEnd = max_frame_id;
             skeletonVideoSlider.Value = min_frame_id;
             skeletonSliderLabel.Content = min_frame_id.ToString();
 
             replay_setStartBtn.IsEnabled = true;
             replay_startLabel.Content = min_frame_id.ToString();
             //replay_setEndBtn.IsEnabled = true;
-            //replay_endLabel.Content = max_frame_id;
+            replay_endLabel.Content = max_frame_id;
 
             keyframeConfigBtn.IsEnabled = true;
 
@@ -636,6 +711,16 @@ namespace KinectMotionAnalyzer.UI
             skeleton_rec_buffer = new List<Skeleton>();
             color_frame_rec_buffer = new List<byte[]>();
             depth_frame_rec_buffer = new List<DepthImagePixel[]>();
+            try
+            {
+                dbcontext = new MotionDBContext();
+                //MessageBox.Show(dbcontext.Actions.Count().ToString());
+                statusbarLabel.Content = "Connected to database.";
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show("Can't connect to database: " + ex.Message);
+            }
 
             // init kinect
             if (!InitKinect())
@@ -649,36 +734,8 @@ namespace KinectMotionAnalyzer.UI
             DeactivateReplay();
 
             // load gesture config and update ui
-            gesture_recognizer.LoadAllGestureConfig();
+            //gesture_recognizer.LoadAllGestureConfig();
             UpdateGestureComboBox();
-        }
-
-        private void InitFromDatabase()
-        {
-            //using (MotionDBContext motionContext = new MotionDBContext("KinectMotionDB"))
-            //{
-            //    try
-            //    {
-            //        //if (motionContext.Database.Exists())
-            //        //    motionContext.Database.Delete();
-
-            //        motionContext.Actions.Add(action);
-            //        motionContext.SaveChanges();
-            //    }
-            //    catch (System.Exception ex)
-            //    {
-            //        MessageBox.Show(ex.Message);
-            //        return false;
-            //    }
-
-            //    var query = from ac in motionContext.Actions
-            //                select ac;
-
-            //    foreach (var q in query)
-            //    {
-            //        Console.WriteLine((q as KinectAction).Id);
-            //    }
-            //}
         }
 
         private void measureConfigBtn_Click(object sender, RoutedEventArgs e)

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Kinect;
 using System.Windows.Media.Media3D;
+using KinectMotionAnalyzer.Model;
 
 
 namespace KinectMotionAnalyzer.Processors
@@ -48,6 +49,56 @@ namespace KinectMotionAnalyzer.Processors
             double angle = Math.Acos(val / (vec1_norm * vec2_norm));
 
             return angle * 180 / Math.PI;
+        }
+
+        static public bool ConvertFromKinectAction(KinectAction action,
+            out List<byte[]> color_frames,
+            out List<DepthImagePixel[]> depth_frames,
+            out List<Skeleton> skeleton_buffer)
+        {
+            if (action.ColorFrames == null || action.DepthFrames == null || action.Skeletons == null)
+            {
+                // clear
+                color_frames = new List<byte[]>();
+                depth_frames = new List<DepthImagePixel[]>();
+                skeleton_buffer = new List<Skeleton>();
+                return false;
+            }
+
+            // color frames
+            color_frames = new List<byte[]>();
+            foreach (ColorFrameData colorData in action.ColorFrames)
+            {
+                color_frames.Add(colorData.FrameData);
+            }
+            // skeletons
+            skeleton_buffer = new List<Skeleton>();
+            foreach (SkeletonData skeData in action.Skeletons)
+            {
+                Skeleton cur_ske = new Skeleton();
+                foreach (SingleJoint joint in skeData.JointsData)
+                {
+                    Joint cur_joint = new Joint();
+                    SkeletonPoint point = new SkeletonPoint();
+                    point.X = joint.PosX;
+                    point.Y = joint.PosY;
+                    point.Z = joint.PosZ;
+                    cur_joint.Position = point;
+                    cur_ske.Joints[(JointType)joint.Type] = cur_joint;
+                }
+            }
+            // depth image
+            depth_frames = new List<DepthImagePixel[]>();
+            foreach (DepthMapData dData in action.DepthFrames)
+            {
+                DepthImagePixel[] depthPixels = new DepthImagePixel[dData.DepthData.Length];
+                for (int i = 0; i < dData.DepthData.Length; i++ )
+                {
+                    depthPixels[i].Depth = dData.DepthData[i];
+                }
+            }
+
+            return true;
         }
     }
 }

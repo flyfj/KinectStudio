@@ -1,0 +1,24 @@
+﻿<Window x:Class="KinectMotionAnalyzer.UI.ActionDatabasePreview"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Action Picker" Height="352.561" Width="483.122">
+    <Grid>
+        <ListView x:Name="dbActionTypeList" HorizontalAlignment="Left" Height="160" Margin="50,71,0,0" VerticalAlignment="Top" Width="208" SelectionChanged="dbActionTypeList_SelectionChanged">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <ListView x:Name="dbActionIdList" HorizontalAlignment="Left" Height="160" Margin="296,71,0,0" VerticalAlignment="Top" Width="130">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Label Content="Action Type" HorizontalAlignment="Left" Margin="102,30,0,0" VerticalAlignment="Top" Width="104" FontSize="16" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+        <Label x:Name="dbActionId" Content="Action Id" HorizontalAlignment="Left" Margin="310,30,0,0" VerticalAlignment="Top" Width="102" FontSize="16" FontWeight="Bold" HorizontalContentAlignment="Center"/>
+        <Button x:Name="dbActionPreviewBtn" Content="Load" HorizontalAlignment="Left" Margin="308,256,0,0" VerticalAlignment="Top" Width="104" Height="38" FontSize="16" Click="dbActionPreviewBtn_Click"/>
+    </Grid>
+</Window>

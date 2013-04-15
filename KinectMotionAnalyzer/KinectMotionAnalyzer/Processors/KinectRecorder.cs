@@ -307,7 +307,7 @@ namespace KinectMotionAnalyzer.Processors
         static public bool WriteActionToDatabase(KinectAction action)
         {
             // get database context
-            using (MotionDBContext motionContext = new MotionDBContext("KinectMotionDB"))
+            using (MotionDBContext motionContext = new MotionDBContext())
             {
                 try
                 {
@@ -323,13 +323,10 @@ namespace KinectMotionAnalyzer.Processors
                     return false;
                 }
 
-                var query = from ac in motionContext.Actions
-                            select ac;
-
-                foreach (var q in query)
-                {
-                    Console.WriteLine((q as KinectAction).Id);
-                }
+                //foreach (var q in query)
+                //{
+                //    Console.WriteLine((q as KinectAction).Id);
+                //}
             }
 
             return true;

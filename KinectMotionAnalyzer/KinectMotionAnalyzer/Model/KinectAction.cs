@@ -15,9 +15,9 @@ namespace KinectMotionAnalyzer.Model
 
         public string ActionName { get; set; }
 
-        public List<ColorFrameData> ColorFrames { get; set; }
-        public List<DepthMapData> DepthFrames { get; set; }
-        public List<SkeletonData> Skeletons { get; set; }
+        public virtual List<ColorFrameData> ColorFrames { get; set; }
+        public virtual List<DepthMapData> DepthFrames { get; set; }
+        public virtual List<SkeletonData> Skeletons { get; set; }
     }
 
     class ActionType

@@ -126,6 +126,9 @@
     <Compile Include="Model\SkeletonData.cs" />
     <Compile Include="Processors\GestureRecognizer.cs" />
     <Compile Include="Processors\KinectRecorder.cs" />
+    <Compile Include="UI\ActionDatabasePreview.xaml.cs">
+      <DependentUpon>ActionDatabasePreview.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\EnterWindow.xaml.cs">
       <DependentUpon>EnterWindow.xaml</DependentUpon>
     </Compile>
@@ -194,6 +197,10 @@
     <Resource Include="Resources\kinect_skeleton.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="UI\ActionDatabasePreview.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\EnterWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

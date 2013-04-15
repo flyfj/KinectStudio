@@ -20,7 +20,7 @@
         <Label BorderThickness="1" Content="0" FontSize="13" FontStretch="Normal" Height="32" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="222,600,0,0" Name="replay_startLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="55" Background="#FFCBC0C0" />
         <GroupBox Header="Action Management" Height="316" HorizontalAlignment="Left" Margin="654,87,0,0" Name="groupBox1" VerticalAlignment="Top" Width="342" FontSize="16">
             <Grid>
-                <ComboBox Height="34" HorizontalAlignment="Left" Margin="41,22,0,0" Name="gestureComboBox" VerticalAlignment="Top" Width="222" Text="" SnapsToDevicePixels="True" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15" SelectedIndex="0">
+                <ComboBox Height="34" HorizontalAlignment="Left" Margin="41,22,0,0" x:Name="actionComboBox" VerticalAlignment="Top" Width="222" Text="" SnapsToDevicePixels="True" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15" SelectedIndex="0">
                     <ComboBoxItem Content="Choose Action" IsSelected="True" IsEnabled="False" />
                 </ComboBox>
                 <Button Content="Add Action" FontSize="15" Height="40" HorizontalAlignment="Left" Margin="21,77,0,0" Name="add_gesture_btn" VerticalAlignment="Top" Width="118" Click="add_gesture_btn_Click" />
