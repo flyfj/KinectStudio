@@ -109,14 +109,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Migrations\201304141650404_new data.cs" />
-    <Compile Include="Migrations\201304141650404_new data.Designer.cs">
-      <DependentUpon>201304141650404_new data.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201304141713194_add action type.cs" />
-    <Compile Include="Migrations\201304141713194_add action type.Designer.cs">
-      <DependentUpon>201304141713194_add action type.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\DepthMapData.cs" />
     <Compile Include="Model\KinectAction.cs" />
@@ -175,12 +167,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="Migrations\201304141650404_new data.resx">
-      <DependentUpon>201304141650404_new data.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201304141713194_add action type.resx">
-      <DependentUpon>201304141713194_add action type.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

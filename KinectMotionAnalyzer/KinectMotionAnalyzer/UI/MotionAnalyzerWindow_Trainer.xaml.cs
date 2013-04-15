@@ -228,6 +228,9 @@ namespace KinectMotionAnalyzer.UI
                     }
                 }
 
+                if (tracked_skeleton == null)
+                    return;
+
                 // if capturing, add to gesture data
                 if (gestureCaptureBtn.Content.ToString() == "Stop Capture")
                 {
