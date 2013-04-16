@@ -19,5 +19,7 @@ namespace KinectMotionAnalyzer.Model
         public int FrameHeight { get; set; }
 
         public byte[] FrameData { get; set; }
+
+        public KinectAction KAction { get; set; }
     }
 }
