@@ -347,8 +347,8 @@ namespace KinectMotionAnalyzer.UI
                 KinectAction rec_action = new KinectAction();
                 rec_action.ActionName = (actionComboBox.SelectedItem as ComboBoxItem).Content.ToString();
                 rec_action.ColorFrames = new List<ColorFrameData>();
-                rec_action.Skeletons = new List<SkeletonData>();
-                rec_action.DepthFrames = new List<DepthMapData>();
+                //rec_action.Skeletons = new List<SkeletonData>();
+                //rec_action.DepthFrames = new List<DepthMapData>();
 
                 // copy color frame
                 for (int i = 0; i < color_frame_rec_buffer.Count; i++)
@@ -362,40 +362,40 @@ namespace KinectMotionAnalyzer.UI
                     rec_action.ColorFrames.Add(colorFrame);
                 }
                 // copy depth frame
-                for (int i = 0; i < depth_frame_rec_buffer.Count; i++)
-                {
-                    DepthMapData depthFrame = new DepthMapData();
-                    depthFrame.FrameWidth = kinect_sensor.DepthStream.FrameWidth;
-                    depthFrame.FrameHeight = kinect_sensor.DepthStream.FrameHeight;
-                    depthFrame.FrameId = i;
-                    depthFrame.DepthData = new short[depth_frame_rec_buffer[i].Length];
-                    // copy depth
-                    for (int j = 0; j < depth_frame_rec_buffer[i].Length; j++)
-                        depthFrame.DepthData[j] = depth_frame_rec_buffer[i][j].Depth;
+                //for (int i = 0; i < depth_frame_rec_buffer.Count; i++)
+                //{
+                //    DepthMapData depthFrame = new DepthMapData();
+                //    depthFrame.FrameWidth = kinect_sensor.DepthStream.FrameWidth;
+                //    depthFrame.FrameHeight = kinect_sensor.DepthStream.FrameHeight;
+                //    depthFrame.FrameId = i;
+                //    //depthFrame.DepthData = new short[depth_frame_rec_buffer[i].Length];
+                //    // copy depth
+                //    //for (int j = 0; j < depth_frame_rec_buffer[i].Length; j++)
+                //    //    depthFrame.DepthData[j] = depth_frame_rec_buffer[i][j].Depth;
 
-                    rec_action.DepthFrames.Add(depthFrame);
-                }
-                // copy skeleton
-                for (int i = 0; i < skeleton_rec_buffer.Count; i++)
-                {
-                    SkeletonData skeData = new SkeletonData();
-                    if (skeleton_rec_buffer[i] != null)
-                    {
-                        skeData.Status = (int)skeleton_rec_buffer[i].TrackingState;
-                        skeData.JointsData = new List<SingleJoint>();
-                        foreach (JointType jtype in Enum.GetValues(typeof(JointType)))
-                        {
-                            SingleJoint cur_joint = new SingleJoint();
-                            cur_joint.PosX = skeleton_rec_buffer[i].Joints[jtype].Position.X;
-                            cur_joint.PosY = skeleton_rec_buffer[i].Joints[jtype].Position.Y;
-                            cur_joint.PosZ = skeleton_rec_buffer[i].Joints[jtype].Position.Z;
-                            cur_joint.Type = (int)jtype;
-                            skeData.JointsData.Add(cur_joint);
-                        }
-                    }
+                //    rec_action.DepthFrames.Add(depthFrame);
+                //}
+                //// copy skeleton
+                //for (int i = 0; i < skeleton_rec_buffer.Count; i++)
+                //{
+                //    SkeletonData skeData = new SkeletonData();
+                //    if (skeleton_rec_buffer[i] != null)
+                //    {
+                //        skeData.Status = (int)skeleton_rec_buffer[i].TrackingState;
+                //        skeData.JointsData = new List<SingleJoint>();
+                //        foreach (JointType jtype in Enum.GetValues(typeof(JointType)))
+                //        {
+                //            SingleJoint cur_joint = new SingleJoint();
+                //            cur_joint.PosX = skeleton_rec_buffer[i].Joints[jtype].Position.X;
+                //            cur_joint.PosY = skeleton_rec_buffer[i].Joints[jtype].Position.Y;
+                //            cur_joint.PosZ = skeleton_rec_buffer[i].Joints[jtype].Position.Z;
+                //            cur_joint.Type = (int)jtype;
+                //            skeData.JointsData.Add(cur_joint);
+                //        }
+                //    }
 
-                    rec_action.Skeletons.Add(skeData);
-                }
+                //    rec_action.Skeletons.Add(skeData);
+                //}
 
                 if (KinectRecorder.WriteActionToDatabase(rec_action))
                     statusbarLabel.Content = "Finish saving to database: " + 

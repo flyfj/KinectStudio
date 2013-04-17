@@ -17,6 +17,6 @@ namespace KinectMotionAnalyzer.Model
 
         public virtual List<SingleJoint> JointsData { get; set; }
 
-        public KinectAction KAction { get; set; }
+        //public KinectAction KAction { get; set; }
     }
 }

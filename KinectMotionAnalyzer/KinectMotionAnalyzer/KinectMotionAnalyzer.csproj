@@ -113,6 +113,22 @@
     <Compile Include="Migrations\201304160225387_add foreign key.Designer.cs">
       <DependentUpon>201304160225387_add foreign key.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201304170507338_remove depth and skeleton.cs" />
+    <Compile Include="Migrations\201304170507338_remove depth and skeleton.Designer.cs">
+      <DependentUpon>201304170507338_remove depth and skeleton.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201304170515442_remove depth data.cs" />
+    <Compile Include="Migrations\201304170515442_remove depth data.Designer.cs">
+      <DependentUpon>201304170515442_remove depth data.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201304170519139_remove foreign key.cs" />
+    <Compile Include="Migrations\201304170519139_remove foreign key.Designer.cs">
+      <DependentUpon>201304170519139_remove foreign key.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201304170523406_keep only color.cs" />
+    <Compile Include="Migrations\201304170523406_keep only color.Designer.cs">
+      <DependentUpon>201304170523406_keep only color.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\DepthMapData.cs" />
     <Compile Include="Model\KinectAction.cs" />
@@ -149,10 +165,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="UI\MotionAnalyzerWindow.xaml.cs">
-      <DependentUpon>MotionAnalyzerWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Processors\KinectDataManager.cs" />
@@ -173,6 +185,18 @@
     </Compile>
     <EmbeddedResource Include="Migrations\201304160225387_add foreign key.resx">
       <DependentUpon>201304160225387_add foreign key.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201304170507338_remove depth and skeleton.resx">
+      <DependentUpon>201304170507338_remove depth and skeleton.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201304170515442_remove depth data.resx">
+      <DependentUpon>201304170515442_remove depth data.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201304170519139_remove foreign key.resx">
+      <DependentUpon>201304170519139_remove foreign key.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201304170523406_keep only color.resx">
+      <DependentUpon>201304170523406_keep only color.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -219,10 +243,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\MainWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\MotionAnalyzerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

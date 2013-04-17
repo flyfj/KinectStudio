@@ -336,7 +336,7 @@ namespace KinectMotionAnalyzer.UI
                 KinectAction rec_action = new KinectAction();
                 rec_action.ActionName = (gestureComboBox.SelectedItem as ComboBoxItem).Content.ToString();
                 rec_action.ColorFrames = new List<ColorFrameData>();
-                rec_action.Skeletons = new List<SkeletonData>();
+                //rec_action.Skeletons = new List<SkeletonData>();
 
                 for (int i = 0; i < color_frame_rec_buffer.Count; i++)
                 {
@@ -348,23 +348,23 @@ namespace KinectMotionAnalyzer.UI
 
                     rec_action.ColorFrames.Add(colorFrame);
                 }
-                for (int i = 0; i < skeleton_rec_buffer.Count; i++)
-                {
-                    SkeletonData skeData = new SkeletonData();
-                    skeData.Status = (int)skeleton_rec_buffer[i].TrackingState;
-                    skeData.JointsData = new List<SingleJoint>();
-                    foreach (JointType jtype in Enum.GetValues(typeof(JointType)))
-                    {
-                        SingleJoint cur_joint = new SingleJoint();
-                        cur_joint.PosX = skeleton_rec_buffer[i].Joints[jtype].Position.X;
-                        cur_joint.PosY = skeleton_rec_buffer[i].Joints[jtype].Position.Y;
-                        cur_joint.PosZ = skeleton_rec_buffer[i].Joints[jtype].Position.Z;
-                        cur_joint.Type = (int)jtype;
-                        skeData.JointsData.Add(cur_joint);
-                    }
+                //for (int i = 0; i < skeleton_rec_buffer.Count; i++)
+                //{
+                //    SkeletonData skeData = new SkeletonData();
+                //    skeData.Status = (int)skeleton_rec_buffer[i].TrackingState;
+                //    skeData.JointsData = new List<SingleJoint>();
+                //    foreach (JointType jtype in Enum.GetValues(typeof(JointType)))
+                //    {
+                //        SingleJoint cur_joint = new SingleJoint();
+                //        cur_joint.PosX = skeleton_rec_buffer[i].Joints[jtype].Position.X;
+                //        cur_joint.PosY = skeleton_rec_buffer[i].Joints[jtype].Position.Y;
+                //        cur_joint.PosZ = skeleton_rec_buffer[i].Joints[jtype].Position.Z;
+                //        cur_joint.Type = (int)jtype;
+                //        skeData.JointsData.Add(cur_joint);
+                //    }
 
-                    rec_action.Skeletons.Add(skeData);
-                }
+                //    rec_action.Skeletons.Add(skeData);
+                //}
 
                 KinectRecorder.WriteActionToDatabase(rec_action);
             }

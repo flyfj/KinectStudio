@@ -21,6 +21,6 @@ namespace KinectMotionAnalyzer.Model
 
         public float PosZ { get; set; }
 
-        public SkeletonData SkeData { get; set; }
+        //public SkeletonData SkeData { get; set; }
     }
 }
