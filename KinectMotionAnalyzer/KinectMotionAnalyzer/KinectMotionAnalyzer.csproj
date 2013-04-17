@@ -129,6 +129,18 @@
     <Compile Include="Migrations\201304170523406_keep only color.Designer.cs">
       <DependentUpon>201304170523406_keep only color.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201304171923208_remove virtual.cs" />
+    <Compile Include="Migrations\201304171923208_remove virtual.Designer.cs">
+      <DependentUpon>201304171923208_remove virtual.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201304171925220_add explicit id.cs" />
+    <Compile Include="Migrations\201304171925220_add explicit id.Designer.cs">
+      <DependentUpon>201304171925220_add explicit id.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201304171939478_add explicit id, make required.cs" />
+    <Compile Include="Migrations\201304171939478_add explicit id, make required.Designer.cs">
+      <DependentUpon>201304171939478_add explicit id, make required.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\DepthMapData.cs" />
     <Compile Include="Model\KinectAction.cs" />
@@ -197,6 +209,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201304170523406_keep only color.resx">
       <DependentUpon>201304170523406_keep only color.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201304171923208_remove virtual.resx">
+      <DependentUpon>201304171923208_remove virtual.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201304171925220_add explicit id.resx">
+      <DependentUpon>201304171925220_add explicit id.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201304171939478_add explicit id, make required.resx">
+      <DependentUpon>201304171939478_add explicit id, make required.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
