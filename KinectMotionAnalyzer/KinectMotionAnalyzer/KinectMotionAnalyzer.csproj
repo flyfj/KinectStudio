@@ -109,37 +109,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Migrations\201304160225387_add foreign key.cs" />
-    <Compile Include="Migrations\201304160225387_add foreign key.Designer.cs">
-      <DependentUpon>201304160225387_add foreign key.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201304170507338_remove depth and skeleton.cs" />
-    <Compile Include="Migrations\201304170507338_remove depth and skeleton.Designer.cs">
-      <DependentUpon>201304170507338_remove depth and skeleton.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201304170515442_remove depth data.cs" />
-    <Compile Include="Migrations\201304170515442_remove depth data.Designer.cs">
-      <DependentUpon>201304170515442_remove depth data.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201304170519139_remove foreign key.cs" />
-    <Compile Include="Migrations\201304170519139_remove foreign key.Designer.cs">
-      <DependentUpon>201304170519139_remove foreign key.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201304170523406_keep only color.cs" />
-    <Compile Include="Migrations\201304170523406_keep only color.Designer.cs">
-      <DependentUpon>201304170523406_keep only color.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201304171923208_remove virtual.cs" />
-    <Compile Include="Migrations\201304171923208_remove virtual.Designer.cs">
-      <DependentUpon>201304171923208_remove virtual.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201304171925220_add explicit id.cs" />
-    <Compile Include="Migrations\201304171925220_add explicit id.Designer.cs">
-      <DependentUpon>201304171925220_add explicit id.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201304171939478_add explicit id, make required.cs" />
-    <Compile Include="Migrations\201304171939478_add explicit id, make required.Designer.cs">
-      <DependentUpon>201304171939478_add explicit id, make required.cs</DependentUpon>
+    <Compile Include="Migrations\201304180219283_simple test.cs" />
+    <Compile Include="Migrations\201304180219283_simple test.Designer.cs">
+      <DependentUpon>201304180219283_simple test.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\DepthMapData.cs" />
@@ -195,29 +167,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="Migrations\201304160225387_add foreign key.resx">
-      <DependentUpon>201304160225387_add foreign key.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201304170507338_remove depth and skeleton.resx">
-      <DependentUpon>201304170507338_remove depth and skeleton.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201304170515442_remove depth data.resx">
-      <DependentUpon>201304170515442_remove depth data.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201304170519139_remove foreign key.resx">
-      <DependentUpon>201304170519139_remove foreign key.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201304170523406_keep only color.resx">
-      <DependentUpon>201304170523406_keep only color.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201304171923208_remove virtual.resx">
-      <DependentUpon>201304171923208_remove virtual.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201304171925220_add explicit id.resx">
-      <DependentUpon>201304171925220_add explicit id.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201304171939478_add explicit id, make required.resx">
-      <DependentUpon>201304171939478_add explicit id, make required.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201304180219283_simple test.resx">
+      <DependentUpon>201304180219283_simple test.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

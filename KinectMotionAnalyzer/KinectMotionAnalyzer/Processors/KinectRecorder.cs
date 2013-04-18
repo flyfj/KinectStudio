@@ -316,6 +316,11 @@ namespace KinectMotionAnalyzer.Processors
 
                     motionContext.Actions.Add(action);
                     motionContext.SaveChanges();
+
+                    var q = from ac in motionContext.Actions
+                            select ac;
+                    
+                    Console.WriteLine((q as KinectAction).colorData.FrameId);
                 }
                 catch (System.Exception ex)
                 {
@@ -323,10 +328,6 @@ namespace KinectMotionAnalyzer.Processors
                     return false;
                 }
 
-                //foreach (var q in query)
-                //{
-                //    Console.WriteLine((q as KinectAction).Id);
-                //}
             }
 
             return true;

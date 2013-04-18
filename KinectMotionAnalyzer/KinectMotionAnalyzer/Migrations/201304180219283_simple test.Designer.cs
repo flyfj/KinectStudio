@@ -5,13 +5,13 @@ namespace KinectMotionAnalyzer.Migrations
     using System.Data.Entity.Migrations.Infrastructure;
     using System.Resources;
     
-    public sealed partial class removedepthandskeleton : IMigrationMetadata
+    public sealed partial class simpletest : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(removedepthandskeleton));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(simpletest));
         
         string IMigrationMetadata.Id
         {
-            get { return "201304170507338_remove depth and skeleton"; }
+            get { return "201304180219283_simple test"; }
         }
         
         string IMigrationMetadata.Source

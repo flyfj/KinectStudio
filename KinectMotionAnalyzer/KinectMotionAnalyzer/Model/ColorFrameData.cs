@@ -20,7 +20,7 @@ namespace KinectMotionAnalyzer.Model
 
         public byte[] FrameData { get; set; }
 
-        [Required]
-        public int KinectActionId { get; set; }
+        //[Required]
+       // public int KinectActionId { get; set; }
     }
 }

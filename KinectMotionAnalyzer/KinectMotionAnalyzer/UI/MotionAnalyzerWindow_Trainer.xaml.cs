@@ -346,7 +346,7 @@ namespace KinectMotionAnalyzer.UI
                 // convert to kinect action for saving
                 KinectAction rec_action = new KinectAction();
                 rec_action.ActionName = (actionComboBox.SelectedItem as ComboBoxItem).Content.ToString();
-                rec_action.ColorFrames = new List<ColorFrameData>();
+                //rec_action.ColorFrames = new List<ColorFrameData>();
                 //rec_action.Skeletons = new List<SkeletonData>();
                 //rec_action.DepthFrames = new List<DepthMapData>();
 
@@ -359,7 +359,10 @@ namespace KinectMotionAnalyzer.UI
                     colorFrame.FrameHeight = kinect_sensor.ColorStream.FrameHeight;
                     colorFrame.FrameId = i;
 
-                    rec_action.ColorFrames.Add(colorFrame);
+                    rec_action.colorData = colorFrame;
+                    break;
+
+                    //rec_action.ColorFrames.Add(colorFrame);
                 }
                 // copy depth frame
                 //for (int i = 0; i < depth_frame_rec_buffer.Count; i++)

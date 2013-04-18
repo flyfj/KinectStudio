@@ -56,21 +56,21 @@ namespace KinectMotionAnalyzer.Processors
             out List<DepthImagePixel[]> depth_frames,
             out List<Skeleton> skeleton_buffer)
         {
-            if (action.ColorFrames == null)
-            {
-                // clear
-                color_frames = new List<byte[]>();
-                depth_frames = new List<DepthImagePixel[]>();
-                skeleton_buffer = new List<Skeleton>();
-                return false;
-            }
+            //if (action.ColorFrames == null)
+            //{
+            //    // clear
+            //    color_frames = new List<byte[]>();
+            //    depth_frames = new List<DepthImagePixel[]>();
+            //    skeleton_buffer = new List<Skeleton>();
+            //    return false;
+            //}
 
             // color frames
             color_frames = new List<byte[]>();
-            foreach (ColorFrameData colorData in action.ColorFrames)
-            {
-                color_frames.Add(colorData.FrameData);
-            }
+            //foreach (ColorFrameData colorData in action.ColorFrames)
+            //{
+            //    color_frames.Add(colorData.FrameData);
+            //}
             // skeletons
             skeleton_buffer = new List<Skeleton>();
             //foreach (SkeletonData skeData in action.Skeletons)
