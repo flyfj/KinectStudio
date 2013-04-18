@@ -39,7 +39,7 @@ namespace KinectMotionAnalyzer.UI
         private KinectDataManager kinect_data_manager;
         private KinectSensor kinect_sensor;
         private MotionAssessor motion_assessor = null;
-        private MotionDBContext dbcontext = null;  // database connection
+        //private MotionDBContext dbcontext = null;  // database connection
 
         // recognition
         private GestureRecognizer gesture_recognizer = null;
@@ -346,7 +346,7 @@ namespace KinectMotionAnalyzer.UI
                 // convert to kinect action for saving
                 KinectAction rec_action = new KinectAction();
                 rec_action.ActionName = (actionComboBox.SelectedItem as ComboBoxItem).Content.ToString();
-                //rec_action.ColorFrames = new List<ColorFrameData>();
+                rec_action.ColorFrames = new List<ColorFrameData>();
                 //rec_action.Skeletons = new List<SkeletonData>();
                 //rec_action.DepthFrames = new List<DepthMapData>();
 
@@ -359,10 +359,10 @@ namespace KinectMotionAnalyzer.UI
                     colorFrame.FrameHeight = kinect_sensor.ColorStream.FrameHeight;
                     colorFrame.FrameId = i;
 
-                    rec_action.colorData = colorFrame;
-                    break;
+                    //rec_action.colorData = colorFrame;
+                    //break;
 
-                    //rec_action.ColorFrames.Add(colorFrame);
+                    rec_action.ColorFrames.Add(colorFrame);
                 }
                 // copy depth frame
                 //for (int i = 0; i < depth_frame_rec_buffer.Count; i++)
@@ -475,12 +475,15 @@ namespace KinectMotionAnalyzer.UI
             try
             {
                 // remove type
-                ActionType toRemoveType = dbcontext.ActionTypes.FirstOrDefault(x => x.Name == toRemoveItem.Content.ToString());
-                dbcontext.ActionTypes.Remove(toRemoveType);
-                // remove actions
-                //var res = dbcontext.Actions.Select(x => x.ActionName == toRemoveItem.Content.ToString());
-                // update
-                dbcontext.SaveChanges();
+                using (MotionDBContext dbcontext = new MotionDBContext())
+                {
+                    ActionType toRemoveType = dbcontext.ActionTypes.FirstOrDefault(x => x.Name == toRemoveItem.Content.ToString());
+                    dbcontext.ActionTypes.Remove(toRemoveType);
+                    // remove actions
+                    //var res = dbcontext.Actions.Select(x => x.ActionName == toRemoveItem.Content.ToString());
+                    // update
+                    dbcontext.SaveChanges();
+                }
             }
             catch (System.Exception ex)
             {
@@ -510,11 +513,14 @@ namespace KinectMotionAnalyzer.UI
             // update from database
             try
             {
-                foreach (ActionType action_type in dbcontext.ActionTypes)
+                using (MotionDBContext dbcontext = new MotionDBContext())
                 {
-                    ComboBoxItem item = new ComboBoxItem();
-                    item.Content = action_type.Name;
-                    actionComboBox.Items.Add(item);
+                    foreach (ActionType action_type in dbcontext.ActionTypes)
+                    {
+                        ComboBoxItem item = new ComboBoxItem();
+                        item.Content = action_type.Name;
+                        actionComboBox.Items.Add(item);
+                    }
                 }
             }
             catch (System.Exception ex)
@@ -561,9 +567,12 @@ namespace KinectMotionAnalyzer.UI
             preview_win.dbActionTypeList.Items.Clear();
             try
             {
-                foreach (ActionType cur_type in dbcontext.ActionTypes)
+                using (MotionDBContext dbcontext = new MotionDBContext())
                 {
-                    preview_win.dbActionTypeList.Items.Add(cur_type.Name);
+                    foreach (ActionType cur_type in dbcontext.ActionTypes)
+                    {
+                        preview_win.dbActionTypeList.Items.Add(cur_type.Name);
+                    }
                 }
             }
             catch (System.Exception ex)
@@ -577,25 +586,47 @@ namespace KinectMotionAnalyzer.UI
                 if (preview_win.selectedActionId < 0)
                     return;
 
-                dbcontext.Actions.Load();
-                var query = from ac in dbcontext.Actions
-                                 where ac.Id == preview_win.selectedActionId
-                                 select ac;
-                
-                foreach (var q in query)
+                // retrieve action from database
+                try
                 {
-                    KinectAction sel_action = q as KinectAction;
-                    if (!Tools.ConvertFromKinectAction(
-                            sel_action,
-                            out color_frame_rec_buffer,
-                            out depth_frame_rec_buffer,
-                            out skeleton_rec_buffer))
+                    using (MotionDBContext dbcontext = new MotionDBContext())
                     {
-                        MessageBox.Show("Fail to load database action.");
-                        return;
-                    }
+                        MessageBox.Show(dbcontext.Database.Connection.ConnectionString);
 
-                    break;
+                        //foreach (KinectAction ac in dbcontext.Actions)
+                        //{
+                        //    if (ac.ColorFrames != null)
+                        //        MessageBox.Show(ac.ColorFrames.Count.ToString());
+                            
+                        //}
+                        //return;
+
+                        var query = from ac in dbcontext.Actions.Include("ColorFrames")
+                                    where ac.Id == preview_win.selectedActionId
+                                    select ac;
+
+                        if (query != null)
+                        {
+                            foreach (var q in query)
+                            {
+                                KinectAction sel_action = q as KinectAction;
+                                if (!Tools.ConvertFromKinectAction(
+                                        sel_action,
+                                        out color_frame_rec_buffer,
+                                        out depth_frame_rec_buffer,
+                                        out skeleton_rec_buffer))
+                                {
+                                    MessageBox.Show("Fail to load database action.");
+                                    return;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
                 }
                                           
                 // activate replay
@@ -623,17 +654,16 @@ namespace KinectMotionAnalyzer.UI
 
         private void ActivateReplay(List<byte[]> color_frame_rec_buffer, List<Skeleton> skeleton_rec_buffer)
         {
-            if (color_frame_rec_buffer == null || color_frame_rec_buffer.Count == 0 || 
-                skeleton_rec_buffer == null || skeleton_rec_buffer.Count == 0)
+            if (color_frame_rec_buffer == null || color_frame_rec_buffer.Count == 0)
+                // ||skeleton_rec_buffer == null || skeleton_rec_buffer.Count == 0
             {
                 statusbarLabel.Content = "Replay gesture is empty.";
                 return;
             }
 
-            //gesture_data = gesture;
-
             int min_frame_id = 0;
-            int max_frame_id = Math.Min(color_frame_rec_buffer.Count, skeleton_rec_buffer.Count) - 1;
+            //, skeleton_rec_buffer.Count
+            int max_frame_id = color_frame_rec_buffer.Count - 1;
 
             skeletonVideoSlider.IsEnabled = true;
             skeletonVideoSlider.Minimum = min_frame_id;
@@ -654,7 +684,7 @@ namespace KinectMotionAnalyzer.UI
 
             // update view
             kinect_data_manager.UpdateColorData(color_frame_rec_buffer[min_frame_id], 640, 480);
-            kinect_data_manager.UpdateSkeletonData(skeleton_rec_buffer[min_frame_id]);
+            //kinect_data_manager.UpdateSkeletonData(skeleton_rec_buffer[min_frame_id]);
         }
 
         private void DeactivateReplay()
@@ -717,16 +747,6 @@ namespace KinectMotionAnalyzer.UI
             skeleton_rec_buffer = new List<Skeleton>();
             color_frame_rec_buffer = new List<byte[]>();
             depth_frame_rec_buffer = new List<DepthImagePixel[]>();
-            try
-            {
-                dbcontext = new MotionDBContext();
-                //MessageBox.Show(dbcontext.Actions.Count().ToString());
-                statusbarLabel.Content = "Connected to database.";
-            }
-            catch (System.Exception ex)
-            {
-                MessageBox.Show("Can't connect to database: " + ex.Message);
-            }
 
             // init kinect
             if (!InitKinect())

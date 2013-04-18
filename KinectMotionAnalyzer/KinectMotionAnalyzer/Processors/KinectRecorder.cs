@@ -311,16 +311,21 @@ namespace KinectMotionAnalyzer.Processors
             {
                 try
                 {
-                    //if (motionContext.Database.Exists())
-                    //    motionContext.Database.Delete();
+                    MessageBox.Show(motionContext.Database.Connection.ConnectionString);
 
                     motionContext.Actions.Add(action);
                     motionContext.SaveChanges();
 
-                    var q = from ac in motionContext.Actions
+                    var query = from ac in motionContext.Actions
                             select ac;
+
+                    foreach (var q in query)
+                    {
+                        KinectAction cur_action = q as KinectAction;
+                        if (cur_action.ColorFrames != null)
+                            MessageBox.Show(cur_action.ColorFrames.Count.ToString());
+                    }
                     
-                    Console.WriteLine((q as KinectAction).colorData.FrameId);
                 }
                 catch (System.Exception ex)
                 {

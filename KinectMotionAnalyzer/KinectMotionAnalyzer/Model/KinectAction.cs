@@ -13,12 +13,18 @@ namespace KinectMotionAnalyzer.Model
         [Key]
         public int Id { get; set; }
 
+        [Required]
         public string ActionName { get; set; }
 
-        public ColorFrameData colorData { get; set; }
-        //public List<ColorFrameData> ColorFrames { get; set; }
+        //public ColorFrameData colorData { get; set; }
+        public List<ColorFrameData> ColorFrames { get; set; }
         //public virtual List<DepthMapData> DepthFrames { get; set; }
         //public virtual List<SkeletonData> Skeletons { get; set; }
+
+        public KinectAction()
+        {
+            ColorFrames = new List<ColorFrameData>();
+        }
     }
 
     class ActionType
@@ -26,6 +32,7 @@ namespace KinectMotionAnalyzer.Model
         [Key]
         public int Id { get; set; }
 
+        [Required]
         public string Name { get; set; }
 
     }
