@@ -228,15 +228,15 @@ namespace KinectMotionAnalyzer.UI
                     }
                 }
 
-                if (tracked_skeleton == null)
-                    return;
-
                 // if capturing, add to gesture data
                 if (gestureCaptureBtn.Content.ToString() == "Stop Capture")
                 {
                     // just add first tracked skeleton, assume only one person is present
                     skeleton_rec_buffer.Add(tracked_skeleton);
                 }
+
+                if (tracked_skeleton == null)
+                    return;
 
                 if (kinect_data_manager.ifShowJointStatus)
                 {
@@ -326,29 +326,29 @@ namespace KinectMotionAnalyzer.UI
             // save to database
             statusbarLabel.Content = "Saving to database...";
             // save data from start label to end label
-            int start_id = int.Parse(replay_startLabel.Content.ToString());
-            int end_id = int.Parse(replay_endLabel.Content.ToString());
+            int start_id = (int)skeletonVideoSlider.SelectionStart;
+            int end_id = (int)skeletonVideoSlider.SelectionEnd;
             // remove end part first so front id will not change
             if (color_frame_rec_buffer.Count > 0 && 
                 skeleton_rec_buffer.Count > 0 && 
                 depth_frame_rec_buffer.Count > 0)
             {
                 // clean data
-                color_frame_rec_buffer.RemoveRange(end_id + 1, color_frame_rec_buffer.Count - end_id - 1);
+                color_frame_rec_buffer.RemoveRange(end_id + 1, Math.Max(color_frame_rec_buffer.Count - end_id - 1, 0));
                 color_frame_rec_buffer.RemoveRange(0, start_id);
 
-                skeleton_rec_buffer.RemoveRange(end_id + 1, skeleton_rec_buffer.Count - end_id - 1);
+                skeleton_rec_buffer.RemoveRange(end_id + 1, Math.Max(skeleton_rec_buffer.Count - end_id - 1, 0));
                 skeleton_rec_buffer.RemoveRange(0, start_id);
 
-                depth_frame_rec_buffer.RemoveRange(end_id + 1, depth_frame_rec_buffer.Count - end_id - 1);
+                depth_frame_rec_buffer.RemoveRange(end_id + 1, Math.Max(depth_frame_rec_buffer.Count - end_id - 1, 0));
                 depth_frame_rec_buffer.RemoveRange(0, start_id);
 
                 // convert to kinect action for saving
                 KinectAction rec_action = new KinectAction();
                 rec_action.ActionName = (actionComboBox.SelectedItem as ComboBoxItem).Content.ToString();
                 rec_action.ColorFrames = new List<ColorFrameData>();
-                //rec_action.Skeletons = new List<SkeletonData>();
-                //rec_action.DepthFrames = new List<DepthMapData>();
+                rec_action.Skeletons = new List<SkeletonData>();
+                rec_action.DepthFrames = new List<DepthMapData>();
 
                 // copy color frame
                 for (int i = 0; i < color_frame_rec_buffer.Count; i++)
@@ -359,46 +359,44 @@ namespace KinectMotionAnalyzer.UI
                     colorFrame.FrameHeight = kinect_sensor.ColorStream.FrameHeight;
                     colorFrame.FrameId = i;
 
-                    //rec_action.colorData = colorFrame;
-                    //break;
-
                     rec_action.ColorFrames.Add(colorFrame);
                 }
                 // copy depth frame
-                //for (int i = 0; i < depth_frame_rec_buffer.Count; i++)
-                //{
-                //    DepthMapData depthFrame = new DepthMapData();
-                //    depthFrame.FrameWidth = kinect_sensor.DepthStream.FrameWidth;
-                //    depthFrame.FrameHeight = kinect_sensor.DepthStream.FrameHeight;
-                //    depthFrame.FrameId = i;
-                //    //depthFrame.DepthData = new short[depth_frame_rec_buffer[i].Length];
-                //    // copy depth
-                //    //for (int j = 0; j < depth_frame_rec_buffer[i].Length; j++)
-                //    //    depthFrame.DepthData[j] = depth_frame_rec_buffer[i][j].Depth;
+                for (int i = 0; i < depth_frame_rec_buffer.Count; i++)
+                {
+                    DepthMapData depthFrame = new DepthMapData();
+                    depthFrame.FrameWidth = kinect_sensor.DepthStream.FrameWidth;
+                    depthFrame.FrameHeight = kinect_sensor.DepthStream.FrameHeight;
+                    depthFrame.FrameId = i;
+                    //depthFrame.DepthData = new short[depth_frame_rec_buffer[i].Length];
+                    // copy depth
+                    //for (int j = 0; j < depth_frame_rec_buffer[i].Length; j++)
+                    //    depthFrame.DepthData[j] = depth_frame_rec_buffer[i][j].Depth;
 
-                //    rec_action.DepthFrames.Add(depthFrame);
-                //}
-                //// copy skeleton
-                //for (int i = 0; i < skeleton_rec_buffer.Count; i++)
-                //{
-                //    SkeletonData skeData = new SkeletonData();
-                //    if (skeleton_rec_buffer[i] != null)
-                //    {
-                //        skeData.Status = (int)skeleton_rec_buffer[i].TrackingState;
-                //        skeData.JointsData = new List<SingleJoint>();
-                //        foreach (JointType jtype in Enum.GetValues(typeof(JointType)))
-                //        {
-                //            SingleJoint cur_joint = new SingleJoint();
-                //            cur_joint.PosX = skeleton_rec_buffer[i].Joints[jtype].Position.X;
-                //            cur_joint.PosY = skeleton_rec_buffer[i].Joints[jtype].Position.Y;
-                //            cur_joint.PosZ = skeleton_rec_buffer[i].Joints[jtype].Position.Z;
-                //            cur_joint.Type = (int)jtype;
-                //            skeData.JointsData.Add(cur_joint);
-                //        }
-                //    }
+                    rec_action.DepthFrames.Add(depthFrame);
+                }
+                // copy skeleton
+                for (int i = 0; i < skeleton_rec_buffer.Count; i++)
+                {
+                    SkeletonData skeData = new SkeletonData();
+                    if (skeleton_rec_buffer[i] != null)
+                    {
+                        skeData.Status = (int)skeleton_rec_buffer[i].TrackingState;
+                        skeData.JointsData = new List<SingleJoint>();
+                        foreach (JointType jtype in Enum.GetValues(typeof(JointType)))
+                        {
+                            SingleJoint cur_joint = new SingleJoint();
+                            cur_joint.PosX = skeleton_rec_buffer[i].Joints[jtype].Position.X;
+                            cur_joint.PosY = skeleton_rec_buffer[i].Joints[jtype].Position.Y;
+                            cur_joint.PosZ = skeleton_rec_buffer[i].Joints[jtype].Position.Z;
+                            cur_joint.Type = (int)jtype;
+                            cur_joint.TrackingStatus = (int)skeleton_rec_buffer[i].Joints[jtype].TrackingState;
+                            skeData.JointsData.Add(cur_joint);
+                        }
+                    }
 
-                //    rec_action.Skeletons.Add(skeData);
-                //}
+                    rec_action.Skeletons.Add(skeData);
+                }
 
                 if (KinectRecorder.WriteActionToDatabase(rec_action))
                     statusbarLabel.Content = "Finish saving to database: " + 
@@ -542,7 +540,7 @@ namespace KinectMotionAnalyzer.UI
         private void skeletonVideoSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             // valid only when kinect is stopped so no new data will come
-            if (isReplay && skeleton_rec_buffer.Count > 0)
+            if (isReplay && color_frame_rec_buffer.Count > 0 && skeleton_rec_buffer.Count > 0)
             {
                 // load new skeleton data
                 int cur_frame_id = (int)skeletonVideoSlider.Value;
@@ -601,7 +599,7 @@ namespace KinectMotionAnalyzer.UI
                         //}
                         //return;
 
-                        var query = from ac in dbcontext.Actions.Include("ColorFrames")
+                        var query = from ac in dbcontext.Actions.Include("ColorFrames").Include("DepthFrames").Include("Skeletons.JointsData")
                                     where ac.Id == preview_win.selectedActionId
                                     select ac;
 
@@ -654,16 +652,15 @@ namespace KinectMotionAnalyzer.UI
 
         private void ActivateReplay(List<byte[]> color_frame_rec_buffer, List<Skeleton> skeleton_rec_buffer)
         {
-            if (color_frame_rec_buffer == null || color_frame_rec_buffer.Count == 0)
-                // ||skeleton_rec_buffer == null || skeleton_rec_buffer.Count == 0
+            if (color_frame_rec_buffer == null || color_frame_rec_buffer.Count == 0
+                 || skeleton_rec_buffer == null || skeleton_rec_buffer.Count == 0)
             {
                 statusbarLabel.Content = "Replay gesture is empty.";
                 return;
             }
 
             int min_frame_id = 0;
-            //, skeleton_rec_buffer.Count
-            int max_frame_id = color_frame_rec_buffer.Count - 1;
+            int max_frame_id = Math.Min(color_frame_rec_buffer.Count, skeleton_rec_buffer.Count) - 1;
 
             skeletonVideoSlider.IsEnabled = true;
             skeletonVideoSlider.Minimum = min_frame_id;
@@ -684,7 +681,7 @@ namespace KinectMotionAnalyzer.UI
 
             // update view
             kinect_data_manager.UpdateColorData(color_frame_rec_buffer[min_frame_id], 640, 480);
-            //kinect_data_manager.UpdateSkeletonData(skeleton_rec_buffer[min_frame_id]);
+            kinect_data_manager.UpdateSkeletonData(skeleton_rec_buffer[min_frame_id]);
         }
 
         private void DeactivateReplay()

@@ -58,5 +58,14 @@ namespace KinectMotionAnalyzer.UI
 
             this.DialogResult = true;
         }
+
+        private void dbActionPreviewDelBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (dbActionIdList.SelectedValue != null)
+            {
+                // remove select action from database
+
+            }
+        }
     }
 }

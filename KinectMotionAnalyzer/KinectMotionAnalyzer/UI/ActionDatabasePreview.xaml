@@ -20,5 +20,6 @@
         <Label Content="Action Type" HorizontalAlignment="Left" Margin="102,30,0,0" VerticalAlignment="Top" Width="104" FontSize="16" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
         <Label x:Name="dbActionId" Content="Action Id" HorizontalAlignment="Left" Margin="310,30,0,0" VerticalAlignment="Top" Width="102" FontSize="16" FontWeight="Bold" HorizontalContentAlignment="Center"/>
         <Button x:Name="dbActionPreviewBtn" Content="Load" HorizontalAlignment="Left" Margin="308,256,0,0" VerticalAlignment="Top" Width="104" Height="38" FontSize="16" Click="dbActionPreviewBtn_Click"/>
+        <Button x:Name="dbActionPreviewDelBtn" Content="Delete" HorizontalAlignment="Left" Margin="154,256,0,0" VerticalAlignment="Top" Width="104" Height="38" FontSize="16" Click="dbActionPreviewDelBtn_Click"/>
     </Grid>
 </Window>

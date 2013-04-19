@@ -103,7 +103,6 @@ namespace KinectMotionAnalyzer.Processors
 
             skeletonsCollection = new List<Skeleton>();
             XmlElement root = doc.DocumentElement;
-            
 
             #region read_frames
             for (int i = 0; i < root.ChildNodes.Count; i++ )
@@ -316,15 +315,15 @@ namespace KinectMotionAnalyzer.Processors
                     motionContext.Actions.Add(action);
                     motionContext.SaveChanges();
 
-                    var query = from ac in motionContext.Actions
-                            select ac;
+                    //var query = from ac in motionContext.Actions
+                    //        select ac;
 
-                    foreach (var q in query)
-                    {
-                        KinectAction cur_action = q as KinectAction;
-                        if (cur_action.ColorFrames != null)
-                            MessageBox.Show(cur_action.ColorFrames.Count.ToString());
-                    }
+                    //foreach (var q in query)
+                    //{
+                    //    KinectAction cur_action = q as KinectAction;
+                    //    if (cur_action.ColorFrames != null)
+                    //        MessageBox.Show(cur_action.ColorFrames.Count.ToString());
+                    //}
                     
                 }
                 catch (System.Exception ex)

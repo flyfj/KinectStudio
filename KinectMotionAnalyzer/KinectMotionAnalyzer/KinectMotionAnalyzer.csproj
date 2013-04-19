@@ -124,6 +124,18 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Migrations\201304190308056_add depth.cs" />
+    <Compile Include="Migrations\201304190308056_add depth.Designer.cs">
+      <DependentUpon>201304190308056_add depth.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201304190312477_add all but depth data.cs" />
+    <Compile Include="Migrations\201304190312477_add all but depth data.Designer.cs">
+      <DependentUpon>201304190312477_add all but depth data.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201304190419068_add joint status.cs" />
+    <Compile Include="Migrations\201304190419068_add joint status.Designer.cs">
+      <DependentUpon>201304190419068_add joint status.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\DepthMapData.cs" />
     <Compile Include="Model\KinectAction.cs" />
@@ -178,6 +190,15 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="Migrations\201304190308056_add depth.resx">
+      <DependentUpon>201304190308056_add depth.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201304190312477_add all but depth data.resx">
+      <DependentUpon>201304190312477_add all but depth data.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201304190419068_add joint status.resx">
+      <DependentUpon>201304190419068_add joint status.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

@@ -73,20 +73,31 @@ namespace KinectMotionAnalyzer.Processors
             }
             // skeletons
             skeleton_buffer = new List<Skeleton>();
-            //foreach (SkeletonData skeData in action.Skeletons)
-            //{
-            //    Skeleton cur_ske = new Skeleton();
-            //    foreach (SingleJoint joint in skeData.JointsData)
-            //    {
-            //        Joint cur_joint = new Joint();
-            //        SkeletonPoint point = new SkeletonPoint();
-            //        point.X = joint.PosX;
-            //        point.Y = joint.PosY;
-            //        point.Z = joint.PosZ;
-            //        cur_joint.Position = point;
-            //        cur_ske.Joints[(JointType)joint.Type] = cur_joint;
-            //    }
-            //}
+            foreach (SkeletonData skeData in action.Skeletons)
+            {
+                if (skeData == null)
+                {
+                    skeleton_buffer.Add(null);
+                    continue;
+                }
+
+                Skeleton cur_ske = new Skeleton();
+                cur_ske.TrackingState = (SkeletonTrackingState)skeData.Status;
+                foreach (SingleJoint joint in skeData.JointsData)
+                {
+                    JointType cur_type = (JointType)joint.Type;
+                    // get joint object
+                    Joint cur_joint = cur_ske.Joints[cur_type];
+                    SkeletonPoint point = new SkeletonPoint();
+                    point.X = joint.PosX;
+                    point.Y = joint.PosY;
+                    point.Z = joint.PosZ;
+                    cur_joint.Position = point;
+                    cur_joint.TrackingState = (JointTrackingState)joint.TrackingStatus;
+                    cur_ske.Joints[cur_type] = cur_joint;
+                }
+                skeleton_buffer.Add(cur_ske);
+            }
             // depth image
             depth_frames = new List<DepthImagePixel[]>();
             //foreach (DepthMapData dData in action.DepthFrames)

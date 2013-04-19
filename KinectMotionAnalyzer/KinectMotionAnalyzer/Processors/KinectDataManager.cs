@@ -256,14 +256,14 @@ namespace KinectMotionAnalyzer.Processors
 
         public void UpdateSkeletonData(Skeleton[] skeletons)
         {
-            if (skeletons == null)
-                return;
-
             // draw skeletons
             using (DrawingContext dc = this.drawingGroup.Open())
             {
                 // Draw a transparent background to set the render size
                 dc.DrawRectangle(Brushes.Transparent, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
+
+                if (skeletons == null)
+                    return;
 
                 if (skeletons.Length != 0)
                 {
@@ -295,15 +295,15 @@ namespace KinectMotionAnalyzer.Processors
 
         public void UpdateSkeletonData(Skeleton ske)
         {
-            if (ske == null)
-                return;
-
             // draw skeletons
             using (DrawingContext dc = this.drawingGroup.Open())
             {
                 // Draw a transparent background to set the render size
                 dc.DrawRectangle(Brushes.Transparent, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
-                
+
+                if (ske == null)
+                    return;
+
                 RenderClippedEdges(ske, dc);
 
                 if (ske.TrackingState == SkeletonTrackingState.Tracked)

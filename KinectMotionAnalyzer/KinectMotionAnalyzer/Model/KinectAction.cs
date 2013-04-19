@@ -18,12 +18,14 @@ namespace KinectMotionAnalyzer.Model
 
         //public ColorFrameData colorData { get; set; }
         public List<ColorFrameData> ColorFrames { get; set; }
-        //public virtual List<DepthMapData> DepthFrames { get; set; }
-        //public virtual List<SkeletonData> Skeletons { get; set; }
+        public List<DepthMapData> DepthFrames { get; set; }
+        public List<SkeletonData> Skeletons { get; set; }
 
         public KinectAction()
         {
             ColorFrames = new List<ColorFrameData>();
+            DepthFrames = new List<DepthMapData>();
+            Skeletons = new List<SkeletonData>();
         }
     }
 
