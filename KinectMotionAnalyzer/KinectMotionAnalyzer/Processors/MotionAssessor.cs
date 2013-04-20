@@ -25,8 +25,20 @@ namespace KinectMotionAnalyzer.Processors
         YZPlane
     }
 
+    public enum MeasurementType
+    {
+        MType_Angle,
+        MType_PosDiff
+    }
+
+    // basic measurement per frame
     public class MeasurementUnit
     {
+        public MeasurementType mType;
+
+        /*
+         * angle measurements
+         */
         public bool ifSingleJoint;
         
         // joint angle
@@ -37,15 +49,24 @@ namespace KinectMotionAnalyzer.Processors
         public JointType boneJoint2;
         public PlaneName plane;
 
-        // assessment quality
-        public double tolerance;    // max different allowed for measurement
-        public double standard_angle_value;
+        /*
+         * position difference
+         */
+        public JointType joint_higher;
+        public JointType joint_lower;
+
+        /*
+         * assessment quality
+         */
+        public double tolerance;    // max difference allowed for measurement
+        public double standard_angle_value; // correct angle value
 
         // instruction
         public string instruction_text;
 
-        public MeasurementUnit()
+        public MeasurementUnit(MeasurementType type)
         {
+            mType = type;
             ifSingleJoint = true;
             singleJoint = JointType.ElbowRight;
             tolerance = 20;
@@ -221,7 +242,7 @@ namespace KinectMotionAnalyzer.Processors
         }
 
         // compute angle in measure unit
-        private void ComputeJointAngle(Skeleton ske, MeasurementUnit unit, ref JointStatus status)
+        public void ComputeJointAngle(Skeleton ske, MeasurementUnit unit, ref JointStatus status)
         {
             if (ske == null)
                 return;
@@ -325,8 +346,6 @@ namespace KinectMotionAnalyzer.Processors
             foreach (MeasurementUnit unit in toMeasureUnits)
             {
                 JointStatus stat = null;
-
-
 
                 if (unit.ifSingleJoint)
                 {
