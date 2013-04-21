@@ -152,6 +152,9 @@
     <Compile Include="UI\EnterWindow.xaml.cs">
       <DependentUpon>EnterWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\FMSReportWindow.xaml.cs">
+      <DependentUpon>FMSReportWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\MotionAnalyzerWindow_User.xaml.cs">
       <DependentUpon>MotionAnalyzerWindow_User.xaml</DependentUpon>
     </Compile>
@@ -223,6 +226,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\EnterWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\FMSReportWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

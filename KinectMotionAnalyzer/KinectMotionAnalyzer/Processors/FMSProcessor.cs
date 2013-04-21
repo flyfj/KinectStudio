@@ -55,7 +55,7 @@ namespace KinectMotionAnalyzer.Processors
     class FMSProcessor
     {
         private MotionAssessor basicAssessor;
-        private List<FMSTest> FMSTests;
+        public List<FMSTest> FMSTests;
 
         public FMSProcessor()
         {
@@ -73,6 +73,12 @@ namespace KinectMotionAnalyzer.Processors
             #region Deep squat
             FMSTest dsquat = new FMSTest("Deep Squat");
             dsquat.rules = new List<FMSRule>();
+
+            FMSRule drule0 = new FMSRule();
+            drule0.id = 0;
+            drule0.name = "Upper torso is parallel with tibia or toward vertical";
+            dsquat.rules.Add(drule0);
+
             FMSRule drule1 = new FMSRule();
             drule1.id = 1;
             drule1.name = "Femur is below horizontal";

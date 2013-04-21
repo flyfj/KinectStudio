@@ -43,7 +43,7 @@ namespace KinectMotionAnalyzer.UI
 
         // recognition
         private GestureRecognizer gesture_recognizer = null;
-        private string GESTURE_DATABASE_DIR = "gdata\\";
+        private FMSProcessor fmsProcessor = null;
 
         // sign
         bool isReplay = false;
@@ -53,6 +53,7 @@ namespace KinectMotionAnalyzer.UI
         bool isCalculating = false; // a lock param for multi-threading
 
         // record params
+        private string GESTURE_DATABASE_DIR = "gdata\\";
         private int frame_id = 0;
         Gesture temp_gesture = new Gesture();
         ArrayList overlap_frame_rec_buffer; // use to store record frames in memory
@@ -739,6 +740,7 @@ namespace KinectMotionAnalyzer.UI
             // do initialization here
             gesture_recognizer = new GestureRecognizer();
             motion_assessor = new MotionAssessor();
+            fmsProcessor = new FMSProcessor();
             toMeasureUnits = new List<MeasurementUnit>();
             overlap_frame_rec_buffer = new ArrayList();
             skeleton_rec_buffer = new List<Skeleton>();
@@ -768,6 +770,42 @@ namespace KinectMotionAnalyzer.UI
             
             if (measureConfigWin.ShowDialog().Value == true)
                 toMeasureUnits = measureConfigWin.measureUnits;
+            
+        }
+
+        private void processBtn_Click(object sender, RoutedEventArgs e)
+        {
+            FMSReportWindow reportWin = new FMSReportWindow();
+            reportWin.ScoreLabel1.Content = "Score: " + 2;
+            int sel_test_id = Math.Max(actionComboBox.SelectedIndex - 1, 0);
+            reportWin.ruleBox1.Content = fmsProcessor.FMSTests[sel_test_id].rules[0].name;
+            reportWin.ruleBox1.IsChecked = true;
+            reportWin.ruleBox2.Content = fmsProcessor.FMSTests[sel_test_id].rules[1].name;
+            reportWin.ruleBox3.Content = fmsProcessor.FMSTests[sel_test_id].rules[2].name;
+            reportWin.ruleBox3.IsChecked = true;
+            reportWin.ruleBox4.Content = fmsProcessor.FMSTests[sel_test_id].rules[3].name;
+            reportWin.Show();
+
+            return;
+
+            // trim valid buffer data
+            statusbarLabel.Content = "Processing " + actionComboBox.Items[sel_test_id+1].ToString();
+            // save data from start label to end label
+            int start_id = (int)skeletonVideoSlider.SelectionStart;
+            int end_id = (int)skeletonVideoSlider.SelectionEnd;
+            // remove end part first so front id will not change
+            if (skeleton_rec_buffer.Count > 0)
+            {
+                // clean data
+                //color_frame_rec_buffer.RemoveRange(end_id + 1, Math.Max(color_frame_rec_buffer.Count - end_id - 1, 0));
+                //color_frame_rec_buffer.RemoveRange(0, start_id);
+
+                skeleton_rec_buffer.RemoveRange(end_id + 1, Math.Max(skeleton_rec_buffer.Count - end_id - 1, 0));
+                skeleton_rec_buffer.RemoveRange(0, start_id);
+            }
+
+            FMSTestEvaluation test_eval = fmsProcessor.EvaluateTest(skeleton_rec_buffer, sel_test_id);
+
             
         }
 

@@ -31,6 +31,6 @@
             </Grid>
         </GroupBox>
         <Button x:Name="keyframeConfigBtn" Content="Config Keyframe" HorizontalAlignment="Left" Margin="101,535,0,0" VerticalAlignment="Top" Width="176" Height="40" FontSize="14" Click="measureConfigBtn_Click"/>
-        <Button x:Name="processBtn" Content="Process" HorizontalAlignment="Left" Margin="313,535,0,0" VerticalAlignment="Top" Width="176" Height="40" FontSize="14" Click="measureConfigBtn_Click"/>
+        <Button x:Name="processBtn" Content="Process" HorizontalAlignment="Left" Margin="313,535,0,0" VerticalAlignment="Top" Width="176" Height="40" FontSize="14" Click="processBtn_Click"/>
     </Grid>
 </Window>
