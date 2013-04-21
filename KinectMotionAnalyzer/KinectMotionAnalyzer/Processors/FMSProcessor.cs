@@ -97,8 +97,9 @@ namespace KinectMotionAnalyzer.Processors
             MeasurementUnit drule2_munit1 = new MeasurementUnit(MeasurementType.MType_Angle);
             drule2_munit1.ifSingleJoint = false;
             drule2_munit1.boneJoint1 = JointType.KneeRight;
-            drule2_munit1.boneJoint2 = JointType.FootRight;
+            drule2_munit1.boneJoint2 = JointType.KneeLeft;
             drule2_munit1.plane = PlaneName.XZPlane;
+            drule2_munit1.tolerance = 10;
             drule2.measurements.Add(drule2_munit1);
             dsquat.rules.Add(drule2);
 
@@ -109,8 +110,9 @@ namespace KinectMotionAnalyzer.Processors
             MeasurementUnit drule3_munit1 = new MeasurementUnit(MeasurementType.MType_Angle);
             drule3_munit1.ifSingleJoint = false;
             drule3_munit1.boneJoint1 = JointType.HandRight;
-            drule3_munit1.boneJoint2 = JointType.FootRight;
+            drule3_munit1.boneJoint2 = JointType.HandLeft;
             drule3_munit1.plane = PlaneName.XZPlane;
+            drule3_munit1.tolerance = 10;
             drule3.measurements.Add(drule3_munit1);
             dsquat.rules.Add(drule3);
 
@@ -164,10 +166,11 @@ namespace KinectMotionAnalyzer.Processors
                             }
                         }
 
-                        JointStatus status = new JointStatus();
-                        basicAssessor.ComputeJointAngle(skeletons[sel_id], rule.measurements[0], ref status);
-                        double angle = status.planeAngles[rule.measurements[0].boneJoint2][rule.measurements[0].plane];
-                        if (angle < rule.measurements[0].tolerance)
+                        double angle_val = basicAssessor.ComputeMeasurement(skeletons[sel_id], rule.measurements[0]);
+                        //JointStatus status = new JointStatus();
+                        //basicAssessor.ComputeJointAngle(skeletons[sel_id], rule.measurements[0], ref status);
+                        //double angle = status.planeAngles[rule.measurements[0].boneJoint2][rule.measurements[0].plane];
+                        if (angle_val < rule.measurements[0].tolerance)
                             rule_eval.ruleScore = 1;
                         else
                             rule_eval.ruleScore = 0;

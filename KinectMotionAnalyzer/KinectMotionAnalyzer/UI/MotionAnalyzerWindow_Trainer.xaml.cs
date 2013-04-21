@@ -55,6 +55,7 @@ namespace KinectMotionAnalyzer.UI
         // record params
         private string GESTURE_DATABASE_DIR = "gdata\\";
         private int frame_id = 0;
+        private int MAX_ALLOW_FRAME = 800;  // no more than this number for color and skeleton to avoid memory issue
         Gesture temp_gesture = new Gesture();
         ArrayList overlap_frame_rec_buffer; // use to store record frames in memory
         List<Skeleton> skeleton_rec_buffer; // record skeleton data
@@ -97,7 +98,7 @@ namespace KinectMotionAnalyzer.UI
 
                 // initialize stream
                 kinect_sensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
-                kinect_sensor.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
+                //kinect_sensor.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
                 if (ifDoSmoothing)
                 {
                     TransformSmoothParameters smoothingParam = new TransformSmoothParameters();
@@ -176,7 +177,14 @@ namespace KinectMotionAnalyzer.UI
                     {
                         byte[] colorData = new byte[frame.PixelDataLength];
                         frame.CopyPixelDataTo(colorData);
+                        
+                        // remove oldest frame
+                        if (color_frame_rec_buffer.Count == MAX_ALLOW_FRAME)
+                            color_frame_rec_buffer.RemoveAt(0);
+
                         color_frame_rec_buffer.Add(colorData);
+
+                        //Console.WriteLine(color_frame_rec_buffer.Count);
                     }
                 }
 
@@ -198,6 +206,10 @@ namespace KinectMotionAnalyzer.UI
                     {
                         DepthImagePixel[] depthData = new DepthImagePixel[frame.PixelDataLength];
                         frame.CopyDepthImagePixelDataTo(depthData);
+
+                        if (depth_frame_rec_buffer.Count == MAX_ALLOW_FRAME)
+                            depth_frame_rec_buffer.RemoveAt(0);
+
                         depth_frame_rec_buffer.Add(depthData);
                     }
                 }
@@ -232,6 +244,9 @@ namespace KinectMotionAnalyzer.UI
                 // if capturing, add to gesture data
                 if (gestureCaptureBtn.Content.ToString() == "Stop Capture")
                 {
+                    if (skeleton_rec_buffer.Count == MAX_ALLOW_FRAME)
+                        skeleton_rec_buffer.RemoveAt(0);
+
                     // just add first tracked skeleton, assume only one person is present
                     skeleton_rec_buffer.Add(tracked_skeleton);
                 }
