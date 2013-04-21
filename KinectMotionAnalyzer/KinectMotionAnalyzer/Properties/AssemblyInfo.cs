@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyTitle("KinectMotionAnalyzer")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Jie Feng")]
 [assembly: AssemblyProduct("KinectMotionAnalyzer")]
 [assembly: AssemblyCopyright("Copyright ©  2013")]
 [assembly: AssemblyTrademark("")]
