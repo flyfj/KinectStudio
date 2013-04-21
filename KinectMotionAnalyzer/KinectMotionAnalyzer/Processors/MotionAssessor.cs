@@ -52,6 +52,7 @@ namespace KinectMotionAnalyzer.Processors
         /*
          * position difference
          */
+        public AxisName pos_axis;
         public JointType joint_higher;
         public JointType joint_lower;
 
@@ -64,7 +65,7 @@ namespace KinectMotionAnalyzer.Processors
          * assessment quality
          */
         public double tolerance;    // max difference allowed for measurement
-        public double standard_angle_value; // correct angle value
+        public double standard_value; // correct angle value
 
         // instruction
         public string instruction_text = "";
@@ -76,7 +77,7 @@ namespace KinectMotionAnalyzer.Processors
             ifSingleJoint = true;
             singleJoint = JointType.ElbowRight;
             tolerance = 20;
-            standard_angle_value = 0;
+            standard_value = 0;
         }
     }
 
@@ -202,39 +203,42 @@ namespace KinectMotionAnalyzer.Processors
 
                         mvalue = Tools.ComputeAngle(vec1, vec2);
                     }
-                    else
+                }
+                else
+                {
+                    // compute bone angle
+                    SkeletonPoint cur_joint_pos = ske.Joints[munit.boneJoint1].Position;
+                    SkeletonPoint neighbor_joint_pos1 = ske.Joints[munit.boneJoint2].Position;
+
+                    Point3D vec1 = new Point3D(neighbor_joint_pos1.X - cur_joint_pos.X,
+                            neighbor_joint_pos1.Y - cur_joint_pos.Y,
+                            neighbor_joint_pos1.Z - cur_joint_pos.Z);
+
+                    switch (munit.plane)
                     {
-                        // compute bone angle
-                        SkeletonPoint cur_joint_pos = ske.Joints[munit.boneJoint1].Position;
-                        SkeletonPoint neighbor_joint_pos1 = ske.Joints[munit.boneJoint2].Position;
-
-                        Point3D vec1 = new Point3D(neighbor_joint_pos1.X - cur_joint_pos.X,
-                                neighbor_joint_pos1.Y - cur_joint_pos.Y,
-                                neighbor_joint_pos1.Z - cur_joint_pos.Z);
-
-                        switch (munit.plane)
-                        {
-                            case PlaneName.XYPlane:
-                                Point3D xyplane1 = new Point3D(vec1.X, vec1.Y, 0);  // projection of vec1 to xy plane
-                                mvalue = Tools.ComputeAngle(vec1, xyplane1);
-                                break;
-                            case PlaneName.YZPlane:
-                                Point3D yzplane1 = new Point3D(0, vec1.Y, vec1.Z);
-                                mvalue = Tools.ComputeAngle(vec1, yzplane1);
-                                break;
-                            case PlaneName.XZPlane:
-                                Point3D xzplane1 = new Point3D(vec1.X, 0, vec1.Z);
-                                mvalue = Tools.ComputeAngle(vec1, xzplane1);
-                                break;
-                            default:
-                                break;
-                        }
+                        case PlaneName.XYPlane:
+                            Point3D xyplane1 = new Point3D(vec1.X, vec1.Y, 0);  // projection of vec1 to xy plane
+                            mvalue = Tools.ComputeAngle(vec1, xyplane1);
+                            break;
+                        case PlaneName.YZPlane:
+                            Point3D yzplane1 = new Point3D(0, vec1.Y, vec1.Z);
+                            mvalue = Tools.ComputeAngle(vec1, yzplane1);
+                            break;
+                        case PlaneName.XZPlane:
+                            Point3D xzplane1 = new Point3D(vec1.X, 0, vec1.Z);
+                            mvalue = Tools.ComputeAngle(vec1, xzplane1);
+                            break;
+                        default:
+                            break;
                     }
                 }
             }
             if (munit.mType == MeasurementType.MType_PosDiff)
             {
-                mvalue = ske.Joints[munit.joint_higher].Position.Y - ske.Joints[munit.joint_lower].Position.Y;
+                if (munit.pos_axis == AxisName.YAsix)
+                    mvalue = ske.Joints[munit.joint_higher].Position.Y - ske.Joints[munit.joint_lower].Position.Y;
+                if (munit.pos_axis == AxisName.ZAsix)
+                    mvalue = ske.Joints[munit.joint_higher].Position.Z - ske.Joints[munit.joint_lower].Position.Z;
             }
 
             return mvalue;

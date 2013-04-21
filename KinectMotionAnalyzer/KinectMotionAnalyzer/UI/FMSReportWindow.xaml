@@ -1,7 +1,7 @@
 ﻿<Window x:Class="KinectMotionAnalyzer.UI.FMSReportWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="FMSReportWindow" Height="664.285" Width="544.898">
+        Title="FMSReportWindow" Height="352.073" Width="544.898">
     <Grid Margin="0,0,0,4">
         <GroupBox Header="Deep Squat" HorizontalAlignment="Left" Margin="65,76,0,0" VerticalAlignment="Top" Height="229" Width="407" FontSize="14">
             <Grid HorizontalAlignment="Left" Height="205" VerticalAlignment="Top" Width="395" Margin="0,0,0,-2">
@@ -10,21 +10,13 @@
                     <ColumnDefinition Width="379*"/>
                 </Grid.ColumnDefinitions>
                 <Label x:Name="ScoreLabel1" Content="Score: " HorizontalAlignment="Left" Margin="112,25,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Grid.Column="1"/>
-                <ListBox Grid.Column="1" HorizontalAlignment="Left" Height="85" Margin="10,95,0,0" VerticalAlignment="Top" Width="344">
+                <ListBox Grid.Column="1" HorizontalAlignment="Left" Height="67" Margin="10,95,0,0" VerticalAlignment="Top" Width="344">
                     <CheckBox x:Name="ruleBox1" Content="Rule1"/>
                     <CheckBox x:Name="ruleBox2" Content="Rule2"/>
                     <CheckBox x:Name="ruleBox3" Content="Rule3"/>
-                    <CheckBox x:Name="ruleBox4" Content="Rule4"/>
                 </ListBox>
             </Grid>
         </GroupBox>
         <Label x:Name="MainLabel" Content="FMS Report" HorizontalAlignment="Center" Margin="10,24,0,0" VerticalAlignment="Top" FontSize="22" FontWeight="Bold" FontFamily="Rockwell"/>
-        <ScrollViewer HorizontalAlignment="Left" Height="241" Margin="65,335,0,0" VerticalAlignment="Top" Width="407">
-            <StackPanel>
-                <GroupBox Header="GroupBox" Height="111"/>
-                <GroupBox Header="GroupBox2" Height="126"/>
-            </StackPanel>
-                
-        </ScrollViewer>
     </Grid>
 </Window>

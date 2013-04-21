@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 using System.Threading.Tasks;
 using Microsoft.Kinect;
 
@@ -78,41 +79,52 @@ namespace KinectMotionAnalyzer.Processors
             FMSRule drule0 = new FMSRule();
             drule0.id = 0;
             drule0.name = "Upper torso is parallel with tibia or toward vertical";
+            // measure angle of upper torso relative to ground
+            MeasurementUnit drule0_munit1 = new MeasurementUnit(MeasurementType.MType_Angle);
+            drule0_munit1.ifSingleJoint = false;
+            drule0_munit1.boneJoint1 = JointType.ShoulderCenter;
+            drule0_munit1.boneJoint2 = JointType.HipCenter;
+            drule0_munit1.plane = PlaneName.XZPlane;
+            drule0_munit1.standard_value = 90;
+            drule0_munit1.tolerance = 30;
+            drule0.measurements.Add(drule0_munit1);
             dsquat.rules.Add(drule0);
 
             FMSRule drule1 = new FMSRule();
             drule1.id = 1;
             drule1.name = "Femur is below horizontal";
-            drule1.measurements = new List<MeasurementUnit>();
+            //drule1.measurements = new List<MeasurementUnit>();
             MeasurementUnit drule1_munit1 = new MeasurementUnit(MeasurementType.MType_PosDiff);
+            drule1_munit1.pos_axis = AxisName.YAsix;
             drule1_munit1.joint_higher = JointType.KneeRight;
             drule1_munit1.joint_lower = JointType.HipRight;
             drule1.measurements.Add(drule1_munit1);
             dsquat.rules.Add(drule1);
 
-            FMSRule drule2 = new FMSRule();
-            drule2.id = 2;
-            drule2.name = "Knees are aligned over feet";
-            drule2.measurements = new List<MeasurementUnit>();
-            MeasurementUnit drule2_munit1 = new MeasurementUnit(MeasurementType.MType_Angle);
-            drule2_munit1.ifSingleJoint = false;
-            drule2_munit1.boneJoint1 = JointType.KneeRight;
-            drule2_munit1.boneJoint2 = JointType.KneeLeft;
-            drule2_munit1.plane = PlaneName.XZPlane;
-            drule2_munit1.tolerance = 10;
-            drule2.measurements.Add(drule2_munit1);
-            dsquat.rules.Add(drule2);
+            //FMSRule drule2 = new FMSRule();
+            //drule2.id = 2;
+            //drule2.name = "Knees are aligned over feet";
+            //drule2.measurements = new List<MeasurementUnit>();
+            //MeasurementUnit drule2_munit1 = new MeasurementUnit(MeasurementType.MType_Angle);
+            //drule2_munit1.ifSingleJoint = false;
+            //drule2_munit1.boneJoint1 = JointType.KneeRight;
+            //drule2_munit1.boneJoint2 = JointType.WristRight;
+            //drule2_munit1.plane = PlaneName.XZPlane;
+            //drule2_munit1.standard_angle_value = 90;
+            //drule2_munit1.tolerance = 40;
+            //drule2.measurements.Add(drule2_munit1);
+            //dsquat.rules.Add(drule2);
 
             FMSRule drule3 = new FMSRule();
             drule3.id = 3;
             drule3.name = "Dowel should be aligned over feet";
             drule3.measurements = new List<MeasurementUnit>();
-            MeasurementUnit drule3_munit1 = new MeasurementUnit(MeasurementType.MType_Angle);
-            drule3_munit1.ifSingleJoint = false;
-            drule3_munit1.boneJoint1 = JointType.HandRight;
-            drule3_munit1.boneJoint2 = JointType.HandLeft;
-            drule3_munit1.plane = PlaneName.XZPlane;
-            drule3_munit1.tolerance = 10;
+            MeasurementUnit drule3_munit1 = new MeasurementUnit(MeasurementType.MType_PosDiff);
+            drule3_munit1.pos_axis = AxisName.ZAsix;
+            drule3_munit1.joint_higher = JointType.WristRight;
+            drule3_munit1.joint_lower = JointType.KneeRight;
+            drule3_munit1.standard_value = 0;
+            drule3_munit1.tolerance = 0.3;
             drule3.measurements.Add(drule3_munit1);
             dsquat.rules.Add(drule3);
 
@@ -144,33 +156,41 @@ namespace KinectMotionAnalyzer.Processors
                                 ske.Joints[rule.measurements[0].joint_lower].Position.Y;
                             pos_diff.Add(diff);
                         }
+
+                        MessageBox.Show("rule1: " + pos_diff.Max());
+                        
                         if (pos_diff.Max() >= 0)
                             rule_eval.ruleScore = 1;
                         else
                             rule_eval.ruleScore = 0;
                     }
-                    if (rule.id == 2 || rule.id == 3)
+                    if (rule.id == 2 || rule.id == 3 || rule.id == 0)
                     {
                         // if angle is 90 relative to ground when reaching the lowest point
-                        float max_diff = float.MinValue;
+                        float min_pos_y = float.MaxValue;
                         int sel_id = -1;
                         for (int i = 0; i < skeletons.Count; i++)
                         {
-                            float diff = skeletons[i].Joints[JointType.KneeRight].Position.Y -
-                                skeletons[i].Joints[JointType.FootRight].Position.Y;
+                            if (skeletons[i] == null)
+                                continue;
 
-                            if (diff > max_diff)
+                            float diff = skeletons[i].Joints[JointType.Spine].Position.Y;
+
+                            if (diff < min_pos_y)
                             {
-                                max_diff = diff;
+                                min_pos_y = diff;
                                 sel_id = i;
                             }
                         }
 
                         double angle_val = basicAssessor.ComputeMeasurement(skeletons[sel_id], rule.measurements[0]);
+
+                        MessageBox.Show(rule.id + ": " + angle_val);
+
                         //JointStatus status = new JointStatus();
                         //basicAssessor.ComputeJointAngle(skeletons[sel_id], rule.measurements[0], ref status);
                         //double angle = status.planeAngles[rule.measurements[0].boneJoint2][rule.measurements[0].plane];
-                        if (angle_val < rule.measurements[0].tolerance)
+                        if (Math.Abs(angle_val - rule.measurements[0].standard_value) < rule.measurements[0].tolerance)
                             rule_eval.ruleScore = 1;
                         else
                             rule_eval.ruleScore = 0;
@@ -195,13 +215,13 @@ namespace KinectMotionAnalyzer.Processors
 
             switch (rule_ok_num)
             {
-                case 4:
+                case 3:
                     test_eval.testScore = 3;
                     break;
-                case 3:
+                case 2:
                     test_eval.testScore = 2;
                     break;
-                case 2:
+                case 1:
                     test_eval.testScore = 1;
                     break;
                 default:

@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{C4F6EF01-B07D-4466-AC6F-6B92582855F5}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>KinectMotionAnalyzer</RootNamespace>
     <AssemblyName>KinectMotionAnalyzer</AssemblyName>

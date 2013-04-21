@@ -427,7 +427,7 @@ namespace KinectMotionAnalyzer.Processors
                             {
                                 string displaytext = cur_joint_status[unit.singleJoint].angle.ToString("F2") + "°";
                                 SolidColorBrush textColor = Brushes.Yellow;
-                                if (Math.Abs(cur_joint_status[unit.singleJoint].angle - unit.standard_angle_value) > unit.tolerance)
+                                if (Math.Abs(cur_joint_status[unit.singleJoint].angle - unit.standard_value) > unit.tolerance)
                                 {
                                     displaytext += "\n " + unit.instruction_text;
                                     textColor = Brushes.Red;
@@ -460,7 +460,7 @@ namespace KinectMotionAnalyzer.Processors
                         {
                             string displaytext = cur_joint_status[unit.boneJoint1].planeAngles[unit.boneJoint2][unit.plane].ToString("F2") + "°";
                             SolidColorBrush textColor = Brushes.Yellow;
-                            if (Math.Abs(cur_joint_status[unit.boneJoint1].planeAngles[unit.boneJoint2][unit.plane] - unit.standard_angle_value) > unit.tolerance)
+                            if (Math.Abs(cur_joint_status[unit.boneJoint1].planeAngles[unit.boneJoint2][unit.plane] - unit.standard_value) > unit.tolerance)
                             {
                                 displaytext += "\n " + unit.instruction_text;
                                 textColor = Brushes.Red;

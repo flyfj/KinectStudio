@@ -92,7 +92,7 @@ namespace KinectMotionAnalyzer.UI
                 {
                     unit.ifSingleJoint = true;
                     unit.singleJoint = checkedJoints[0];
-                    unit.standard_angle_value = double.Parse(angleInputBox.Text);
+                    unit.standard_value = double.Parse(angleInputBox.Text);
 
                     // allow user to input intuitive instruction
                     if (measureInstructionTextBox.Text != string.Empty && measureInstructionTextBox.Text != defaultInstructionText)
@@ -127,7 +127,7 @@ namespace KinectMotionAnalyzer.UI
                     unit.ifSingleJoint = false;
                     unit.boneJoint1 = checkedJoints[0];
                     unit.boneJoint2 = checkedJoints[1];
-                    unit.standard_angle_value = double.Parse(angleInputBox.Text);
+                    unit.standard_value = double.Parse(angleInputBox.Text);
 
                     // allow user to input intuitive instruction
                     if (measureInstructionTextBox.Text != string.Empty && measureInstructionTextBox.Text != defaultInstructionText)

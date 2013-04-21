@@ -493,10 +493,12 @@ namespace KinectMotionAnalyzer.UI
                 // remove type
                 using (MotionDBContext dbcontext = new MotionDBContext())
                 {
-                    ActionType toRemoveType = dbcontext.ActionTypes.FirstOrDefault(x => x.Name == toRemoveItem.Content.ToString());
+                    string toRemoveString = toRemoveItem.Content.ToString();
+                    ActionType toRemoveType = dbcontext.ActionTypes.FirstOrDefault(x => x.Name == toRemoveString);
                     dbcontext.ActionTypes.Remove(toRemoveType);
-                    // remove actions
+                    // TODO: remove actions
                     //var res = dbcontext.Actions.Select(x => x.ActionName == toRemoveItem.Content.ToString());
+
                     // update
                     dbcontext.SaveChanges();
                 }
@@ -819,8 +821,8 @@ namespace KinectMotionAnalyzer.UI
             reportWin.ruleBox2.IsChecked = (test_eval.rule_evals[1].ruleScore == 1 ? true : false);
             reportWin.ruleBox3.Content = fmsProcessor.FMSTests[sel_test_id].rules[2].name;
             reportWin.ruleBox3.IsChecked = (test_eval.rule_evals[2].ruleScore == 1 ? true : false);
-            reportWin.ruleBox4.Content = fmsProcessor.FMSTests[sel_test_id].rules[3].name;
-            reportWin.ruleBox4.IsChecked = (test_eval.rule_evals[3].ruleScore == 1 ? true : false);
+            //reportWin.ruleBox4.Content = fmsProcessor.FMSTests[sel_test_id].rules[3].name;
+            //reportWin.ruleBox4.IsChecked = (test_eval.rule_evals[3].ruleScore == 1 ? true : false);
             reportWin.Show();
 
             //return;
