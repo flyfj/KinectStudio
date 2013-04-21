@@ -31,7 +31,7 @@ namespace KinectMotionAnalyzer.Processors
         MType_PosDiff
     }
 
-    // basic measurement per frame
+    // basic measurement pre frame
     public class MeasurementUnit
     {
         public MeasurementType mType;
@@ -56,6 +56,11 @@ namespace KinectMotionAnalyzer.Processors
         public JointType joint_lower;
 
         /*
+         * measurement value
+         */
+        public double value;
+
+        /*
          * assessment quality
          */
         public double tolerance;    // max difference allowed for measurement
@@ -63,6 +68,7 @@ namespace KinectMotionAnalyzer.Processors
 
         // instruction
         public string instruction_text;
+
 
         public MeasurementUnit(MeasurementType type)
         {
@@ -162,6 +168,76 @@ namespace KinectMotionAnalyzer.Processors
 
                 jointNeighbors.Add(joint, neighborJoints);
             }
+        }
+
+
+        // compute value for primitive measurement
+        public double ComputeMeasurement(Skeleton ske, MeasurementUnit munit)
+        {
+            if (ske == null)
+                return -1; ;
+
+            double mvalue = -1;
+            if (munit.mType == MeasurementType.MType_Angle)
+            {
+                if (munit.ifSingleJoint)
+                {
+                    // compute bone-bone angle centered in single joint
+                    if (jointNeighbors.ContainsKey(munit.singleJoint) &&
+                        jointNeighbors[munit.singleJoint].Count == 2)
+                    {
+                        SkeletonPoint cur_joint_pos = ske.Joints[munit.singleJoint].Position;
+                        JointType neighbor_jointtype1 = jointNeighbors[munit.singleJoint][0];
+                        JointType neighbor_jointtype2 = jointNeighbors[munit.singleJoint][1];
+                        SkeletonPoint neighbor_joint_pos1 = ske.Joints[neighbor_jointtype1].Position;
+                        SkeletonPoint neighbor_joint_pos2 = ske.Joints[neighbor_jointtype2].Position;
+
+                        // compute bone-bone angle
+                        Point3D vec1 = new Point3D(neighbor_joint_pos1.X - cur_joint_pos.X,
+                                neighbor_joint_pos1.Y - cur_joint_pos.Y,
+                                neighbor_joint_pos1.Z - cur_joint_pos.Z);
+                        Point3D vec2 = new Point3D(neighbor_joint_pos2.X - cur_joint_pos.X,
+                                    neighbor_joint_pos2.Y - cur_joint_pos.Y,
+                                    neighbor_joint_pos2.Z - cur_joint_pos.Z);
+
+                        mvalue = Tools.ComputeAngle(vec1, vec2);
+                    }
+                    else
+                    {
+                        // compute bone angle
+                        SkeletonPoint cur_joint_pos = ske.Joints[munit.boneJoint1].Position;
+                        SkeletonPoint neighbor_joint_pos1 = ske.Joints[munit.boneJoint2].Position;
+
+                        Point3D vec1 = new Point3D(neighbor_joint_pos1.X - cur_joint_pos.X,
+                                neighbor_joint_pos1.Y - cur_joint_pos.Y,
+                                neighbor_joint_pos1.Z - cur_joint_pos.Z);
+
+                        switch (munit.plane)
+                        {
+                            case PlaneName.XYPlane:
+                                Point3D xyplane1 = new Point3D(vec1.X, vec1.Y, 0);  // projection of vec1 to xy plane
+                                mvalue = Tools.ComputeAngle(vec1, xyplane1);
+                                break;
+                            case PlaneName.YZPlane:
+                                Point3D yzplane1 = new Point3D(0, vec1.Y, vec1.Z);
+                                mvalue = Tools.ComputeAngle(vec1, yzplane1);
+                                break;
+                            case PlaneName.XZPlane:
+                                Point3D xzplane1 = new Point3D(vec1.X, 0, vec1.Z);
+                                mvalue = Tools.ComputeAngle(vec1, xzplane1);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            }
+            if (munit.mType == MeasurementType.MType_PosDiff)
+            {
+                mvalue = ske.Joints[munit.joint_higher].Position.Y - ske.Joints[munit.joint_lower].Position.Y;
+            }
+
+            return mvalue;
         }
 
         // compute all angles associated with input joint (must have two neighbors)

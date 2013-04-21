@@ -86,7 +86,7 @@ namespace KinectMotionAnalyzer.UI
             }
             else
             {
-                MeasurementUnit unit = new MeasurementUnit();
+                MeasurementUnit unit = new MeasurementUnit(MeasurementType.MType_Angle);
 
                 if (checkedJoints.Count == 1)
                 {

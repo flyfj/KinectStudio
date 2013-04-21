@@ -143,6 +143,7 @@
     <Compile Include="Model\MotionDBContext.cs" />
     <Compile Include="Model\SingleJoint.cs" />
     <Compile Include="Model\SkeletonData.cs" />
+    <Compile Include="Processors\FMSProcessor.cs" />
     <Compile Include="Processors\GestureRecognizer.cs" />
     <Compile Include="Processors\KinectRecorder.cs" />
     <Compile Include="UI\ActionDatabasePreview.xaml.cs">

@@ -61,9 +61,16 @@ namespace KinectMotionAnalyzer.Processors
         {
             basicAssessor = new MotionAssessor();
 
+            PopulateFMSTests();
+        }
+
+
+        public void PopulateFMSTests()
+        {
             // populate test
             FMSTests = new List<FMSTest>();
-            // deep squat
+
+            #region Deep squat
             FMSTest dsquat = new FMSTest("Deep Squat");
             dsquat.rules = new List<FMSRule>();
             FMSRule drule1 = new FMSRule();
@@ -78,6 +85,7 @@ namespace KinectMotionAnalyzer.Processors
 
             FMSRule drule2 = new FMSRule();
             drule2.id = 2;
+            drule2.name = "Knees are aligned over feet";
             drule2.measurements = new List<MeasurementUnit>();
             MeasurementUnit drule2_munit1 = new MeasurementUnit(MeasurementType.MType_Angle);
             drule2_munit1.ifSingleJoint = false;
@@ -87,10 +95,25 @@ namespace KinectMotionAnalyzer.Processors
             drule2.measurements.Add(drule2_munit1);
             dsquat.rules.Add(drule2);
 
+            FMSRule drule3 = new FMSRule();
+            drule3.id = 3;
+            drule3.name = "Dowel should be aligned over feet";
+            drule3.measurements = new List<MeasurementUnit>();
+            MeasurementUnit drule3_munit1 = new MeasurementUnit(MeasurementType.MType_Angle);
+            drule3_munit1.ifSingleJoint = false;
+            drule3_munit1.boneJoint1 = JointType.HandRight;
+            drule3_munit1.boneJoint2 = JointType.FootRight;
+            drule3_munit1.plane = PlaneName.XZPlane;
+            drule3.measurements.Add(drule3_munit1);
+            dsquat.rules.Add(drule3);
+
             FMSTests.Add(dsquat);
-            // hurdle step
+            #endregion
+
+            #region Hurdle step
             FMSTest hstep = new FMSTest("Hurdle Step");
 
+            #endregion
         }
 
         public FMSRuleEvaluation EvaluateRule(List<Skeleton> skeletons, int testId, FMSRule rule)
@@ -137,7 +160,7 @@ namespace KinectMotionAnalyzer.Processors
                         JointStatus status = new JointStatus();
                         basicAssessor.ComputeJointAngle(skeletons[sel_id], rule.measurements[0], ref status);
                         double angle = status.planeAngles[rule.measurements[0].boneJoint2][rule.measurements[0].plane];
-                        if (angle < 10)
+                        if (angle < rule.measurements[0].tolerance)
                             rule_eval.ruleScore = 1;
                         else
                             rule_eval.ruleScore = 0;
@@ -148,9 +171,14 @@ namespace KinectMotionAnalyzer.Processors
             return rule_eval;
         }
 
-        public FMSTestEvaluation EvaluateTest(List<Skeleton> skeletons, FMSTest test)
+        public FMSTestEvaluation EvaluateTest(List<Skeleton> skeletons, int testId)
         {
             FMSTestEvaluation test_eval = new FMSTestEvaluation();
+
+            foreach (FMSRule rule in FMSTests[testId].rules)
+            {
+                FMSRuleEvaluation rule_eval = EvaluateRule(skeletons, testId, rule);
+            }
 
             return test_eval;
         }
