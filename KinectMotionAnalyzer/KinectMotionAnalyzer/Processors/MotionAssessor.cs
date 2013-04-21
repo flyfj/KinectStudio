@@ -67,7 +67,7 @@ namespace KinectMotionAnalyzer.Processors
         public double standard_angle_value; // correct angle value
 
         // instruction
-        public string instruction_text;
+        public string instruction_text = "";
 
 
         public MeasurementUnit(MeasurementType type)

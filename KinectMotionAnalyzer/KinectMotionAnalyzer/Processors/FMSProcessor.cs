@@ -11,7 +11,7 @@ namespace KinectMotionAnalyzer.Processors
     public class FMSRule
     {
         public int id;
-        public string name;
+        public string name = "";
         public List<MeasurementUnit> measurements;
 
         public FMSRule()
@@ -25,7 +25,7 @@ namespace KinectMotionAnalyzer.Processors
     {
         public int ruleId;
         public float ruleScore;
-        public string feedback;
+        public string feedback = "";
 
         public FMSRuleEvaluation()
         {
@@ -35,8 +35,8 @@ namespace KinectMotionAnalyzer.Processors
 
     public class FMSTest
     {
-        public string testName;
-        public List<FMSRule> rules;
+        public string testName = "";
+        public List<FMSRule> rules = new List<FMSRule>();
 
         public FMSTest(string name)
         {
@@ -48,6 +48,7 @@ namespace KinectMotionAnalyzer.Processors
     {
         public int testId;
         public float testScore;
+        public List<FMSRuleEvaluation> rule_evals = new List<FMSRuleEvaluation>();
     }
 
 
@@ -55,7 +56,7 @@ namespace KinectMotionAnalyzer.Processors
     class FMSProcessor
     {
         private MotionAssessor basicAssessor;
-        public List<FMSTest> FMSTests;
+        public List<FMSTest> FMSTests = new List<FMSTest>();
 
         public FMSProcessor()
         {
@@ -65,10 +66,10 @@ namespace KinectMotionAnalyzer.Processors
         }
 
 
-        public void PopulateFMSTests()
+        private void PopulateFMSTests()
         {
             // populate test
-            FMSTests = new List<FMSTest>();
+            //FMSTests = new List<FMSTest>();
 
             #region Deep squat
             FMSTest dsquat = new FMSTest("Deep Squat");
@@ -181,9 +182,28 @@ namespace KinectMotionAnalyzer.Processors
         {
             FMSTestEvaluation test_eval = new FMSTestEvaluation();
 
+            int rule_ok_num = 0;
             foreach (FMSRule rule in FMSTests[testId].rules)
             {
                 FMSRuleEvaluation rule_eval = EvaluateRule(skeletons, testId, rule);
+                rule_ok_num += (rule_eval.ruleScore == 1 ? 1 : 0);
+                test_eval.rule_evals.Add(rule_eval);
+            }
+
+            switch (rule_ok_num)
+            {
+                case 4:
+                    test_eval.testScore = 3;
+                    break;
+                case 3:
+                    test_eval.testScore = 2;
+                    break;
+                case 2:
+                    test_eval.testScore = 1;
+                    break;
+                default:
+                    test_eval.testScore = 0;
+                    break;
             }
 
             return test_eval;

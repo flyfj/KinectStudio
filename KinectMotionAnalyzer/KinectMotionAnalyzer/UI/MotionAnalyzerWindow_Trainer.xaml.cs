@@ -309,6 +309,8 @@ namespace KinectMotionAnalyzer.UI
                 gestureCaptureBtn.Content = "Capture";
                 gestureReplayBtn.IsEnabled = true;
                 isRecognition = false;
+
+                processBtn.IsEnabled = true;
             }
         }
 
@@ -775,19 +777,7 @@ namespace KinectMotionAnalyzer.UI
 
         private void processBtn_Click(object sender, RoutedEventArgs e)
         {
-            FMSReportWindow reportWin = new FMSReportWindow();
-            reportWin.ScoreLabel1.Content = "Score: " + 2;
             int sel_test_id = Math.Max(actionComboBox.SelectedIndex - 1, 0);
-            reportWin.ruleBox1.Content = fmsProcessor.FMSTests[sel_test_id].rules[0].name;
-            reportWin.ruleBox1.IsChecked = true;
-            reportWin.ruleBox2.Content = fmsProcessor.FMSTests[sel_test_id].rules[1].name;
-            reportWin.ruleBox3.Content = fmsProcessor.FMSTests[sel_test_id].rules[2].name;
-            reportWin.ruleBox3.IsChecked = true;
-            reportWin.ruleBox4.Content = fmsProcessor.FMSTests[sel_test_id].rules[3].name;
-            reportWin.Show();
-
-            return;
-
             // trim valid buffer data
             statusbarLabel.Content = "Processing " + actionComboBox.Items[sel_test_id+1].ToString();
             // save data from start label to end label
@@ -806,6 +796,19 @@ namespace KinectMotionAnalyzer.UI
 
             FMSTestEvaluation test_eval = fmsProcessor.EvaluateTest(skeleton_rec_buffer, sel_test_id);
 
+            FMSReportWindow reportWin = new FMSReportWindow();
+            reportWin.ScoreLabel1.Content = "Score: " + test_eval.testScore;
+            reportWin.ruleBox1.Content = fmsProcessor.FMSTests[sel_test_id].rules[0].name;
+            reportWin.ruleBox1.IsChecked = (test_eval.rule_evals[0].ruleScore == 1 ? true : false);
+            reportWin.ruleBox2.Content = fmsProcessor.FMSTests[sel_test_id].rules[1].name;
+            reportWin.ruleBox2.IsChecked = (test_eval.rule_evals[1].ruleScore == 1 ? true : false);
+            reportWin.ruleBox3.Content = fmsProcessor.FMSTests[sel_test_id].rules[2].name;
+            reportWin.ruleBox3.IsChecked = (test_eval.rule_evals[2].ruleScore == 1 ? true : false);
+            reportWin.ruleBox4.Content = fmsProcessor.FMSTests[sel_test_id].rules[3].name;
+            reportWin.ruleBox4.IsChecked = (test_eval.rule_evals[3].ruleScore == 1 ? true : false);
+            reportWin.Show();
+
+            //return;
             
         }
 
