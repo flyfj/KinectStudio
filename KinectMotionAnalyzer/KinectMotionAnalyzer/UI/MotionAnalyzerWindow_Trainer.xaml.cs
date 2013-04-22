@@ -173,8 +173,8 @@ namespace KinectMotionAnalyzer.UI
                 if (gestureCaptureBtn.Content.ToString() == "Stop Capture")
                 {
                     // consistent with skeleton data
-                    if (skeleton_rec_buffer.Count > 0)
-                    {
+                    //if (skeleton_rec_buffer.Count > 0)
+                    //{
                         byte[] colorData = new byte[frame.PixelDataLength];
                         frame.CopyPixelDataTo(colorData);
                         
@@ -185,7 +185,7 @@ namespace KinectMotionAnalyzer.UI
                         color_frame_rec_buffer.Add(colorData);
 
                         //Console.WriteLine(color_frame_rec_buffer.Count);
-                    }
+                    //}
                 }
 
                 kinect_data_manager.UpdateColorData(frame); 
@@ -358,8 +358,8 @@ namespace KinectMotionAnalyzer.UI
                 skeleton_rec_buffer.RemoveRange(end_id + 1, Math.Max(skeleton_rec_buffer.Count - end_id - 1, 0));
                 skeleton_rec_buffer.RemoveRange(0, start_id);
 
-                depth_frame_rec_buffer.RemoveRange(end_id + 1, Math.Max(depth_frame_rec_buffer.Count - end_id - 1, 0));
-                depth_frame_rec_buffer.RemoveRange(0, start_id);
+                //depth_frame_rec_buffer.RemoveRange(end_id + 1, Math.Max(depth_frame_rec_buffer.Count - end_id - 1, 0));
+                //depth_frame_rec_buffer.RemoveRange(0, start_id);
 
                 // convert to kinect action for saving
                 KinectAction rec_action = new KinectAction();
@@ -568,10 +568,10 @@ namespace KinectMotionAnalyzer.UI
                 {
                     kinect_data_manager.UpdateColorData(color_frame_rec_buffer[cur_frame_id], 640, 480);
                     kinect_data_manager.UpdateSkeletonData(skeleton_rec_buffer[cur_frame_id]);
-                }
 
-                // update label
-                skeletonSliderLabel.Content = skeletonVideoSlider.Value.ToString();
+                    // update label
+                    skeletonSliderLabel.Content = skeletonVideoSlider.Value.ToString();
+                }
             }
         }
 
@@ -693,7 +693,7 @@ namespace KinectMotionAnalyzer.UI
             replay_setStartBtn.IsEnabled = true;
             replay_startLabel.Content = min_frame_id.ToString();
             //replay_setEndBtn.IsEnabled = true;
-            replay_endLabel.Content = max_frame_id;
+            replay_endLabel.Content = max_frame_id.ToString();
 
             keyframeConfigBtn.IsEnabled = true;
 
@@ -814,6 +814,7 @@ namespace KinectMotionAnalyzer.UI
             FMSTestEvaluation test_eval = fmsProcessor.EvaluateTest(skeleton_rec_buffer, sel_test_id);
 
             FMSReportWindow reportWin = new FMSReportWindow();
+            reportWin.groupBox.Header = fmsProcessor.FMSTests[sel_test_id].testName;
             reportWin.ScoreLabel1.Content = "Score: " + test_eval.testScore;
             reportWin.ruleBox1.Content = fmsProcessor.FMSTests[sel_test_id].rules[0].name;
             reportWin.ruleBox1.IsChecked = (test_eval.rule_evals[0].ruleScore == 1 ? true : false);

@@ -128,13 +128,54 @@ namespace KinectMotionAnalyzer.Processors
             drule3.measurements.Add(drule3_munit1);
             dsquat.rules.Add(drule3);
 
-            FMSTests.Add(dsquat);
             #endregion
+
+            FMSTests.Add(dsquat);
 
             #region Hurdle step
             FMSTest hstep = new FMSTest("Hurdle Step");
+            FMSRule drule21 = new FMSRule();
+            drule21.id = 1;
+            drule21.name = "back staright";
+            // measure angle of upper torso relative to ground
+            MeasurementUnit drule21_munit1 = new MeasurementUnit(MeasurementType.MType_Angle);
+            drule21_munit1.ifSingleJoint = false;
+            drule21_munit1.boneJoint1 = JointType.ShoulderCenter;
+            drule21_munit1.boneJoint2 = JointType.HipCenter;
+            drule21_munit1.plane = PlaneName.XZPlane;
+            drule21_munit1.standard_value = 90;
+            drule21_munit1.tolerance = 30;
+            drule21.measurements.Add(drule21_munit1);
+            hstep.rules.Add(drule21);
 
+            FMSRule drule22 = new FMSRule();
+            drule22.id = 2;
+            drule22.name = "No move for lumbar spine";
+            //drule1.measurements = new List<MeasurementUnit>();
+            MeasurementUnit drule22_munit1 = new MeasurementUnit(MeasurementType.MType_PosDiff);
+            drule22_munit1.pos_axis = AxisName.XAxis;
+            drule22_munit1.joint_higher = JointType.KneeRight;
+            drule22_munit1.joint_lower = JointType.HipRight;
+            drule22_munit1.standard_value = 0;
+            drule22_munit1.tolerance = 0.15;
+            drule22.measurements.Add(drule22_munit1);
+            hstep.rules.Add(drule22);
+
+            FMSRule drule23 = new FMSRule();
+            drule23.id = 3;
+            drule23.name = "Dowel horizontal";
+            //drule1.measurements = new List<MeasurementUnit>();
+            MeasurementUnit drule23_munit1 = new MeasurementUnit(MeasurementType.MType_PosDiff);
+            drule23_munit1.pos_axis = AxisName.YAsix;
+            drule23_munit1.joint_higher = JointType.WristLeft;
+            drule23_munit1.joint_lower = JointType.WristRight;
+            drule23_munit1.standard_value = 0;
+            drule23_munit1.tolerance = 0.3;
+            drule23.measurements.Add(drule23_munit1);
+            hstep.rules.Add(drule23);
             #endregion
+
+            FMSTests.Add(hstep);
         }
 
         public FMSRuleEvaluation EvaluateRule(List<Skeleton> skeletons, int testId, FMSRule rule)
@@ -195,6 +236,37 @@ namespace KinectMotionAnalyzer.Processors
                         else
                             rule_eval.ruleScore = 0;
                     }
+                }
+                if (testId == 1)
+                {
+                    // find the time right knee is the higher
+                    double max_knee_y = 0;
+                    int sel_id = -1;
+                    for (int i = 0; i < skeletons.Count; i++)
+                    {
+                        if (skeletons[i] == null)
+                            continue;
+
+                        float diff = skeletons[i].Joints[JointType.KneeRight].Position.Y;
+
+                        if (diff > max_knee_y)
+                        {
+                            max_knee_y = diff;
+                            sel_id = i;
+                        }
+                    }
+
+                    double mval = basicAssessor.ComputeMeasurement(skeletons[sel_id], rule.measurements[0]);
+
+                    MessageBox.Show(rule.id + ": " + mval);
+
+                    //JointStatus status = new JointStatus();
+                    //basicAssessor.ComputeJointAngle(skeletons[sel_id], rule.measurements[0], ref status);
+                    //double angle = status.planeAngles[rule.measurements[0].boneJoint2][rule.measurements[0].plane];
+                    if (Math.Abs(mval - rule.measurements[0].standard_value) < rule.measurements[0].tolerance)
+                        rule_eval.ruleScore = 1;
+                    else
+                        rule_eval.ruleScore = 0;
                 }
             }
 

@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="FMSReportWindow" Height="352.073" Width="544.898">
     <Grid Margin="0,0,0,4">
-        <GroupBox Header="Deep Squat" HorizontalAlignment="Left" Margin="65,76,0,0" VerticalAlignment="Top" Height="229" Width="407" FontSize="14">
+        <GroupBox x:Name="groupBox" Header="Deep Squat" HorizontalAlignment="Left" Margin="65,76,0,0" VerticalAlignment="Top" Height="229" Width="407" FontSize="14">
             <Grid HorizontalAlignment="Left" Height="205" VerticalAlignment="Top" Width="395" Margin="0,0,0,-2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="16*"/>

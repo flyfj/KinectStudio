@@ -235,6 +235,8 @@ namespace KinectMotionAnalyzer.Processors
             }
             if (munit.mType == MeasurementType.MType_PosDiff)
             {
+                if (munit.pos_axis == AxisName.XAxis)
+                    mvalue = ske.Joints[munit.joint_higher].Position.X - ske.Joints[munit.joint_lower].Position.X;
                 if (munit.pos_axis == AxisName.YAsix)
                     mvalue = ske.Joints[munit.joint_higher].Position.Y - ske.Joints[munit.joint_lower].Position.Y;
                 if (munit.pos_axis == AxisName.ZAsix)
