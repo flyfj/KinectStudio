@@ -136,7 +136,7 @@ namespace KinectMotionAnalyzer.Processors
             FMSTest hstep = new FMSTest("Hurdle Step");
             FMSRule drule21 = new FMSRule();
             drule21.id = 1;
-            drule21.name = "back staright";
+            drule21.name = "Back straight";
             // measure angle of upper torso relative to ground
             MeasurementUnit drule21_munit1 = new MeasurementUnit(MeasurementType.MType_Angle);
             drule21_munit1.ifSingleJoint = false;
@@ -240,8 +240,8 @@ namespace KinectMotionAnalyzer.Processors
                 if (testId == 1)
                 {
                     // find the time right knee is the higher
-                    double max_knee_y = 0;
-                    int sel_id = -1;
+                    double max_knee_y = -1;
+                    int sel_id = 0;
                     for (int i = 0; i < skeletons.Count; i++)
                     {
                         if (skeletons[i] == null)
@@ -258,7 +258,7 @@ namespace KinectMotionAnalyzer.Processors
 
                     double mval = basicAssessor.ComputeMeasurement(skeletons[sel_id], rule.measurements[0]);
 
-                    MessageBox.Show(rule.id + ": " + mval);
+                    //MessageBox.Show(rule.id + ": " + mval);
 
                     //JointStatus status = new JointStatus();
                     //basicAssessor.ComputeJointAngle(skeletons[sel_id], rule.measurements[0], ref status);
