@@ -200,7 +200,7 @@ namespace KinectMotionAnalyzer.UI
                     // update status
                     motion_assessor.UpdateJointStatus(tracked_skeleton, toMeasureUnits);
                     kinect_data_manager.cur_joint_status = motion_assessor.GetCurrentJointStatus();
-                    kinect_data_manager.toMeasureUnits = this.toMeasureUnits;
+                    //kinect_data_manager.toMeasureUnits = this.toMeasureUnits;
 
                     // show feedback
                     //feedback_textblock.Text = motion_assessor.GetFeedbackForCurrentStatus();
@@ -308,6 +308,7 @@ namespace KinectMotionAnalyzer.UI
                     previewBtn.Content = "Stop Test";
                     isStreaming = true;
                     kinect_data_manager.ifShowJointStatus = true;
+                    kinect_data_manager.toMeasureUnits = this.toMeasureUnits;
 
                     overlap_frame_rec_buffer.Clear();
 
