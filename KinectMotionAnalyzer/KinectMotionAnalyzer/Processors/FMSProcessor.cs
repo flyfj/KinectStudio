@@ -144,7 +144,7 @@ namespace KinectMotionAnalyzer.Processors
             drule21_munit1.boneJoint2 = JointType.HipCenter;
             drule21_munit1.plane = PlaneName.XZPlane;
             drule21_munit1.standard_value = 90;
-            drule21_munit1.tolerance = 30;
+            drule21_munit1.tolerance = 20;
             drule21.measurements.Add(drule21_munit1);
             hstep.rules.Add(drule21);
 
@@ -157,7 +157,7 @@ namespace KinectMotionAnalyzer.Processors
             drule22_munit1.joint_higher = JointType.KneeRight;
             drule22_munit1.joint_lower = JointType.HipRight;
             drule22_munit1.standard_value = 0;
-            drule22_munit1.tolerance = 0.15;
+            drule22_munit1.tolerance = 0.1;
             drule22.measurements.Add(drule22_munit1);
             hstep.rules.Add(drule22);
 
@@ -170,7 +170,7 @@ namespace KinectMotionAnalyzer.Processors
             drule23_munit1.joint_higher = JointType.WristLeft;
             drule23_munit1.joint_lower = JointType.WristRight;
             drule23_munit1.standard_value = 0;
-            drule23_munit1.tolerance = 0.3;
+            drule23_munit1.tolerance = 0.1;
             drule23.measurements.Add(drule23_munit1);
             hstep.rules.Add(drule23);
             #endregion

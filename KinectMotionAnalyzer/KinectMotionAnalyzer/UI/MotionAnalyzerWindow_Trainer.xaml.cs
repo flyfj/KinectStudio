@@ -106,11 +106,11 @@ namespace KinectMotionAnalyzer.UI
                         // Some smoothing with little latency (defaults).
                         // Only filters out small jitters.
                         // Good for gesture recognition in games.
-                        smoothingParam.Smoothing = 0.5f;
-                        smoothingParam.Correction = 0.5f;
-                        smoothingParam.Prediction = 0.5f;
-                        smoothingParam.JitterRadius = 0.05f;
-                        smoothingParam.MaxDeviationRadius = 0.04f;
+                        //smoothingParam.Smoothing = 0.5f;
+                        //smoothingParam.Correction = 0.5f;
+                        //smoothingParam.Prediction = 0.5f;
+                        //smoothingParam.JitterRadius = 0.05f;
+                        //smoothingParam.MaxDeviationRadius = 0.04f;
 
                         // Smoothed with some latency.
                         // Filters out medium jitters.
@@ -126,11 +126,11 @@ namespace KinectMotionAnalyzer.UI
                         //// Filters out large jitters.
                         //// Good for situations where smooth data is absolutely required
                         //// and latency is not an issue.
-                        //smoothingParam.Smoothing = 0.7f;
-                        //smoothingParam.Correction = 0.3f;
-                        //smoothingParam.Prediction = 1.0f;
-                        //smoothingParam.JitterRadius = 1.0f;
-                        //smoothingParam.MaxDeviationRadius = 1.0f;
+                        smoothingParam.Smoothing = 0.7f;
+                        smoothingParam.Correction = 0.3f;
+                        smoothingParam.Prediction = 1.0f;
+                        smoothingParam.JitterRadius = 1.0f;
+                        smoothingParam.MaxDeviationRadius = 1.0f;
                     };
 
                     kinect_sensor.SkeletonStream.Enable(smoothingParam);
@@ -173,8 +173,8 @@ namespace KinectMotionAnalyzer.UI
                 if (gestureCaptureBtn.Content.ToString() == "Stop Capture")
                 {
                     // consistent with skeleton data
-                    //if (skeleton_rec_buffer.Count > 0)
-                    //{
+                    if (skeleton_rec_buffer.Count > 0)
+                    {
                         byte[] colorData = new byte[frame.PixelDataLength];
                         frame.CopyPixelDataTo(colorData);
                         
@@ -185,7 +185,7 @@ namespace KinectMotionAnalyzer.UI
                         color_frame_rec_buffer.Add(colorData);
 
                         //Console.WriteLine(color_frame_rec_buffer.Count);
-                    //}
+                    }
                 }
 
                 kinect_data_manager.UpdateColorData(frame); 
@@ -241,6 +241,9 @@ namespace KinectMotionAnalyzer.UI
                     }
                 }
 
+                if (tracked_skeleton == null)
+                    return;
+
                 // if capturing, add to gesture data
                 if (gestureCaptureBtn.Content.ToString() == "Stop Capture")
                 {
@@ -251,8 +254,7 @@ namespace KinectMotionAnalyzer.UI
                     skeleton_rec_buffer.Add(tracked_skeleton);
                 }
 
-                if (tracked_skeleton == null)
-                    return;
+                
 
                 if (kinect_data_manager.ifShowJointStatus)
                 {
@@ -296,7 +298,7 @@ namespace KinectMotionAnalyzer.UI
                 color_frame_rec_buffer.Clear();
                 skeleton_rec_buffer.Clear();
                 gestureCaptureBtn.Content = "Stop Capture";
-                
+
                 // start kinect
                 if (!kinect_sensor.IsRunning)
                 {
@@ -306,6 +308,7 @@ namespace KinectMotionAnalyzer.UI
 
                     kinect_sensor.Start();
                 }
+
             }
             else
             {

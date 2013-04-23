@@ -114,7 +114,6 @@ namespace KinectMotionAnalyzer.Processors
         public DrawingImage skeletonImageSource;
 
 
-
         public KinectDataManager(ref KinectSensor sensor)
         {
             if(sensor == null)
