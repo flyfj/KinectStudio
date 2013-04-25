@@ -41,14 +41,10 @@ namespace KinectMotionAnalyzer.UI
 
         // recognition
         private GestureRecognizer gesture_recognizer = null;
-        private string GESTURE_DATABASE_DIR = "gdata\\";
 
         // sign
-        bool isReplay = false;
-        bool isRecognition = false;
         bool isStreaming = false;
         bool ifDoSmoothing = true;
-        bool isCalculating = false; // a lock param for multithreading
 
         // record params
         private int frame_id = 0;
