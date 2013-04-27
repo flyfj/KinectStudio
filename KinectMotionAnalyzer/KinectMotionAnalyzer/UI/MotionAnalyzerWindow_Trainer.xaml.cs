@@ -42,7 +42,7 @@ namespace KinectMotionAnalyzer.UI
         //private MotionDBContext dbcontext = null;  // database connection
 
         // recognition
-        private GestureRecognizer gesture_recognizer = null;
+        //private GestureRecognizer gesture_recognizer = null;
         private FMSProcessor fmsProcessor = null;
 
         // sign
@@ -51,10 +51,10 @@ namespace KinectMotionAnalyzer.UI
 
         // record params
         private int MAX_ALLOW_FRAME = 800;  // no more than this number for color and skeleton to avoid memory issue
-        Gesture temp_gesture = new Gesture();
-        ArrayList overlap_frame_rec_buffer; // use to store record frames in memory
-        List<Skeleton> skeleton_rec_buffer; // record skeleton data
-        List<byte[]> color_frame_rec_buffer; // record video frames
+        //Gesture temp_gesture = new Gesture();
+        ArrayList overlap_frame_rec_buffer = null; // use to store record frames in memory
+        List<Skeleton> skeleton_rec_buffer = null; // record skeleton data
+        List<byte[]> color_frame_rec_buffer = null; // record video frames
         List<DepthImagePixel[]> depth_frame_rec_buffer;
         // we are not directly using action to store all buffer data since action has different
         // data type, e.g. skeleton which is harder to visualize
