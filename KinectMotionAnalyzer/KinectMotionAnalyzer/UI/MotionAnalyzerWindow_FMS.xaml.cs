@@ -46,6 +46,7 @@ namespace KinectMotionAnalyzer.UI
         bool isReplaying = false;
         bool ifDoSmoothing = true;
         bool isCapturing = false;
+        bool isValidSkeleton = false;
 
         // record params
         private int MAX_ALLOW_FRAME = 800;  // no more than this number for color and skeleton to avoid memory issue
@@ -163,16 +164,18 @@ namespace KinectMotionAnalyzer.UI
                 if (isCapturing)
                 {
                     // consistent with skeleton data
-                    if (color_frame_rec_buffer.Count < skeleton_rec_buffer.Count)
+                    if (isValidSkeleton)
                     {
                         byte[] colorData = new byte[frame.PixelDataLength];
                         frame.CopyPixelDataTo(colorData);
-                        
+
                         // remove oldest frame
                         if (color_frame_rec_buffer.Count == MAX_ALLOW_FRAME)
                             color_frame_rec_buffer.RemoveAt(0);
 
                         color_frame_rec_buffer.Add(colorData);
+
+                        isValidSkeleton = false;
                     }
                 }
 
@@ -237,6 +240,8 @@ namespace KinectMotionAnalyzer.UI
 
                     // just add first tracked skeleton, assume only one person is present
                     skeleton_rec_buffer.Add(tracked_skeleton);
+
+                    isValidSkeleton = true;
                 }
 
                 kinect_data_manager.UpdateSkeletonData(tracked_skeleton);
@@ -282,6 +287,8 @@ namespace KinectMotionAnalyzer.UI
                     return;
 
                 kinect_sensor.Stop();
+
+                isCapturing = false;
 
                 // prepare for replay
                 ActivateReplay(color_frame_rec_buffer, skeleton_rec_buffer);

@@ -195,6 +195,9 @@ namespace KinectMotionAnalyzer.Processors
                         List<float> pos_diff = new List<float>();
                         foreach (Skeleton ske in skeletons)
                         {
+                            if(ske == null)
+                                continue;
+
                             float diff = ske.Joints[rule.measurements[0].joint_higher].Position.Y - 
                                 ske.Joints[rule.measurements[0].joint_lower].Position.Y;
                             pos_diff.Add(diff);

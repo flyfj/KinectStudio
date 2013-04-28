@@ -148,7 +148,6 @@ namespace KinectMotionAnalyzer.UI
 
         void kinect_colorframe_ready(object sender, ColorImageFrameReadyEventArgs e)
         {
-
             using (ColorImageFrame frame = e.OpenColorImageFrame())
             {
                 if (frame == null)

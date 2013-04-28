@@ -546,11 +546,12 @@ namespace KinectMotionAnalyzer.Processors
             if (joint0.TrackingState == JointTrackingState.Tracked && joint1.TrackingState == JointTrackingState.Tracked)
             {
                 drawPen = this.trackedBonePen;
-            }
-
-            drawingContext.DrawLine(drawPen,
+                drawingContext.DrawLine(drawPen,
                 SkeletonPointToScreen(joint0.Position),
                 SkeletonPointToScreen(joint1.Position));
+            }
+
+            
         }
 
         #endregion
