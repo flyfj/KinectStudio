@@ -13,15 +13,14 @@
             <Label Content="Welcome" Name="statusbarLabel" FontStretch="Medium" FontSize="14" />
         </StatusBar>
         <Button Content="Start Test" FontSize="15" Height="40" HorizontalAlignment="Left" Margin="731,254,0,0" Name="previewBtn" VerticalAlignment="Top" Width="182" Click="previewBtn_Click" />
-        <GroupBox Header="Action Selection" Height="170" HorizontalAlignment="Left" Margin="654,52,0,0" Name="groupBox1" VerticalAlignment="Top" Width="342" FontSize="16">
+        <GroupBox Header="Action Selection" Height="170" HorizontalAlignment="Left" Margin="654,52,0,0" Name="groupBox1" VerticalAlignment="Top" Width="332" FontSize="16">
             <Grid>
-                <ComboBox Height="34" HorizontalAlignment="Left" Margin="41,22,0,0" Name="actionComboBox" VerticalAlignment="Top" Width="222" Text="" SnapsToDevicePixels="True" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15" SelectedIndex="0" SelectionChanged="actionComboBox_SelectionChanged">
+                <ComboBox Height="34" HorizontalAlignment="Left" Margin="41,22,0,0" Name="actionComboBox" VerticalAlignment="Top" Width="222" Text="" SnapsToDevicePixels="True" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15" SelectedIndex="0">
                     <ComboBoxItem Content="Choose Action" IsSelected="True" IsEnabled="False" />
                 </ComboBox>
                 <Button Content="Add Action" FontSize="15" Height="40" HorizontalAlignment="Left" Margin="21,77,0,0" Name="add_action_btn" VerticalAlignment="Top" Width="118" Click="add_action_btn_Click" />
                 <Button Content="Remove Action" FontSize="15" Height="40" HorizontalAlignment="Left" Margin="174,77,0,0" Name="remove_action_btn" VerticalAlignment="Top" Width="118" Click="remove_action_btn_Click" />
             </Grid>
         </GroupBox>
-        <CheckBox Content="Save video" Height="26" HorizontalAlignment="Left" Margin="770,318,0,0" Name="saveVideoCheckBox" VerticalAlignment="Top" Width="112" FontSize="16" IsEnabled="False" />
     </Grid>
 </Window>

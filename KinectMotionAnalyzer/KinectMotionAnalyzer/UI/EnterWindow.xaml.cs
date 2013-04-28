@@ -45,6 +45,5 @@ namespace KinectMotionAnalyzer.UI
             }
         }
 
-
     }
 }

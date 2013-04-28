@@ -53,7 +53,7 @@ namespace KinectMotionAnalyzer.UI
 
         // motion analysis params
         private Dictionary<string, List<MeasurementUnit>> actionMeasureUnitsCollection = null;
-        private List<MeasurementUnit> toMeasureUnits;
+        private List<MeasurementUnit> toMeasureUnits = null;
 
 
         public MotionAnalyzerWindow_User()
@@ -252,7 +252,7 @@ namespace KinectMotionAnalyzer.UI
                 return;
             }
 
-            string toRemoveActionName = actionComboBox.SelectedItem.ToString();
+            string toRemoveActionName = actionComboBox.SelectionBoxItem.ToString();
             actionMeasureUnitsCollection.Remove(toRemoveActionName);
 
             // update ui
@@ -290,14 +290,25 @@ namespace KinectMotionAnalyzer.UI
 
         private void previewBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (previewBtn.Content.ToString() == "Start Test")
+            if (!isStreaming)
             {
+                if (actionComboBox.SelectedIndex <= 0)
+                {
+                    MessageBox.Show("Select a valid action");
+                    return;
+                }
+
+                color_frame_rec_buffer.Clear();
+                skeleton_rec_buffer.Clear();
+
                 if (kinect_sensor != null)
                 {
                     // disable all other buttons
                     previewBtn.Content = "Stop Test";
                     isStreaming = true;
                     kinect_data_manager.ifShowJointStatus = true;
+
+                    toMeasureUnits = actionMeasureUnitsCollection[actionComboBox.SelectionBoxItem.ToString()];
                     kinect_data_manager.toMeasureUnits = this.toMeasureUnits;
 
                     overlap_frame_rec_buffer.Clear();
@@ -315,49 +326,49 @@ namespace KinectMotionAnalyzer.UI
                     kinect_data_manager.ifShowJointStatus = false;
 
                     // save recorded frame to disk and save skeleton data
-                    if (overlap_frame_rec_buffer!=null && skeleton_rec_buffer!=null && saveVideoCheckBox.IsChecked.Value)
-                    {
-                        statusbarLabel.Content = "Saving video...";
+                    //if (overlap_frame_rec_buffer!=null && skeleton_rec_buffer!=null && saveVideoCheckBox.IsChecked.Value)
+                    //{
+                    //    statusbarLabel.Content = "Saving video...";
 
-                        // create video writer
-                        int fwidth = (int)groupBox3.Width + 20;
-                        int fheight = (int)groupBox3.Height + 20;
+                    //    // create video writer
+                    //    int fwidth = (int)groupBox3.Width + 20;
+                    //    int fheight = (int)groupBox3.Height + 20;
 
-                        SaveFileDialog saveDialog = new SaveFileDialog();
-                        saveDialog.Filter = "avi files (*.avi)|*.avi";
-                        saveDialog.FilterIndex = 2;
-                        saveDialog.RestoreDirectory = true;
+                    //    SaveFileDialog saveDialog = new SaveFileDialog();
+                    //    saveDialog.Filter = "avi files (*.avi)|*.avi";
+                    //    saveDialog.FilterIndex = 2;
+                    //    saveDialog.RestoreDirectory = true;
 
-                        //if (saveDialog.ShowDialog().Value)
-                        //{
-                        //    string videofile = saveDialog.FileName.ToString();
-                        //    VideoWriter videoWriter = new VideoWriter(videofile, CvInvoke.CV_FOURCC('M', 'J', 'P', 'G'), 15,
-                        //        fwidth, fheight, true);
+                    //    //if (saveDialog.ShowDialog().Value)
+                    //    //{
+                    //    //    string videofile = saveDialog.FileName.ToString();
+                    //    //    VideoWriter videoWriter = new VideoWriter(videofile, CvInvoke.CV_FOURCC('M', 'J', 'P', 'G'), 15,
+                    //    //        fwidth, fheight, true);
 
-                        //    // save video
-                        //    if (videoWriter == null)
-                        //        MessageBox.Show("Fail to save video. Check if codec has been installed.");
-                        //    else
-                        //    {
-                        //        for (int i = 0; i < overlap_frame_rec_buffer.Count; i++)
-                        //        {
-                        //            // write to video file
-                        //            Emgu.CV.Image<Bgr, byte> cvImg =
-                        //                new Emgu.CV.Image<Bgr, byte>(overlap_frame_rec_buffer[i] as Bitmap);
+                    //    //    // save video
+                    //    //    if (videoWriter == null)
+                    //    //        MessageBox.Show("Fail to save video. Check if codec has been installed.");
+                    //    //    else
+                    //    //    {
+                    //    //        for (int i = 0; i < overlap_frame_rec_buffer.Count; i++)
+                    //    //        {
+                    //    //            // write to video file
+                    //    //            Emgu.CV.Image<Bgr, byte> cvImg =
+                    //    //                new Emgu.CV.Image<Bgr, byte>(overlap_frame_rec_buffer[i] as Bitmap);
 
-                        //            videoWriter.WriteFrame<Bgr, byte>(cvImg);
-                        //        }
+                    //    //            videoWriter.WriteFrame<Bgr, byte>(cvImg);
+                    //    //        }
 
-                        //        videoWriter.Dispose();
+                    //    //        videoWriter.Dispose();
 
-                        //        statusbarLabel.Content = "Video saved to " + videofile;
-                        //    }
+                    //    //        statusbarLabel.Content = "Video saved to " + videofile;
+                    //    //    }
 
-                        //    // save skeleton
-                        //    string skeletonpath = videofile + ".xml";
-                        //    KinectRecorder.WriteToSkeletonXMLFile(skeletonpath, skeleton_rec_buffer);
-                        //}
-                    }
+                    //    //    // save skeleton
+                    //    //    string skeletonpath = videofile + ".xml";
+                    //    //    KinectRecorder.WriteToSkeletonXMLFile(skeletonpath, skeleton_rec_buffer);
+                    //    //}
+                    //}
 
                     skeleton_rec_buffer.Clear();
                     overlap_frame_rec_buffer.Clear();
@@ -384,6 +395,7 @@ namespace KinectMotionAnalyzer.UI
             overlap_frame_rec_buffer = new ArrayList();
             skeleton_rec_buffer = new List<Skeleton>();
             color_frame_rec_buffer = new List<byte[]>();
+            actionMeasureUnitsCollection = new Dictionary<string, List<MeasurementUnit>>();
 
             // init kinect
             if (!InitKinect())
@@ -407,11 +419,6 @@ namespace KinectMotionAnalyzer.UI
             if (measureConfigWin.ShowDialog().Value == true)
                 toMeasureUnits = measureConfigWin.measureUnits;
             
-        }
-
-        private void actionComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            toMeasureUnits = actionMeasureUnitsCollection[actionComboBox.SelectedItem.ToString()];
         }
 
     }
