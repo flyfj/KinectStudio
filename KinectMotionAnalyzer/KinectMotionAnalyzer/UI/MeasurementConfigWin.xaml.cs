@@ -28,14 +28,13 @@ namespace KinectMotionAnalyzer.UI
         private Dictionary<string, JointType> checkbox_name_jointtype_mapping = null;
         public List<MeasurementUnit> measureUnits = null;
         private string defaultInstructionText;
+        private string defaultActionNameText;
+        public string newActionName = "";
 
 
         public MeasurementConfigWin()
         {
             InitializeComponent();
-
-            defaultInstructionText = "Input instruction here";
-            measureInstructionTextBox.Text = defaultInstructionText;
         }
 
         private void select_all_btn_Click(object sender, RoutedEventArgs e)
@@ -130,7 +129,8 @@ namespace KinectMotionAnalyzer.UI
                     unit.standard_value = double.Parse(angleInputBox.Text);
 
                     // allow user to input intuitive instruction
-                    if (measureInstructionTextBox.Text != string.Empty && measureInstructionTextBox.Text != defaultInstructionText)
+                    if (measureInstructionTextBox.Text != string.Empty && 
+                        measureInstructionTextBox.Text != defaultInstructionText)
                     {
                         unit.instruction_text = measureInstructionTextBox.Text;
 
@@ -157,9 +157,14 @@ namespace KinectMotionAnalyzer.UI
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            measureUnits = new List<MeasurementUnit>();
+            defaultInstructionText = "Input instruction here";
+            defaultActionNameText = "Input action name here";
+            measureInstructionTextBox.Text = defaultInstructionText;
+            actionNameInputTextBox.Text = defaultActionNameText;
 
             // add all checkbox to collection
+            measureUnits = new List<MeasurementUnit>();
+            
             joint_checkbox_collection.Add(head_checkbox);
             joint_checkbox_collection.Add(shoulder_center_checkbox);
             joint_checkbox_collection.Add(shoulder_left_checkbox);
@@ -208,12 +213,25 @@ namespace KinectMotionAnalyzer.UI
 
         private void okBtn_Click(object sender, RoutedEventArgs e)
         {
+            if (actionNameInputTextBox.Text == defaultActionNameText ||
+                actionNameInputTextBox.Text == string.Empty)
+            {
+                MessageBox.Show("Input a valid action name");
+                return;
+            }
+
+            newActionName = actionNameInputTextBox.Text;
             this.DialogResult = true;
         }
 
         private void measureInstructionTextBox_GotFocus(object sender, RoutedEventArgs e)
         {
             measureInstructionTextBox.Text = string.Empty;
+        }
+
+        private void actionNameInputTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            actionNameInputTextBox.Text = string.Empty;
         }
 
     }

@@ -144,10 +144,15 @@
     <Compile Include="Model\SingleJoint.cs" />
     <Compile Include="Model\SkeletonData.cs" />
     <Compile Include="Processors\FMSProcessor.cs" />
-    <Compile Include="Processors\GestureRecognizer.cs" />
     <Compile Include="Processors\KinectRecorder.cs" />
     <Compile Include="UI\ActionDatabasePreview.xaml.cs">
       <DependentUpon>ActionDatabasePreview.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\AddActionWindow.xaml.cs">
+      <DependentUpon>AddActionWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\MotionAnalyzerWindow_FMS.xaml.cs">
+      <DependentUpon>MotionAnalyzerWindow_FMS.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\EnterWindow.xaml.cs">
       <DependentUpon>EnterWindow.xaml</DependentUpon>
@@ -163,10 +168,6 @@
     </Compile>
     <Compile Include="UI\MeasurementConfigWin.xaml.cs">
       <DependentUpon>MeasurementConfigWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\GestureConfigWin.xaml.cs">
-      <DependentUpon>GestureConfigWin.xaml</DependentUpon>
-      <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -217,6 +218,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\AddActionWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\MotionAnalyzerWindow_FMS.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UI\EnterWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -236,10 +245,6 @@
     <Page Include="UI\MeasurementConfigWin.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\GestureConfigWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
@@ -264,6 +269,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\fms_logo.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

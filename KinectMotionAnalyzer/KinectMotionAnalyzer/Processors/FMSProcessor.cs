@@ -58,6 +58,7 @@ namespace KinectMotionAnalyzer.Processors
     {
         private MotionAssessor basicAssessor;
         public List<FMSTest> FMSTests = new List<FMSTest>();
+        public Dictionary<string, int> FMSTestNameDictionary = new Dictionary<string, int>();
 
         public FMSProcessor()
         {
@@ -69,8 +70,9 @@ namespace KinectMotionAnalyzer.Processors
 
         private void PopulateFMSTests()
         {
-            // populate test
-            //FMSTests = new List<FMSTest>();
+            // populate test names and ids
+            FMSTestNameDictionary.Add("Deep Squat", 0);
+            FMSTestNameDictionary.Add("Hurdle Step", 1);
 
             #region Deep squat
             FMSTest dsquat = new FMSTest("Deep Squat");
@@ -273,8 +275,12 @@ namespace KinectMotionAnalyzer.Processors
             return rule_eval;
         }
 
-        public FMSTestEvaluation EvaluateTest(List<Skeleton> skeletons, int testId)
+        public FMSTestEvaluation EvaluateTest(List<Skeleton> skeletons, string testName)
         {
+            if (!FMSTestNameDictionary.ContainsKey(testName))
+                return null;
+
+            int testId = FMSTestNameDictionary[testName];
             FMSTestEvaluation test_eval = new FMSTestEvaluation();
 
             int rule_ok_num = 0;
@@ -302,6 +308,14 @@ namespace KinectMotionAnalyzer.Processors
             }
 
             return test_eval;
+        }
+
+        public int FMSName2Id(string testName)
+        {
+            if (FMSTestNameDictionary.ContainsKey(testName))
+                return FMSTestNameDictionary[testName];
+            else
+                return -1;
         }
     }
 }

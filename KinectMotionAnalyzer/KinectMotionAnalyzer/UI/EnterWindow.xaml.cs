@@ -26,13 +26,19 @@ namespace KinectMotionAnalyzer.UI
 
         private void mainEnterBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (trainerSelectRadioBtn.IsChecked.Value)
+            if (actionRecordingRadioBtn.IsChecked.Value)
             {
                 MotionAnalyzerWindow_Trainer trainerWin = new MotionAnalyzerWindow_Trainer();
                 trainerWin.ShowDialog();
             }
 
-            if (userSelectRadioBtn.IsChecked.Value)
+            if (FMSRadioBtn.IsChecked.Value)
+            {
+                MotionAnalyzerWindow_FMS fmsWin = new MotionAnalyzerWindow_FMS();
+                fmsWin.ShowDialog();
+            }
+
+            if (realtimeRadioBtn.IsChecked.Value)
             {
                 MotionAnalyzerWindow_User userWin = new MotionAnalyzerWindow_User();
                 userWin.ShowDialog();

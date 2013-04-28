@@ -3,34 +3,32 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MotionAnalyzer - Trainer" SizeToContent="Height" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" ResizeMode="NoResize" Closing="Window_Closing" Width="1088.5" Loaded="Window_Loaded" Height="737">
     <Grid RenderTransformOrigin="0.501,0.544">
-        <GroupBox Header="Display" Height="461" HorizontalAlignment="Left" Margin="31,12,0,0" Name="groupBox3" VerticalAlignment="Top" Width="560" FontSize="16">
+        <GroupBox Header="Display" Height="461" HorizontalAlignment="Left" Margin="31,12,0,0" Name="groupBox3" VerticalAlignment="Top" Width="560" FontSize="16" BorderBrush="#FF0C0C0B">
             <Grid>
                 <Image Name="color_disp_img" Stretch="Fill" Height="414" Margin="37,6,37,13" RenderTransformOrigin="0.484,0.505" />
                 <Image Name="ske_disp_img" Height="414" Margin="37,6,37,13" Stretch="Fill" />
             </Grid>
         </GroupBox>
-        <Slider HorizontalAlignment="Left" Interval="1" IsEnabled="False" IsSnapToTickEnabled="True" Margin="77,487,0,199" Name="skeletonVideoSlider" Width="345" ValueChanged="skeletonVideoSlider_ValueChanged" IsSelectionRangeEnabled="True" />
-        <Label BorderThickness="1" Content="0" FontStretch="Normal" Height="32" HorizontalAlignment="Left" Margin="449,478,0,0" Name="skeletonSliderLabel" VerticalAlignment="Top" Width="89" HorizontalContentAlignment="Center" FontSize="13" VerticalContentAlignment="Center" Background="#FFC5B8B8" />
-        <StatusBar Background="#FFB49788" FontSize="18" Height="43" HorizontalAlignment="Left" Margin="10,657,0,0" Name="kinectStatusBar" VerticalAlignment="Top" Width="964">
+        <Slider HorizontalAlignment="Left" Interval="1" IsEnabled="False" IsSnapToTickEnabled="True" Margin="74,511,0,175" x:Name="actionVideoSlider" Width="345" ValueChanged="actionVideoSlider_ValueChanged" IsSelectionRangeEnabled="True" />
+        <Label BorderThickness="1" Content="0" FontStretch="Normal" Height="32" HorizontalAlignment="Left" Margin="446,502,0,0" x:Name="actionVideoSliderLabel" VerticalAlignment="Top" Width="89" HorizontalContentAlignment="Center" FontSize="13" VerticalContentAlignment="Center" Background="#FFC5B8B8" />
+        <StatusBar Background="#FFB49788" FontSize="18" Height="43" HorizontalAlignment="Left" Margin="10,657,0,0" Name="kinectStatusBar" VerticalAlignment="Top" Width="1062">
             <Label Content="Welcome" Name="statusbarLabel" FontStretch="Medium" FontSize="14" />
         </StatusBar>
-        <Button Content="Set Start" Height="34" HorizontalAlignment="Left" Margin="137,538,0,0" Name="replay_setStartBtn" VerticalAlignment="Top" Width="92" FontSize="14" Click="replay_setStartBtn_Click" />
-        <Button Content="Set End" Height="34" HorizontalAlignment="Left" Margin="325,539,0,0" Name="replay_setEndBtn" VerticalAlignment="Top" Width="92" FontSize="14" Click="replay_setEndBtn_Click" IsEnabled="False" />
-        <Label BorderThickness="1" Content="0" FontSize="13" FontStretch="Normal" Height="32" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="422,540,0,0" Name="replay_endLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="56" Background="#FFC3B9B9" />
-        <Label BorderThickness="1" Content="0" FontSize="13" FontStretch="Normal" Height="32" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="234,540,0,0" Name="replay_startLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="55" Background="#FFCBC0C0" />
-        <GroupBox Header="Action Management" Height="316" HorizontalAlignment="Left" Margin="654,87,0,0" Name="groupBox1" VerticalAlignment="Top" Width="342" FontSize="16">
+        <Button Content="Set Start" Height="34" HorizontalAlignment="Left" Margin="134,562,0,0" Name="replay_setStartBtn" VerticalAlignment="Top" Width="92" FontSize="14" Click="replay_setStartBtn_Click" IsEnabled="False" />
+        <Button Content="Set End" Height="34" HorizontalAlignment="Left" Margin="322,563,0,0" Name="replay_setEndBtn" VerticalAlignment="Top" Width="92" FontSize="14" Click="replay_setEndBtn_Click" IsEnabled="False" />
+        <Label BorderThickness="1" Content="0" FontSize="13" FontStretch="Normal" Height="32" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="419,564,0,0" Name="replay_endLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="56" Background="#FFC3B9B9" />
+        <Label BorderThickness="1" Content="0" FontSize="13" FontStretch="Normal" Height="32" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="231,564,0,0" Name="replay_startLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="55" Background="#FFCBC0C0" />
+        <GroupBox Header="Action Management" Height="316" HorizontalAlignment="Left" Margin="651,87,0,0" Name="groupBox1" VerticalAlignment="Top" Width="330" FontSize="16">
             <Grid>
-                <ComboBox Height="34" HorizontalAlignment="Left" Margin="41,22,0,0" x:Name="actionComboBox" VerticalAlignment="Top" Width="222" Text="" SnapsToDevicePixels="True" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15" SelectedIndex="0">
+                <ComboBox Height="34" HorizontalAlignment="Left" Margin="51,22,0,0" x:Name="actionComboBox" VerticalAlignment="Top" Width="222" Text="" SnapsToDevicePixels="True" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15" SelectedIndex="0">
                     <ComboBoxItem Content="Choose Action" IsSelected="True" IsEnabled="False" />
                 </ComboBox>
-                <Button Content="Add Action" FontSize="15" Height="40" HorizontalAlignment="Left" Margin="21,77,0,0" Name="add_gesture_btn" VerticalAlignment="Top" Width="118" Click="add_gesture_btn_Click" />
-                <Button Content="Remove Action" FontSize="15" Height="40" HorizontalAlignment="Left" Margin="174,77,0,0" Name="remove_gesture_btn" VerticalAlignment="Top" Width="118" Click="remove_gesture_btn_Click" />
-                <Button Content="Capture" Height="44" HorizontalAlignment="Left" Margin="21,0,0,104" Name="gestureCaptureBtn" VerticalAlignment="Bottom" Width="118" Click="gestureCaptureBtn_Click" IsEnabled="True" FontSize="15" />
-                <Button Content="Save Gesture" FontSize="15" Height="44" HorizontalAlignment="Left" IsEnabled="False" Margin="174,0,0,104" Name="saveGestureBtn" VerticalAlignment="Bottom" Width="118" Click="saveGestureBtn_Click" />
-                <Button Content="Load Action" Height="46" HorizontalAlignment="Left" Margin="105,213,0,0" Name="gestureReplayBtn" VerticalAlignment="Top" Width="118" Click="gestureReplayBtn_Click" FontSize="15" />
+                <Button Content="Add Action" FontSize="15" Height="40" HorizontalAlignment="Left" Margin="21,77,0,0" x:Name="add_action_btn" VerticalAlignment="Top" Width="118" Click="add_action_btn_Click" />
+                <Button Content="Remove Action" FontSize="15" Height="40" HorizontalAlignment="Left" Margin="174,77,0,0" x:Name="remove_action_btn" VerticalAlignment="Top" Width="118" Click="remove_action_btn_Click" />
+                <Button Content="Capture" Height="44" HorizontalAlignment="Left" Margin="21,0,0,104" Name="actionCaptureBtn" VerticalAlignment="Bottom" Width="118" Click="actionCaptureBtn_Click" IsEnabled="True" FontSize="15" />
+                <Button Content="Save Gesture" FontSize="15" Height="44" HorizontalAlignment="Left" IsEnabled="False" Margin="174,0,0,104" Name="saveGestureBtn" VerticalAlignment="Bottom" Width="118" Click="saveActionBtn_Click" />
+                <Button Content="Load Action" Height="46" HorizontalAlignment="Left" Margin="104,212,0,0" Name="actionReplayBtn" VerticalAlignment="Top" Width="118" Click="actionReplayBtn_Click" FontSize="15" />
             </Grid>
         </GroupBox>
-        <Button x:Name="keyframeConfigBtn" Content="Config Keyframe" HorizontalAlignment="Left" Margin="113,597,0,0" VerticalAlignment="Top" Width="176" Height="40" FontSize="14" Click="measureConfigBtn_Click"/>
-        <Button x:Name="processBtn" Content="Process" HorizontalAlignment="Left" Margin="325,597,0,0" VerticalAlignment="Top" Width="176" Height="40" FontSize="14" Click="processBtn_Click" IsEnabled="False"/>
     </Grid>
 </Window>

@@ -19,9 +19,6 @@ using Microsoft.Kinect;
 using Microsoft.Win32;
 using System.Diagnostics;
 using System.Data.Entity;
-//using Emgu.CV;
-//using Emgu.CV.Structure;
-//using Emgu.Util;
 using KinectMotionAnalyzer.Model;
 
 
@@ -33,7 +30,7 @@ namespace KinectMotionAnalyzer.UI
     /// <summary>
     /// Interaction logic for GestureRecognizerWindow.xaml
     /// </summary>
-    public partial class MotionAnalyzerWindow_Trainer : Window
+    public partial class MotionAnalyzerWindow_FMS : Window
     {
         // tools
         private KinectDataManager kinect_data_manager;
@@ -64,7 +61,7 @@ namespace KinectMotionAnalyzer.UI
         public List<MeasurementUnit> toMeasureUnits;
 
 
-        public MotionAnalyzerWindow_Trainer()
+        public MotionAnalyzerWindow_FMS()
         {
             InitializeComponent();
         }
@@ -149,9 +146,6 @@ namespace KinectMotionAnalyzer.UI
             }
             else
             {
-                // invalidate all buttons
-                actionReplayBtn.IsEnabled = false;
-
                 return false;
             }
 
@@ -269,7 +263,7 @@ namespace KinectMotionAnalyzer.UI
                 color_frame_rec_buffer.Clear();
                 skeleton_rec_buffer.Clear();
                 // set signs
-                actionCaptureBtn.Content = "Stop";
+                gestureCaptureBtn.Content = "Stop";
                 isCapturing = true;
 
                 // start kinect
@@ -277,7 +271,6 @@ namespace KinectMotionAnalyzer.UI
                 {
                     // can't replay since share same gesture buffer
                     DeactivateReplay();
-                    actionReplayBtn.IsEnabled = false;
 
                     kinect_sensor.Start();
                 }
@@ -292,198 +285,14 @@ namespace KinectMotionAnalyzer.UI
 
                 // prepare for replay
                 ActivateReplay(color_frame_rec_buffer, skeleton_rec_buffer);
-
-                actionCaptureBtn.Content = "Capture";
-                actionReplayBtn.IsEnabled = true;
+                gestureCaptureBtn.Content = "Capture";
             }
-        }
-
-        private void saveActionBtn_Click(object sender, RoutedEventArgs e)
-        {
-            //// save to file
-            //string time = System.DateTime.Now.ToString("hh'-'mm'-'ss", CultureInfo.CurrentUICulture.DateTimeFormat);
-
-            //string gesture_name = (gestureComboBox.SelectedItem as ComboBoxItem).Content.ToString();
-            //string savedir = "gdata\\"; //Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-            //if(!Directory.Exists(savedir))
-            //    Directory.CreateDirectory(savedir);
-
-            //string skeletonpath = savedir + gesture_name + "\\Kinect_skeleton_" + time + ".xml";
-
-            // save to database
-            statusbarLabel.Content = "Saving to database...";
-            // save data from start label to end label
-            int start_id = (int)actionVideoSlider.SelectionStart;
-            int end_id = (int)actionVideoSlider.SelectionEnd;
-            // remove end part first so front id will not change
-            if (color_frame_rec_buffer.Count > 0 && 
-                skeleton_rec_buffer.Count > 0)
-            {
-                // clean data
-                color_frame_rec_buffer.RemoveRange(end_id + 1, Math.Max(color_frame_rec_buffer.Count - end_id - 1, 0));
-                color_frame_rec_buffer.RemoveRange(0, start_id);
-
-                skeleton_rec_buffer.RemoveRange(end_id + 1, Math.Max(skeleton_rec_buffer.Count - end_id - 1, 0));
-                skeleton_rec_buffer.RemoveRange(0, start_id);
-
-                //depth_frame_rec_buffer.RemoveRange(end_id + 1, Math.Max(depth_frame_rec_buffer.Count - end_id - 1, 0));
-                //depth_frame_rec_buffer.RemoveRange(0, start_id);
-
-                // convert to kinect action for saving
-                KinectAction rec_action = new KinectAction();
-                rec_action.ActionName = (actionComboBox.SelectedItem as ComboBoxItem).Content.ToString();
-                rec_action.ColorFrames = new List<ColorFrameData>();
-                rec_action.Skeletons = new List<SkeletonData>();
-                rec_action.DepthFrames = new List<DepthMapData>();
-
-                // copy color frame
-                for (int i = 0; i < color_frame_rec_buffer.Count; i++)
-                {
-                    ColorFrameData colorFrame = new ColorFrameData();
-                    colorFrame.FrameData = color_frame_rec_buffer[i];
-                    colorFrame.FrameWidth = kinect_sensor.ColorStream.FrameWidth;
-                    colorFrame.FrameHeight = kinect_sensor.ColorStream.FrameHeight;
-                    colorFrame.FrameId = i;
-
-                    rec_action.ColorFrames.Add(colorFrame);
-                }
-                // copy depth frame
-                for (int i = 0; i < depth_frame_rec_buffer.Count; i++)
-                {
-                    DepthMapData depthFrame = new DepthMapData();
-                    depthFrame.FrameWidth = kinect_sensor.DepthStream.FrameWidth;
-                    depthFrame.FrameHeight = kinect_sensor.DepthStream.FrameHeight;
-                    depthFrame.FrameId = i;
-                    //depthFrame.DepthData = new short[depth_frame_rec_buffer[i].Length];
-                    // copy depth
-                    //for (int j = 0; j < depth_frame_rec_buffer[i].Length; j++)
-                    //    depthFrame.DepthData[j] = depth_frame_rec_buffer[i][j].Depth;
-
-                    rec_action.DepthFrames.Add(depthFrame);
-                }
-                // copy skeleton
-                for (int i = 0; i < skeleton_rec_buffer.Count; i++)
-                {
-                    SkeletonData skeData = new SkeletonData();
-                    if (skeleton_rec_buffer[i] != null)
-                    {
-                        skeData.Status = (int)skeleton_rec_buffer[i].TrackingState;
-                        skeData.JointsData = new List<SingleJoint>();
-                        foreach (JointType jtype in Enum.GetValues(typeof(JointType)))
-                        {
-                            SingleJoint cur_joint = new SingleJoint();
-                            cur_joint.PosX = skeleton_rec_buffer[i].Joints[jtype].Position.X;
-                            cur_joint.PosY = skeleton_rec_buffer[i].Joints[jtype].Position.Y;
-                            cur_joint.PosZ = skeleton_rec_buffer[i].Joints[jtype].Position.Z;
-                            cur_joint.Type = (int)jtype;
-                            cur_joint.TrackingStatus = (int)skeleton_rec_buffer[i].Joints[jtype].TrackingState;
-                            skeData.JointsData.Add(cur_joint);
-                        }
-                    }
-
-                    rec_action.Skeletons.Add(skeData);
-                }
-
-                if (KinectRecorder.WriteActionToDatabase(rec_action))
-                    statusbarLabel.Content = "Finish saving to database: " + 
-                        color_frame_rec_buffer.Count + "frames";
-                else
-                    statusbarLabel.Content = "Fail to save to database.";
-            }
-
-            color_frame_rec_buffer.Clear();
-            skeleton_rec_buffer.Clear();
-
-            statusbarLabel.Content = "Save action to database.";
-
-            DeactivateReplay();
-            saveGestureBtn.IsEnabled = false;
-        }
-
-        private void add_action_btn_Click(object sender, RoutedEventArgs e)
-        {
-            // open add window
-            AddActionWindow add_win = new AddActionWindow();
-            if (add_win.ShowDialog().Value == true)
-            {
-                // add action type to database
-                // check duplicate
-                if (actionComboBox.Items.Contains(add_win.newActionName))
-                {
-                    MessageBox.Show("This action name exists already. Change another name.");
-                    return;
-                }
-
-                using (MotionDBContext motionContext = new MotionDBContext())
-                {
-                    try
-                    {
-                        ActionType new_type = new ActionType();
-                        new_type.Name = add_win.newActionName;
-                        motionContext.ActionTypes.Add(new_type);
-                        motionContext.SaveChanges();
-                    }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
-                        return;
-                    }
-                }
-
-                //gesture_recognizer.AddGestureConfig(add_win.new_gesture_config);
-
-                // update list
-                UpdateActionComboBox();
-                // update status bar
-                statusbarLabel.Content = "Add new action: " + add_win.newActionName;
-            }
-        }
-
-        private void remove_action_btn_Click(object sender, RoutedEventArgs e)
-        {
-            // remove gesture config of current selected one
-            int gid = actionComboBox.SelectedIndex;
-            // can't delete default one
-            if (gid == 0)
-            {
-                MessageBox.Show("Select a valid gesture to remove.");
-                return;
-            }
-
-            string toRemoveActionName = (actionComboBox.Items[gid] as ComboBoxItem).Content.ToString();
-            try
-            {
-                // remove type
-                using (MotionDBContext dbcontext = new MotionDBContext())
-                {
-                    
-                    ActionType toRemoveType = dbcontext.ActionTypes.FirstOrDefault(x => x.Name == toRemoveActionName);
-                    dbcontext.ActionTypes.Remove(toRemoveType);
-                    // TODO: remove actions
-                    //var res = dbcontext.Actions.Select(x => x.ActionName == toRemoveItem.Content.ToString());
-
-                    // update
-                    dbcontext.SaveChanges();
-                }
-            }
-            catch (System.Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-
-            //gesture_recognizer.RemoveGestureConfig(toRemoveItem.Content.ToString());
-
-            // update ui
-            UpdateActionComboBox();
-            // update status bar
-            statusbarLabel.Content = "Remove action: " + toRemoveActionName;
         }
 
         #endregion
 
         private void UpdateActionComboBox()
         {
-
             actionComboBox.Items.Clear();
             // add prompt item
             ComboBoxItem prompt = new ComboBoxItem();
@@ -492,31 +301,13 @@ namespace KinectMotionAnalyzer.UI
             prompt.IsSelected = true;
             actionComboBox.Items.Add(prompt);
 
-            // update from database
-            try
+            // add item for each gesture type
+            foreach (string testName in fmsProcessor.FMSTestNameDictionary.Keys)
             {
-                using (MotionDBContext dbcontext = new MotionDBContext())
-                {
-                    foreach (ActionType action_type in dbcontext.ActionTypes)
-                    {
-                        ComboBoxItem item = new ComboBoxItem();
-                        item.Content = action_type.Name;
-                        actionComboBox.Items.Add(item);
-                    }
-                }
+                ComboBoxItem item = new ComboBoxItem();
+                item.Content = testName;
+                actionComboBox.Items.Add(item);
             }
-            catch (System.Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-
-            //// add item for each gesture type
-            //foreach (string gname in gesture_recognizer.GESTURE_LIST.Values)
-            //{
-            //    ComboBoxItem item = new ComboBoxItem();
-            //    item.Content = gname;
-            //    gestureComboBox.Items.Add(item);
-            //}
         }
 
         #region action_replay
@@ -661,7 +452,7 @@ namespace KinectMotionAnalyzer.UI
             replay_endLabel.Content = max_frame_id.ToString();
 
             isReplaying = true;
-            saveGestureBtn.IsEnabled = true;
+            processBtn.IsEnabled = true;
 
             // update view
             kinect_data_manager.UpdateColorData(color_frame_rec_buffer[min_frame_id], 640, 480);
@@ -744,6 +535,60 @@ namespace KinectMotionAnalyzer.UI
             // load gesture config and update ui
             //gesture_recognizer.LoadAllGestureConfig();
             UpdateActionComboBox();
+        }
+
+        private void processBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (actionComboBox.SelectedIndex <= 0)
+            {
+                MessageBox.Show("Select an action type before processing.");
+                return;
+            }
+
+            if (skeleton_rec_buffer == null || skeleton_rec_buffer.Count == 0)
+            {
+                MessageBox.Show("No captured action.");
+                return;
+            }
+
+            string sel_test_name = actionComboBox.SelectionBoxItem.ToString();
+            int sel_test_id = fmsProcessor.FMSName2Id(sel_test_name);
+            // trim valid buffer data
+            statusbarLabel.Content = "Processing " + sel_test_name;
+            // save data from start label to end label
+            int start_id = (int)actionVideoSlider.SelectionStart;
+            int end_id = (int)actionVideoSlider.SelectionEnd;
+            // remove end part first so front id will not change
+            if (skeleton_rec_buffer.Count > 0)
+            {
+                // clean data
+                //color_frame_rec_buffer.RemoveRange(end_id + 1, Math.Max(color_frame_rec_buffer.Count - end_id - 1, 0));
+                //color_frame_rec_buffer.RemoveRange(0, start_id);
+
+                skeleton_rec_buffer.RemoveRange(end_id + 1, Math.Max(skeleton_rec_buffer.Count - end_id - 1, 0));
+                skeleton_rec_buffer.RemoveRange(0, start_id);
+            }
+
+            if (skeleton_rec_buffer.Count > 0)
+            {
+                FMSTestEvaluation test_eval = fmsProcessor.EvaluateTest(skeleton_rec_buffer, sel_test_name);
+   
+                FMSReportWindow reportWin = new FMSReportWindow();
+                reportWin.groupBox.Header = fmsProcessor.FMSTests[sel_test_id].testName;
+                reportWin.ScoreLabel1.Content = "Score: " + test_eval.testScore;
+                reportWin.ruleBox1.Content = fmsProcessor.FMSTests[sel_test_id].rules[0].name;
+                reportWin.ruleBox1.IsChecked = (test_eval.rule_evals[0].ruleScore == 1 ? true : false);
+                reportWin.ruleBox2.Content = fmsProcessor.FMSTests[sel_test_id].rules[1].name;
+                reportWin.ruleBox2.IsChecked = (test_eval.rule_evals[1].ruleScore == 1 ? true : false);
+                reportWin.ruleBox3.Content = fmsProcessor.FMSTests[sel_test_id].rules[2].name;
+                reportWin.ruleBox3.IsChecked = (test_eval.rule_evals[2].ruleScore == 1 ? true : false);
+                //reportWin.ruleBox4.Content = fmsProcessor.FMSTests[sel_test_id].rules[3].name;
+                //reportWin.ruleBox4.IsChecked = (test_eval.rule_evals[3].ruleScore == 1 ? true : false);
+                reportWin.Show();
+            }
+            else
+                MessageBox.Show("No valid action recorded");
+            
         }
 
     }

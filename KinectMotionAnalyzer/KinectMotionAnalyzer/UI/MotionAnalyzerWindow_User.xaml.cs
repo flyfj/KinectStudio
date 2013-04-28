@@ -39,8 +39,7 @@ namespace KinectMotionAnalyzer.UI
         private KinectSensor kinect_sensor;
         private MotionAssessor motion_assessor = null;
 
-        // recognition
-        private GestureRecognizer gesture_recognizer = null;
+        //private GestureRecognizer gesture_recognizer = null;
 
         // sign
         bool isStreaming = false;
@@ -48,12 +47,12 @@ namespace KinectMotionAnalyzer.UI
 
         // record params
         private int frame_id = 0;
-        Gesture temp_gesture = new Gesture();
         ArrayList overlap_frame_rec_buffer; // use to store record frames in memory
         List<Skeleton> skeleton_rec_buffer; // record skeleton data
         List<byte[]> color_frame_rec_buffer; // record video frames
 
         // motion analysis params
+        private Dictionary<string, List<MeasurementUnit>> actionMeasureUnitsCollection = null;
         private List<MeasurementUnit> toMeasureUnits;
 
 
@@ -187,12 +186,6 @@ namespace KinectMotionAnalyzer.UI
 
                 if (kinect_data_manager.ifShowJointStatus)
                 {
-                    //if (!isCalculating)
-                    //{
-                    //    // start new thread to do processing
-                    //    Thread thread = new Thread(motion_assessor.UpdateJointStatus);
-                    //    thread.Start(
-                    //}
                     // update status
                     motion_assessor.UpdateJointStatus(tracked_skeleton, toMeasureUnits);
                     kinect_data_manager.cur_joint_status = motion_assessor.GetCurrentJointStatus();
@@ -204,88 +197,89 @@ namespace KinectMotionAnalyzer.UI
 
                 kinect_data_manager.UpdateSkeletonData(tracked_skeleton);
 
-                if (saveVideoCheckBox.IsChecked.Value)
+                //if (saveVideoCheckBox.IsChecked.Value)
+                //{
+                //    // save skeleton data
+                //    skeleton_rec_buffer.Add(tracked_skeleton);
+
+                //    // write screen shot of display into video file
+                //    int width = (int)groupBox3.Width + 20;
+                //    int height = (int)groupBox3.Height + 20;
+                //    System.Drawing.Rectangle bounds = new System.Drawing.Rectangle(
+                //        (int)(Application.Current.MainWindow.Left + groupBox3.Margin.Left),
+                //        (int)(Application.Current.MainWindow.Top + groupBox3.Margin.Top),
+                //        width, height);
+                //    Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height);
+
+                //    using (Graphics g = Graphics.FromImage(bitmap))
+                //    {
+                //        g.CopyFromScreen(new System.Drawing.Point(bounds.Left, bounds.Top),
+                //            new System.Drawing.Point(-1, -1), bounds.Size);
+                //    }
+
+                //    overlap_frame_rec_buffer.Add(bitmap);
+                //}
+            }
+        }
+
+        #region action_management
+
+        private void add_action_btn_Click(object sender, RoutedEventArgs e)
+        {
+            // open add window
+            MeasurementConfigWin add_win = new MeasurementConfigWin();
+            if (add_win.ShowDialog().Value == true)
+            {
+                if (actionMeasureUnitsCollection.ContainsKey(add_win.newActionName))
+                    MessageBox.Show("Action name already exists.");
+                else
                 {
-                    // save skeleton data
-                    skeleton_rec_buffer.Add(tracked_skeleton);
-
-                    // write screen shot of display into video file
-                    int width = (int)groupBox3.Width + 20;
-                    int height = (int)groupBox3.Height + 20;
-                    System.Drawing.Rectangle bounds = new System.Drawing.Rectangle(
-                        (int)(Application.Current.MainWindow.Left + groupBox3.Margin.Left),
-                        (int)(Application.Current.MainWindow.Top + groupBox3.Margin.Top),
-                        width, height);
-                    Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height);
-
-                    using (Graphics g = Graphics.FromImage(bitmap))
-                    {
-                        g.CopyFromScreen(new System.Drawing.Point(bounds.Left, bounds.Top),
-                            new System.Drawing.Point(-1, -1), bounds.Size);
-                    }
-
-                    overlap_frame_rec_buffer.Add(bitmap);
+                    actionMeasureUnitsCollection.Add(add_win.newActionName, add_win.measureUnits);
+                    // update list
+                    UpdateActionComboBox();
+                    // update status bar
+                    statusbarLabel.Content = "Add action: " + add_win.newActionName;
                 }
             }
         }
 
-        #region gesture_management
-
-        private void add_gesture_btn_Click(object sender, RoutedEventArgs e)
-        {
-            // open add window
-            GestureConfigWin add_win = new GestureConfigWin();
-            if (add_win.ShowDialog().Value == true)
-            {
-                gesture_recognizer.AddGestureConfig(add_win.new_gesture_config);
-
-                // update list
-                UpdateGestureComboBox();
-                // update status bar
-                statusbarLabel.Content = "Add gesture: " + add_win.new_gesture_config.name;
-            }
-        }
-
-        private void remove_gesture_btn_Click(object sender, RoutedEventArgs e)
+        private void remove_action_btn_Click(object sender, RoutedEventArgs e)
         {
             // remove gesture config of current selected one
-            int gid = gestureComboBox.SelectedIndex;
-            if (gid == 0)    // can't delete default one
+            if (actionComboBox.SelectedIndex <= 0)    // can't delete default one
             {
-                MessageBox.Show("Select a valid gesture to remove.");
+                MessageBox.Show("Select a valid action to remove.");
                 return;
             }
 
-            ComboBoxItem toRemoveItem = gestureComboBox.Items[gid] as ComboBoxItem;
-            gesture_recognizer.RemoveGestureConfig(toRemoveItem.Content.ToString());
+            string toRemoveActionName = actionComboBox.SelectedItem.ToString();
+            actionMeasureUnitsCollection.Remove(toRemoveActionName);
 
             // update ui
-            UpdateGestureComboBox();
+            UpdateActionComboBox();
             // update status bar
-            statusbarLabel.Content = "Remove gesture: " + toRemoveItem.Content;
+            statusbarLabel.Content = "Remove action: " + toRemoveActionName;
         }
 
         #endregion
 
-        private void UpdateGestureComboBox()
+        private void UpdateActionComboBox()
         {
-
-            gestureComboBox.Items.Clear();
+            actionComboBox.Items.Clear();
             // add prompt item
             ComboBoxItem prompt = new ComboBoxItem();
             prompt.Content = "Choose Gesture";
             prompt.IsEnabled = false;
             prompt.IsSelected = true;
-            gestureComboBox.Items.Add(prompt);
+            actionComboBox.Items.Add(prompt);
 
             // add item for each gesture type
-            foreach (string gname in gesture_recognizer.GESTURE_LIST.Values)
+            foreach (string actionName in actionMeasureUnitsCollection.Keys)
             {
                 ComboBoxItem item = new ComboBoxItem();
-                item.Content = gname;
-                gestureComboBox.Items.Add(item);
+                item.Content = actionName;
+                actionComboBox.Items.Add(item);
             }
-
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -384,7 +378,7 @@ namespace KinectMotionAnalyzer.UI
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // do initialization here
-            gesture_recognizer = new GestureRecognizer();
+            //gesture_recognizer = new GestureRecognizer();
             motion_assessor = new MotionAssessor();
             toMeasureUnits = new List<MeasurementUnit>();
             overlap_frame_rec_buffer = new ArrayList();
@@ -401,8 +395,8 @@ namespace KinectMotionAnalyzer.UI
                 statusbarLabel.Content = "Kinect initialized";
 
             // load gesture config and update ui
-            gesture_recognizer.LoadAllGestureConfig();
-            UpdateGestureComboBox();
+            //gesture_recognizer.LoadAllGestureConfig();
+            UpdateActionComboBox();
         }
 
         private void measureConfigBtn_Click(object sender, RoutedEventArgs e)
@@ -413,6 +407,11 @@ namespace KinectMotionAnalyzer.UI
             if (measureConfigWin.ShowDialog().Value == true)
                 toMeasureUnits = measureConfigWin.measureUnits;
             
+        }
+
+        private void actionComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            toMeasureUnits = actionMeasureUnitsCollection[actionComboBox.SelectedItem.ToString()];
         }
 
     }
