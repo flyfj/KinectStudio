@@ -52,7 +52,7 @@ namespace KinectMotionAnalyzer.UI
         bool ifValidSkeleton = false;
 
         // record params
-        private int MAX_ALLOW_FRAME = 800;  // no more than this number for color and skeleton to avoid memory issue
+        private int MAX_ALLOW_FRAME = 500;  // no more than this number for color and skeleton to avoid memory issue
         //Gesture temp_gesture = new Gesture();
         ArrayList overlap_frame_rec_buffer = null; // use to store record frames in memory
         List<Skeleton> skeleton_rec_buffer = null; // record skeleton data
