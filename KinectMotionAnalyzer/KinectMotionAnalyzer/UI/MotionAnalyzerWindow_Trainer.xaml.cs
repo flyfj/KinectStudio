@@ -49,9 +49,6 @@ namespace KinectMotionAnalyzer.UI
         bool isReplaying = false;
         bool ifDoSmoothing = true;
         bool isCapturing = false;
-        bool isValidSkeleton = false;
-        bool skeletonAdded = false;
-        bool colorAdded = true;
 
         // record params
         private int MAX_ALLOW_FRAME = 500;  // no more than this number for color and skeleton to avoid memory issue
@@ -146,9 +143,10 @@ namespace KinectMotionAnalyzer.UI
                 ske_disp_img.Source = kinect_data_manager.skeletonImageSource;
 
                 // bind event handlers
-                kinect_sensor.ColorFrameReady += kinect_colorframe_ready;
-                kinect_sensor.SkeletonFrameReady += kinect_skeletonframe_ready;
-                kinect_sensor.DepthFrameReady += kinect_depthframe_ready;
+                //kinect_sensor.ColorFrameReady += kinect_colorframe_ready;
+                //kinect_sensor.SkeletonFrameReady += kinect_skeletonframe_ready;
+                //kinect_sensor.DepthFrameReady += kinect_depthframe_ready;
+                kinect_sensor.AllFramesReady += kinect_allframes_ready;
             }
             else
             {
@@ -161,35 +159,62 @@ namespace KinectMotionAnalyzer.UI
             return true;
         }
 
-
-        void kinect_colorframe_ready(object sender, ColorImageFrameReadyEventArgs e)
+        void kinect_allframes_ready(object sender, AllFramesReadyEventArgs e)
         {
+            bool ifAddSkeleton = false;
+            using (SkeletonFrame frame = e.OpenSkeletonFrame())
+            {
+                if (frame == null)
+                    return;
+
+                // get skeleton data
+                Skeleton[] skeletons = new Skeleton[frame.SkeletonArrayLength];
+                frame.CopySkeletonDataTo(skeletons);
+
+                // get first tracked skeleton
+                Skeleton tracked_skeleton = null;
+                foreach (Skeleton ske in skeletons)
+                {
+                    if (ske.TrackingState == SkeletonTrackingState.Tracked)
+                    {
+                        tracked_skeleton = ske;
+                        break;
+                    }
+                }
+
+                // if capturing, add to gesture data
+                if (isCapturing && tracked_skeleton != null)
+                {
+                    if (skeleton_rec_buffer.Count == MAX_ALLOW_FRAME)
+                        skeleton_rec_buffer.RemoveAt(0);
+
+                    // just add first tracked skeleton, assume only one person is present
+                    skeleton_rec_buffer.Add(tracked_skeleton);
+
+                    ifAddSkeleton = true;
+                }
+
+                kinect_data_manager.UpdateSkeletonData(tracked_skeleton);
+            }
+
             using (ColorImageFrame frame = e.OpenColorImageFrame())
             {
                 if (frame == null)
                     return;
 
-                if (isCapturing)
+                if (isCapturing && ifAddSkeleton)
                 {
-                    // consistent with skeleton data
-                    if (skeletonAdded)
-                    {
-                        byte[] colorData = new byte[frame.PixelDataLength];
-                        frame.CopyPixelDataTo(colorData);
+                    byte[] colorData = new byte[frame.PixelDataLength];
+                    frame.CopyPixelDataTo(colorData);
 
-                        // remove oldest frame
-                        if (color_frame_rec_buffer.Count == MAX_ALLOW_FRAME)
-                            color_frame_rec_buffer.RemoveAt(0);
+                    // remove oldest frame
+                    if (color_frame_rec_buffer.Count == MAX_ALLOW_FRAME)
+                        color_frame_rec_buffer.RemoveAt(0);
 
-                        color_frame_rec_buffer.Add(colorData);
-
-                        colorAdded = true;
-                        skeletonAdded = false;
-                        isValidSkeleton = false;
-                    }
+                    color_frame_rec_buffer.Add(colorData);
                 }
 
-                kinect_data_manager.UpdateColorData(frame); 
+                kinect_data_manager.UpdateColorData(frame);
             }
         }
 
@@ -216,48 +241,6 @@ namespace KinectMotionAnalyzer.UI
                 }
 
                 //kinect_data_manager.UpdateDepthData(frame);
-            }
-        }
-
-        void kinect_skeletonframe_ready(object sender, SkeletonFrameReadyEventArgs e)
-        {
-            //isValidSkeleton = false;
-
-            using (SkeletonFrame frame = e.OpenSkeletonFrame())
-            {
-                if (frame == null)
-                    return;
-
-                // get skeleton data
-                Skeleton[] skeletons = new Skeleton[frame.SkeletonArrayLength];
-                frame.CopySkeletonDataTo(skeletons);
-
-                // get first tracked skeleton
-                Skeleton tracked_skeleton = null;
-                foreach (Skeleton ske in skeletons)
-                {
-                    if (ske.TrackingState == SkeletonTrackingState.Tracked)
-                    {
-                        tracked_skeleton = ske;
-                        break;
-                    }
-                }
-
-                // if capturing, add to gesture data
-                if (isCapturing && tracked_skeleton != null && colorAdded)
-                {
-                    if (skeleton_rec_buffer.Count == MAX_ALLOW_FRAME)
-                        skeleton_rec_buffer.RemoveAt(0);
-
-                    // just add first tracked skeleton, assume only one person is present
-                    skeleton_rec_buffer.Add(tracked_skeleton);
-
-                    isValidSkeleton = true;
-                    skeletonAdded = true;
-                    colorAdded = false;
-                }
-
-                kinect_data_manager.UpdateSkeletonData(tracked_skeleton);
             }
         }
 
@@ -303,9 +286,6 @@ namespace KinectMotionAnalyzer.UI
                 kinect_sensor.Stop();
 
                 isCapturing = false;
-                isValidSkeleton = false;
-                colorAdded = true;
-                skeletonAdded = false;
 
                 // prepare for replay
                 ActivateReplay(color_frame_rec_buffer, skeleton_rec_buffer);
@@ -329,7 +309,7 @@ namespace KinectMotionAnalyzer.UI
 
             string actionName = "";
             AddActionWindow add_win = new AddActionWindow();
-            add_win.newActionTextBox.Text = "Action Name:";
+            add_win.addActionLabel.Content = "Action Name:";
             if (add_win.ShowDialog() == true)
             {
                 actionName = add_win.newActionName;

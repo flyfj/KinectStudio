@@ -46,7 +46,6 @@ namespace KinectMotionAnalyzer.UI
         bool ifDoSmoothing = true;
 
         // record params
-        private int frame_id = 0;
         ArrayList overlap_frame_rec_buffer; // use to store record frames in memory
         List<Skeleton> skeleton_rec_buffer; // record skeleton data
         List<byte[]> color_frame_rec_buffer; // record video frames
@@ -134,8 +133,7 @@ namespace KinectMotionAnalyzer.UI
                 ske_disp_img.Source = kinect_data_manager.skeletonImageSource;
 
                 // bind event handlers
-                kinect_sensor.ColorFrameReady += kinect_colorframe_ready;
-                kinect_sensor.SkeletonFrameReady += kinect_skeletonframe_ready;
+                kinect_sensor.AllFramesReady += kinect_allframes_ready;
             }
             else
             {
@@ -145,20 +143,15 @@ namespace KinectMotionAnalyzer.UI
             return true;
         }
 
-
-        void kinect_colorframe_ready(object sender, ColorImageFrameReadyEventArgs e)
+        void kinect_allframes_ready(object sender, AllFramesReadyEventArgs e)
         {
             using (ColorImageFrame frame = e.OpenColorImageFrame())
             {
                 if (frame == null)
                     return;
 
-                kinect_data_manager.UpdateColorData(frame); 
+                kinect_data_manager.UpdateColorData(frame);
             }
-        }
-
-        void kinect_skeletonframe_ready(object sender, SkeletonFrameReadyEventArgs e)
-        {
 
             using (SkeletonFrame frame = e.OpenSkeletonFrame())
             {
@@ -195,30 +188,9 @@ namespace KinectMotionAnalyzer.UI
                 }
 
                 kinect_data_manager.UpdateSkeletonData(tracked_skeleton);
-
-                //if (saveVideoCheckBox.IsChecked.Value)
-                //{
-                //    // save skeleton data
-                //    skeleton_rec_buffer.Add(tracked_skeleton);
-
-                //    // write screen shot of display into video file
-                //    int width = (int)groupBox3.Width + 20;
-                //    int height = (int)groupBox3.Height + 20;
-                //    System.Drawing.Rectangle bounds = new System.Drawing.Rectangle(
-                //        (int)(Application.Current.MainWindow.Left + groupBox3.Margin.Left),
-                //        (int)(Application.Current.MainWindow.Top + groupBox3.Margin.Top),
-                //        width, height);
-                //    Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height);
-
-                //    using (Graphics g = Graphics.FromImage(bitmap))
-                //    {
-                //        g.CopyFromScreen(new System.Drawing.Point(bounds.Left, bounds.Top),
-                //            new System.Drawing.Point(-1, -1), bounds.Size);
-                //    }
-
-                //    overlap_frame_rec_buffer.Add(bitmap);
-                //}
             }
+
+            
         }
 
         #region action_management
