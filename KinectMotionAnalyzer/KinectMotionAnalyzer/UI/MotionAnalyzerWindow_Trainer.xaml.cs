@@ -49,7 +49,7 @@ namespace KinectMotionAnalyzer.UI
         bool isReplaying = false;
         bool ifDoSmoothing = true;
         bool isCapturing = false;
-        bool ifValidSkeleton = false;
+        bool isValidSkeleton = false;
 
         // record params
         private int MAX_ALLOW_FRAME = 500;  // no more than this number for color and skeleton to avoid memory issue
@@ -170,7 +170,7 @@ namespace KinectMotionAnalyzer.UI
                 if (isCapturing)
                 {
                     // consistent with skeleton data
-                    if (ifValidSkeleton)
+                    if (isValidSkeleton)
                     {
                         byte[] colorData = new byte[frame.PixelDataLength];
                         frame.CopyPixelDataTo(colorData);
@@ -181,7 +181,7 @@ namespace KinectMotionAnalyzer.UI
 
                         color_frame_rec_buffer.Add(colorData);
 
-                        ifValidSkeleton = false;
+                        isValidSkeleton = false;
                     }
                 }
 
@@ -217,6 +217,8 @@ namespace KinectMotionAnalyzer.UI
 
         void kinect_skeletonframe_ready(object sender, SkeletonFrameReadyEventArgs e)
         {
+            isValidSkeleton = false;
+
             using (SkeletonFrame frame = e.OpenSkeletonFrame())
             {
                 if (frame == null)
@@ -246,7 +248,7 @@ namespace KinectMotionAnalyzer.UI
                     // just add first tracked skeleton, assume only one person is present
                     skeleton_rec_buffer.Add(tracked_skeleton);
 
-                    ifValidSkeleton = true;
+                    isValidSkeleton = true;
                 }
 
                 kinect_data_manager.UpdateSkeletonData(tracked_skeleton);
@@ -295,6 +297,7 @@ namespace KinectMotionAnalyzer.UI
                 kinect_sensor.Stop();
 
                 isCapturing = false;
+                isValidSkeleton = false;
 
                 // prepare for replay
                 ActivateReplay(color_frame_rec_buffer, skeleton_rec_buffer);

@@ -203,7 +203,7 @@ namespace KinectMotionAnalyzer.Processors
                             pos_diff.Add(diff);
                         }
 
-                        MessageBox.Show("rule1: " + pos_diff.Max());
+                        //MessageBox.Show("rule1: " + pos_diff.Max());
                         
                         if (pos_diff.Max() >= 0)
                             rule_eval.ruleScore = 1;
@@ -231,7 +231,7 @@ namespace KinectMotionAnalyzer.Processors
 
                         double angle_val = basicAssessor.ComputeMeasurement(skeletons[sel_id], rule.measurements[0]);
 
-                        MessageBox.Show(rule.id + ": " + angle_val);
+                        //MessageBox.Show(rule.id + ": " + angle_val);
 
                         //JointStatus status = new JointStatus();
                         //basicAssessor.ComputeJointAngle(skeletons[sel_id], rule.measurements[0], ref status);

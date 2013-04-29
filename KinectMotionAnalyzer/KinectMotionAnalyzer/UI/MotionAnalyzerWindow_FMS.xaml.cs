@@ -211,7 +211,6 @@ namespace KinectMotionAnalyzer.UI
 
         void kinect_skeletonframe_ready(object sender, SkeletonFrameReadyEventArgs e)
         {
-
             using (SkeletonFrame frame = e.OpenSkeletonFrame())
             {
                 if (frame == null)
@@ -242,7 +241,7 @@ namespace KinectMotionAnalyzer.UI
                     skeleton_rec_buffer.Add(tracked_skeleton);
 
                     isValidSkeleton = true;
-                }
+                }    
 
                 kinect_data_manager.UpdateSkeletonData(tracked_skeleton);
             }
@@ -267,6 +266,7 @@ namespace KinectMotionAnalyzer.UI
                 // reset buffer
                 color_frame_rec_buffer.Clear();
                 skeleton_rec_buffer.Clear();
+                
                 // set signs
                 gestureCaptureBtn.Content = "Stop";
                 isCapturing = true;
@@ -289,6 +289,7 @@ namespace KinectMotionAnalyzer.UI
                 kinect_sensor.Stop();
 
                 isCapturing = false;
+                isValidSkeleton = false;
 
                 // prepare for replay
                 ActivateReplay(color_frame_rec_buffer, skeleton_rec_buffer);
