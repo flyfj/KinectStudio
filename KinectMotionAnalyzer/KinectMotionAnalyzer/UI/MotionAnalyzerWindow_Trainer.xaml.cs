@@ -50,6 +50,8 @@ namespace KinectMotionAnalyzer.UI
         bool ifDoSmoothing = true;
         bool isCapturing = false;
         bool isValidSkeleton = false;
+        bool skeletonAdded = false;
+        bool colorAdded = true;
 
         // record params
         private int MAX_ALLOW_FRAME = 500;  // no more than this number for color and skeleton to avoid memory issue
@@ -170,7 +172,7 @@ namespace KinectMotionAnalyzer.UI
                 if (isCapturing)
                 {
                     // consistent with skeleton data
-                    if (isValidSkeleton)
+                    if (skeletonAdded)
                     {
                         byte[] colorData = new byte[frame.PixelDataLength];
                         frame.CopyPixelDataTo(colorData);
@@ -181,6 +183,8 @@ namespace KinectMotionAnalyzer.UI
 
                         color_frame_rec_buffer.Add(colorData);
 
+                        colorAdded = true;
+                        skeletonAdded = false;
                         isValidSkeleton = false;
                     }
                 }
@@ -217,7 +221,7 @@ namespace KinectMotionAnalyzer.UI
 
         void kinect_skeletonframe_ready(object sender, SkeletonFrameReadyEventArgs e)
         {
-            isValidSkeleton = false;
+            //isValidSkeleton = false;
 
             using (SkeletonFrame frame = e.OpenSkeletonFrame())
             {
@@ -240,7 +244,7 @@ namespace KinectMotionAnalyzer.UI
                 }
 
                 // if capturing, add to gesture data
-                if (isCapturing && tracked_skeleton != null)
+                if (isCapturing && tracked_skeleton != null && colorAdded)
                 {
                     if (skeleton_rec_buffer.Count == MAX_ALLOW_FRAME)
                         skeleton_rec_buffer.RemoveAt(0);
@@ -249,6 +253,8 @@ namespace KinectMotionAnalyzer.UI
                     skeleton_rec_buffer.Add(tracked_skeleton);
 
                     isValidSkeleton = true;
+                    skeletonAdded = true;
+                    colorAdded = false;
                 }
 
                 kinect_data_manager.UpdateSkeletonData(tracked_skeleton);
@@ -298,6 +304,8 @@ namespace KinectMotionAnalyzer.UI
 
                 isCapturing = false;
                 isValidSkeleton = false;
+                colorAdded = true;
+                skeletonAdded = false;
 
                 // prepare for replay
                 ActivateReplay(color_frame_rec_buffer, skeleton_rec_buffer);

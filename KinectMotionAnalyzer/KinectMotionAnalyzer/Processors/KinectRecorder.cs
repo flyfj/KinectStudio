@@ -310,7 +310,7 @@ namespace KinectMotionAnalyzer.Processors
             {
                 try
                 {
-                    MessageBox.Show(motionContext.Database.Connection.ConnectionString);
+                    //MessageBox.Show(motionContext.Database.Connection.ConnectionString);
 
                     motionContext.Actions.Add(action);
                     motionContext.SaveChanges();

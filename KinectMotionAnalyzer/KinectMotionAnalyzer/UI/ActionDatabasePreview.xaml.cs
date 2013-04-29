@@ -59,7 +59,7 @@ namespace KinectMotionAnalyzer.UI
         private void dbActionPreviewBtn_Click(object sender, RoutedEventArgs e)
         {
             if (dbActionIdList.SelectedValue != null)
-                selectedActionId = int.Parse(dbActionIdList.SelectedValue.ToString());
+                selectedActionId = actionDict[dbActionIdList.SelectedValue.ToString()];
 
             this.DialogResult = true;
         }
