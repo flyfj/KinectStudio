@@ -15,7 +15,7 @@
                 <RadioButton x:Name="realtimeRadioBtn" Content="Real-time Analysis" HorizontalAlignment="Left" Margin="10,19,0,0" VerticalAlignment="Top" FontSize="16" IsChecked="True"/>
             </Grid>
         </GroupBox>
-        <Image HorizontalAlignment="Left" Height="85" Margin="36,21,0,0" VerticalAlignment="Top" Width="315" Source="/KinectMotionAnalyzer;component/Resources/Logo.jpg"/>
+        <Image HorizontalAlignment="Left" Height="85" Margin="53,28,0,0" VerticalAlignment="Top" Width="298" Source="/KinectMotionAnalyzer;component/Resources/FitronixIO_logo.png" Stretch="Fill"/>
 
     </Grid>
 </Window>

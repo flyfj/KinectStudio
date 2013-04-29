@@ -18,7 +18,7 @@
         <Button Content="Set End" Height="34" HorizontalAlignment="Left" Margin="322,563,0,0" Name="replay_setEndBtn" VerticalAlignment="Top" Width="92" FontSize="14" Click="replay_setEndBtn_Click" IsEnabled="False" />
         <Label BorderThickness="1" Content="0" FontSize="13" FontStretch="Normal" Height="32" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="419,564,0,0" Name="replay_endLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="56" Background="#FFC3B9B9" />
         <Label BorderThickness="1" Content="0" FontSize="13" FontStretch="Normal" Height="32" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="231,564,0,0" Name="replay_startLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="55" Background="#FFCBC0C0" />
-        <GroupBox Header="Action Management" Height="316" HorizontalAlignment="Left" Margin="651,87,0,0" Name="groupBox1" VerticalAlignment="Top" Width="330" FontSize="16">
+        <GroupBox Header="Action Management" Height="316" HorizontalAlignment="Left" Margin="655,218,0,0" Name="groupBox1" VerticalAlignment="Top" Width="330" FontSize="16">
             <Grid>
                 <ComboBox Height="34" HorizontalAlignment="Left" Margin="51,22,0,0" x:Name="actionComboBox" VerticalAlignment="Top" Width="222" Text="" SnapsToDevicePixels="True" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15" SelectedIndex="0">
                     <ComboBoxItem Content="Choose Action" IsSelected="True" IsEnabled="False" />
@@ -30,5 +30,6 @@
                 <Button Content="Load Action" Height="46" HorizontalAlignment="Left" Margin="104,212,0,0" Name="actionReplayBtn" VerticalAlignment="Top" Width="118" Click="actionReplayBtn_Click" FontSize="15" />
             </Grid>
         </GroupBox>
+        <Image HorizontalAlignment="Left" Height="119" Margin="668,61,0,0" VerticalAlignment="Top" Width="348" Source="/KinectMotionAnalyzer;component/Resources/FitronixIO_logo.png" Stretch="Fill"/>
     </Grid>
 </Window>

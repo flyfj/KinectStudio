@@ -316,6 +316,16 @@ namespace KinectMotionAnalyzer.UI
 
             //string skeletonpath = savedir + gesture_name + "\\Kinect_skeleton_" + time + ".xml";
 
+            string actionName = "";
+            AddActionWindow add_win = new AddActionWindow();
+            add_win.newActionTextBox.Text = "Action Name:";
+            if (add_win.ShowDialog() == true)
+            {
+                actionName = add_win.newActionName;
+            }
+            else
+                return;
+
             // save to database
             statusbarLabel.Content = "Saving to database...";
             // save data from start label to end label
@@ -337,6 +347,7 @@ namespace KinectMotionAnalyzer.UI
 
                 // convert to kinect action for saving
                 KinectAction rec_action = new KinectAction();
+                rec_action.CurActionName = actionName;
                 rec_action.ActionName = (actionComboBox.SelectedItem as ComboBoxItem).Content.ToString();
                 rec_action.ColorFrames = new List<ColorFrameData>();
                 rec_action.Skeletons = new List<SkeletonData>();
@@ -579,7 +590,7 @@ namespace KinectMotionAnalyzer.UI
                 {
                     using (MotionDBContext dbcontext = new MotionDBContext())
                     {
-                        MessageBox.Show(dbcontext.Database.Connection.ConnectionString);
+                        //MessageBox.Show(dbcontext.Database.Connection.ConnectionString);
 
                         //foreach (KinectAction ac in dbcontext.Actions)
                         //{

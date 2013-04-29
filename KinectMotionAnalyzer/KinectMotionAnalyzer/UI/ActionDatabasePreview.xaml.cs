@@ -21,6 +21,7 @@ namespace KinectMotionAnalyzer.UI
     public partial class ActionDatabasePreview : Window
     {
         public int selectedActionId = -1;
+        public Dictionary<string, int> actionDict = new Dictionary<string, int>();
 
         public ActionDatabasePreview()
         {
@@ -34,13 +35,17 @@ namespace KinectMotionAnalyzer.UI
             try
             {
                 dbActionIdList.Items.Clear();
+                actionDict.Clear();
                 using (MotionDBContext dbcontext = new MotionDBContext())
                 {
                     //MessageBox.Show(dbcontext.Actions.Count().ToString());
                     foreach (KinectAction cur_action in dbcontext.Actions)
                     {
                         if (cur_action.ActionName == dbActionTypeList.SelectedValue.ToString())
-                            dbActionIdList.Items.Add(cur_action.Id);
+                        {
+                            actionDict.Add(cur_action.CurActionName, cur_action.Id);
+                            dbActionIdList.Items.Add(cur_action.CurActionName);
+                        }
                     }
                 }
             }

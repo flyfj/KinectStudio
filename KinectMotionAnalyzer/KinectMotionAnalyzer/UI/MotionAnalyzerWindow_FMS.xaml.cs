@@ -371,7 +371,7 @@ namespace KinectMotionAnalyzer.UI
                 {
                     using (MotionDBContext dbcontext = new MotionDBContext())
                     {
-                        MessageBox.Show(dbcontext.Database.Connection.ConnectionString);
+                        //MessageBox.Show(dbcontext.Database.Connection.ConnectionString);
 
                         //foreach (KinectAction ac in dbcontext.Actions)
                         //{

@@ -16,6 +16,8 @@ namespace KinectMotionAnalyzer.Model
         [Required]
         public string ActionName { get; set; }
 
+        public string CurActionName { get; set; }
+
         //public ColorFrameData colorData { get; set; }
         public List<ColorFrameData> ColorFrames { get; set; }
         public List<DepthMapData> DepthFrames { get; set; }
