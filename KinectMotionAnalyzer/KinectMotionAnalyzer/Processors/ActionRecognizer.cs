@@ -64,8 +64,8 @@ namespace KinectMotionAnalyzer.Processors
             new Dictionary<int, List<Action>>();
 
         // maximum and minimum gesture length in database: used to define a valid test gesture
-        public int gesture_min_len = 0;
-        public int gesture_max_len = 0;
+        public int action_min_len = 0;
+        public int action_max_len = 0;
 
 
         public ActionRecognizer()
@@ -76,197 +76,197 @@ namespace KinectMotionAnalyzer.Processors
         /// <summary>
         /// gesture config management
         /// </summary>
-        public bool AddGestureConfig(ActionTemplateBase gbase)
-        {
-            string gdir = GESTURE_DATABASE_DIR + gbase.name;
+        //public bool AddGestureConfig(ActionTemplateBase gbase)
+        //{
+        //    string gdir = GESTURE_DATABASE_DIR + gbase.name;
 
-            // save config file
-            string gfilename = GESTURE_DATABASE_DIR + gbase.name + ".xml";
-            SaveGestureConfig(gbase);
+        //    // save config file
+        //    string gfilename = GESTURE_DATABASE_DIR + gbase.name + ".xml";
+        //    SaveGestureConfig(gbase);
 
-            // create new directory
-            if (!Directory.Exists(gdir))
-                Directory.CreateDirectory(gdir);
+        //    // create new directory
+        //    if (!Directory.Exists(gdir))
+        //        Directory.CreateDirectory(gdir);
 
-            int max_id = (ACTION_LIST.Keys.Count > 0 ? ACTION_LIST.Keys.Max() : -1);
-            gbase.id = max_id + 1;
-            ACTION_LIST.Add(max_id+1, gbase.name);
-            ACTION_CONFIG.Add(max_id + 1, gbase);
+        //    int max_id = (ACTION_LIST.Keys.Count > 0 ? ACTION_LIST.Keys.Max() : -1);
+        //    gbase.id = max_id + 1;
+        //    ACTION_LIST.Add(max_id+1, gbase.name);
+        //    ACTION_CONFIG.Add(max_id + 1, gbase);
 
-            return true;
-        }
+        //    return true;
+        //}
 
-        public bool RemoveGestureConfig(string gname)
-        {
-            if (!ACTION_LIST.ContainsValue(gname))
-                return false;
+        //public bool RemoveGestureConfig(string gname)
+        //{
+        //    if (!ACTION_LIST.ContainsValue(gname))
+        //        return false;
 
-            // remove from data structure
-            int gid = ACTION_LIST.FirstOrDefault(x => x.Value == gname).Key;
-            ACTION_CONFIG.Remove(gid);
-            ACTION_LIST.Remove(gid);
+        //    // remove from data structure
+        //    int gid = ACTION_LIST.FirstOrDefault(x => x.Value == gname).Key;
+        //    ACTION_CONFIG.Remove(gid);
+        //    ACTION_LIST.Remove(gid);
 
-            // delete config file
-            string filename = GESTURE_DATABASE_DIR + gname + ".xml";
-            if (File.Exists(filename))
-                File.Delete(filename);
+        //    // delete config file
+        //    string filename = GESTURE_DATABASE_DIR + gname + ".xml";
+        //    if (File.Exists(filename))
+        //        File.Delete(filename);
 
-            // delete directory and all data
-            string gdir = GESTURE_DATABASE_DIR + gname;
-            if (Directory.Exists(gdir))
-                Directory.Delete(gdir, true);
+        //    // delete directory and all data
+        //    string gdir = GESTURE_DATABASE_DIR + gname;
+        //    if (Directory.Exists(gdir))
+        //        Directory.Delete(gdir, true);
 
-            return true;
-        }
+        //    return true;
+        //}
 
-        public bool SaveGestureConfig(ActionTemplateBase config)
-        {
+        //public bool SaveGestureConfig(ActionTemplateBase config)
+        //{
             
-            // write config file for each gesture model
-            // format: <Gesture name = "">
-            //              <Joint type="" weight=""></Joint>
-            //         </Gesture>
-            string filename = GESTURE_DATABASE_DIR + config.name + ".xml";
+        //    // write config file for each gesture model
+        //    // format: <Gesture name = "">
+        //    //              <Joint type="" weight=""></Joint>
+        //    //         </Gesture>
+        //    string filename = GESTURE_DATABASE_DIR + config.name + ".xml";
 
-            XmlDocument xmldoc = new XmlDocument();
-            XmlDeclaration declar = xmldoc.CreateXmlDeclaration("1.0", null, null);
-            xmldoc.AppendChild(declar);
-            // create root element
-            XmlElement root = xmldoc.CreateElement("Gesture");
-            root.SetAttribute("name", config.name);
-            xmldoc.AppendChild(root);
+        //    XmlDocument xmldoc = new XmlDocument();
+        //    XmlDeclaration declar = xmldoc.CreateXmlDeclaration("1.0", null, null);
+        //    xmldoc.AppendChild(declar);
+        //    // create root element
+        //    XmlElement root = xmldoc.CreateElement("Gesture");
+        //    root.SetAttribute("name", config.name);
+        //    xmldoc.AppendChild(root);
 
-            #region output_joint_weights
+        //    #region output_joint_weights
 
-            // add joints
-            foreach (JointType joint_type in config.jointWeights.Keys)
-            {
-                XmlElement joint_elem = xmldoc.CreateElement("Joint");
-                root.AppendChild(joint_elem);
+        //    // add joints
+        //    foreach (JointType joint_type in config.jointWeights.Keys)
+        //    {
+        //        XmlElement joint_elem = xmldoc.CreateElement("Joint");
+        //        root.AppendChild(joint_elem);
 
-                joint_elem.SetAttribute("type", joint_type.ToString());
-                int jtype = (int)joint_type;
-                joint_elem.SetAttribute("typeid", jtype.ToString());
-                joint_elem.SetAttribute("weight", config.jointWeights[joint_type].ToString());
-            }
+        //        joint_elem.SetAttribute("type", joint_type.ToString());
+        //        int jtype = (int)joint_type;
+        //        joint_elem.SetAttribute("typeid", jtype.ToString());
+        //        joint_elem.SetAttribute("weight", config.jointWeights[joint_type].ToString());
+        //    }
 
-            #endregion
+        //    #endregion
 
-            // save to disk
-            xmldoc.Save(filename);
+        //    // save to disk
+        //    xmldoc.Save(filename);
 
-            return true;
-        }
+        //    return true;
+        //}
 
-        public ActionTemplateBase LoadGestureConfig(string filename, int gid)
-        {
-            if (!File.Exists(filename))
-                return null;
+        //public ActionTemplateBase LoadGestureConfig(string filename, int gid)
+        //{
+        //    if (!File.Exists(filename))
+        //        return null;
 
-            ActionTemplateBase basis = new ActionTemplateBase();
+        //    ActionTemplateBase basis = new ActionTemplateBase();
 
-            XmlDocument doc = new XmlDocument();
-            doc.Load(filename);
+        //    XmlDocument doc = new XmlDocument();
+        //    doc.Load(filename);
 
-            XmlElement root = doc.DocumentElement;
-            basis.name = root.Attributes["name"].Value;
-            basis.id = gid;
-            for (int i = 0; i < root.ChildNodes.Count; i++)
-            {
-                XmlElement joint_elem = root.ChildNodes[i] as XmlElement;
-                int jtype = int.Parse(joint_elem.Attributes["typeid"].Value);
-                JointType type = (JointType)jtype;
-                float weight = float.Parse(joint_elem.Attributes["weight"].Value);
-                basis.jointWeights[type] = weight;
-            }
+        //    XmlElement root = doc.DocumentElement;
+        //    basis.name = root.Attributes["name"].Value;
+        //    basis.id = gid;
+        //    for (int i = 0; i < root.ChildNodes.Count; i++)
+        //    {
+        //        XmlElement joint_elem = root.ChildNodes[i] as XmlElement;
+        //        int jtype = int.Parse(joint_elem.Attributes["typeid"].Value);
+        //        JointType type = (JointType)jtype;
+        //        float weight = float.Parse(joint_elem.Attributes["weight"].Value);
+        //        basis.jointWeights[type] = weight;
+        //    }
 
-            return basis;
-        }
+        //    return basis;
+        //}
 
-        public bool LoadAllGestureConfig()
-        {
-            if (!Directory.Exists(GESTURE_DATABASE_DIR))
-                return false;
+        //public bool LoadAllGestureConfig()
+        //{
+        //    if (!Directory.Exists(GESTURE_DATABASE_DIR))
+        //        return false;
 
-            ACTION_LIST.Clear();
-            ACTION_CONFIG.Clear();
+        //    ACTION_LIST.Clear();
+        //    ACTION_CONFIG.Clear();
 
-            // look for config xml file under database root directory: XXX.xml
-            IEnumerable<string> gesture_config_files = Directory.EnumerateFiles(GESTURE_DATABASE_DIR, "*.xml");
-            int gid = 0;
-            foreach (string g_cfile in gesture_config_files)
-            {
-                // get gesture name
-                int slash_id = g_cfile.LastIndexOf('\\');
-                string gesture_name = g_cfile.Substring(slash_id + 1, g_cfile.Length - slash_id - 5);
+        //    // look for config xml file under database root directory: XXX.xml
+        //    IEnumerable<string> gesture_config_files = Directory.EnumerateFiles(GESTURE_DATABASE_DIR, "*.xml");
+        //    int gid = 0;
+        //    foreach (string g_cfile in gesture_config_files)
+        //    {
+        //        // get gesture name
+        //        int slash_id = g_cfile.LastIndexOf('\\');
+        //        string gesture_name = g_cfile.Substring(slash_id + 1, g_cfile.Length - slash_id - 5);
 
-                // add to list
-                ACTION_LIST.Add(gid, gesture_name);
+        //        // add to list
+        //        ACTION_LIST.Add(gid, gesture_name);
 
-                // read configuration file
-                ActionTemplateBase cur_basis = LoadGestureConfig(g_cfile, gid);
+        //        // read configuration file
+        //        ActionTemplateBase cur_basis = LoadGestureConfig(g_cfile, gid);
 
-                ACTION_CONFIG.Add(gid, cur_basis);
+        //        ACTION_CONFIG.Add(gid, cur_basis);
 
-                gid++;
-            }
+        //        gid++;
+        //    }
 
-            return true;
-        }
+        //    return true;
+        //}
 
 
         /// <summary>
         /// read database data from files
         /// </summary>
-        public bool LoadGestureDatabase(string database_dir)
-        {
-            // enumerate gesture directories
-            if (!Directory.Exists(database_dir))
-                return false;
+        //public bool LoadGestureDatabase(string database_dir)
+        //{
+        //    // enumerate gesture directories
+        //    if (!Directory.Exists(database_dir))
+        //        return false;
 
-            // clear
-            ACTION_LIST.Clear();
-            ACTION_CONFIG.Clear();
-            ACTION_DATABASE.Clear();
+        //    // clear
+        //    ACTION_LIST.Clear();
+        //    ACTION_CONFIG.Clear();
+        //    ACTION_DATABASE.Clear();
 
-            // load all gesture config
-            if (!LoadAllGestureConfig())
-            {
-                Debug.WriteLine("Fail to load gesture config.");
-                return false;
-            }
+        //    // load all gesture config
+        //    if (!LoadAllGestureConfig())
+        //    {
+        //        Debug.WriteLine("Fail to load gesture config.");
+        //        return false;
+        //    }
 
-            // load actual gesture data for each type
-            foreach (int gid in ACTION_LIST.Keys)
-            {
-                string gdir = GESTURE_DATABASE_DIR + ACTION_LIST[gid] + "\\";
-                List<Action> cur_gestures = new List<Action>();
-                IEnumerable<string> gesture_files = Directory.EnumerateFiles(gdir, "*.xml");
-                foreach (string filename in gesture_files)
-                {
-                    Action gtemp = new Action();
-                    KinectRecorder.ReadFromSkeletonXMLFile(filename, out gtemp.data);
-                    gtemp.name = ACTION_LIST[gid];
+        //    // load actual gesture data for each type
+        //    foreach (int gid in ACTION_LIST.Keys)
+        //    {
+        //        string gdir = GESTURE_DATABASE_DIR + ACTION_LIST[gid] + "\\";
+        //        List<Action> cur_gestures = new List<Action>();
+        //        IEnumerable<string> gesture_files = Directory.EnumerateFiles(gdir, "*.xml");
+        //        foreach (string filename in gesture_files)
+        //        {
+        //            Action gtemp = new Action();
+        //            KinectRecorder.ReadFromSkeletonXMLFile(filename, out gtemp.data);
+        //            gtemp.name = ACTION_LIST[gid];
 
-                    if (gtemp.data.Count > gesture_max_len)
-                        gesture_max_len = gtemp.data.Count;
-                    if (gtemp.data.Count < gesture_min_len)
-                        gesture_min_len = gtemp.data.Count;
+        //            if (gtemp.data.Count > action_max_len)
+        //                action_max_len = gtemp.data.Count;
+        //            if (gtemp.data.Count < action_min_len)
+        //                action_min_len = gtemp.data.Count;
 
-                    cur_gestures.Add(gtemp);
-                }
+        //            cur_gestures.Add(gtemp);
+        //        }
 
-                // add to database
-                if (cur_gestures.Count > 0)
-                    ACTION_DATABASE.Add(gid, cur_gestures);
-            }
+        //        // add to database
+        //        if (cur_gestures.Count > 0)
+        //            ACTION_DATABASE.Add(gid, cur_gestures);
+        //    }
 
-            // no actual model data
-            if (ACTION_DATABASE.Count == 0)
-                return false;
+        //    // no actual model data
+        //    if (ACTION_DATABASE.Count == 0)
+        //        return false;
 
-            return true;
-        }
+        //    return true;
+        //}
 
         /// <summary>
         /// preprocess input data and transform to 1d feature vector for DTW 
@@ -369,7 +369,7 @@ namespace KinectMotionAnalyzer.Processors
 
         /// <summary>
         /// generic dtw algorithm
-        /// bug: as long as they have similar finishing pose, it will be detected
+        /// seq 1 -> seq 2
         /// </summary>
         public double DynamicTimeWarping(
             ArrayList input1, ArrayList input2, Dictionary<JointType, float> weights)
@@ -390,6 +390,7 @@ namespace KinectMotionAnalyzer.Processors
 
             for(int i=1; i<=length1; i++)
             {
+                // match to j position
                 for(int j=1; j<=length2; j++)
                 {
                     double cost = Tools.Dist2((double[])input1[i - 1], (double[])input2[j - 1]);
