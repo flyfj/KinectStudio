@@ -26,7 +26,7 @@
                 <Button Content="Add Action" FontSize="15" Height="40" HorizontalAlignment="Left" Margin="21,77,0,0" x:Name="add_action_btn" VerticalAlignment="Top" Width="118" Click="add_action_btn_Click" />
                 <Button Content="Remove Action" FontSize="15" Height="40" HorizontalAlignment="Left" Margin="174,77,0,0" x:Name="remove_action_btn" VerticalAlignment="Top" Width="118" Click="remove_action_btn_Click" />
                 <Button Content="Capture" Height="44" HorizontalAlignment="Left" Margin="21,0,0,104" Name="actionCaptureBtn" VerticalAlignment="Bottom" Width="118" Click="actionCaptureBtn_Click" IsEnabled="True" FontSize="15" />
-                <Button Content="Save Gesture" FontSize="15" Height="44" HorizontalAlignment="Left" IsEnabled="False" Margin="174,0,0,104" Name="saveGestureBtn" VerticalAlignment="Bottom" Width="118" Click="saveActionBtn_Click" />
+                <Button Content="Save Action" FontSize="15" Height="44" HorizontalAlignment="Left" IsEnabled="False" Margin="174,0,0,104" Name="saveGestureBtn" VerticalAlignment="Bottom" Width="118" Click="saveActionBtn_Click" />
                 <Button Content="Load Action" Height="46" HorizontalAlignment="Left" Margin="104,212,0,0" Name="actionReplayBtn" VerticalAlignment="Top" Width="118" Click="actionReplayBtn_Click" FontSize="15" />
             </Grid>
         </GroupBox>

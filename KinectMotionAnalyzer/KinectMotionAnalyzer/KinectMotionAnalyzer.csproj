@@ -132,6 +132,7 @@
     <Compile Include="Model\SingleJoint.cs" />
     <Compile Include="Model\SkeletonData.cs" />
     <Compile Include="Processors\FMSProcessor.cs" />
+    <Compile Include="Processors\ActionRecognizer.cs" />
     <Compile Include="Processors\KinectRecorder.cs" />
     <Compile Include="UI\ActionDatabasePreview.xaml.cs">
       <DependentUpon>ActionDatabasePreview.xaml</DependentUpon>

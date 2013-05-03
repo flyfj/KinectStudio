@@ -17,7 +17,7 @@ namespace KinectMotionAnalyzer.Processors
     /// <summary>
     /// user gesture
     /// </summary>
-    public class Gesture
+    public class Action
     {
         // actual gesture data
         public List<Skeleton> data = new List<Skeleton>();
@@ -27,7 +27,7 @@ namespace KinectMotionAnalyzer.Processors
     /// <summary>
     /// common data for all template gesture
     /// </summary>
-    public class GestureTemplateBase
+    public class ActionTemplateBase
     {
         // identity
         public string name = "Unknown";
@@ -36,69 +36,47 @@ namespace KinectMotionAnalyzer.Processors
         // weight for each joint used in recognition (matching, currently only binary)
         public Dictionary<JointType, float> jointWeights = new Dictionary<JointType, float>();
 
-        public GestureTemplateBase()
+        public ActionTemplateBase()
         {
-            jointWeights[JointType.AnkleLeft] = 0;
-            jointWeights[JointType.AnkleRight] = 0;
-            jointWeights[JointType.ElbowLeft] = 0;
-            jointWeights[JointType.ElbowRight] = 0;
-            jointWeights[JointType.FootLeft] = 0;
-            jointWeights[JointType.FootRight] = 0;
-            jointWeights[JointType.HandLeft] = 0;
-            jointWeights[JointType.HandRight] = 0;
-            jointWeights[JointType.Head] = 0;
-            jointWeights[JointType.HipCenter] = 0;
-            jointWeights[JointType.HipLeft] = 0;
-            jointWeights[JointType.HipRight] = 0;
-            jointWeights[JointType.KneeLeft] = 0;
-            jointWeights[JointType.KneeRight] = 0;
-            jointWeights[JointType.ShoulderCenter] = 0;
-            jointWeights[JointType.ShoulderLeft] = 0;
-            jointWeights[JointType.ShoulderRight] = 0;
-            jointWeights[JointType.Spine] = 0;
-            jointWeights[JointType.WristLeft] = 0;
-            jointWeights[JointType.WristRight] = 0;
+            foreach (JointType type in Enum.GetValues(typeof(JointType)))
+            {
+                jointWeights[type] = 0;
+            }
         }
-
     }
 
 
     /// <summary>
     /// recognizer based on dtw
     /// </summary>
-    class GestureRecognizer
+    class ActionRecognizer
     {
 
-        private string GESTURE_DATABASE_DIR = "gdata\\";
-
         // dynamically generate
-        public Dictionary<int, string> GESTURE_LIST = new Dictionary<int, string>();
+        public Dictionary<int, string> ACTION_LIST = new Dictionary<int, string>();
 
-        // configuration for each database gesture type
-        public Dictionary<int, GestureTemplateBase> GESTURE_CONFIG = 
-            new Dictionary<int, GestureTemplateBase>();
+        // configuration for each database action type
+        public Dictionary<int, ActionTemplateBase> ACTION_CONFIG = 
+            new Dictionary<int, ActionTemplateBase>();
 
         // database gesture data
-        private Dictionary<int, List<Gesture>> GESTURE_DATABASE = 
-            new Dictionary<int, List<Gesture>>();
+        private Dictionary<int, List<Action>> ACTION_DATABASE = 
+            new Dictionary<int, List<Action>>();
 
         // maximum and minimum gesture length in database: used to define a valid test gesture
         public int gesture_min_len = 0;
         public int gesture_max_len = 0;
 
 
-        public GestureRecognizer()
+        public ActionRecognizer()
         {
-            // create database dir if not exist yet
-            if (!Directory.Exists(GESTURE_DATABASE_DIR))
-                Directory.CreateDirectory(GESTURE_DATABASE_DIR);
         }
 
 
         /// <summary>
         /// gesture config management
         /// </summary>
-        public bool AddGestureConfig(GestureTemplateBase gbase)
+        public bool AddGestureConfig(ActionTemplateBase gbase)
         {
             string gdir = GESTURE_DATABASE_DIR + gbase.name;
 
@@ -110,23 +88,23 @@ namespace KinectMotionAnalyzer.Processors
             if (!Directory.Exists(gdir))
                 Directory.CreateDirectory(gdir);
 
-            int max_id = (GESTURE_LIST.Keys.Count > 0 ? GESTURE_LIST.Keys.Max() : -1);
+            int max_id = (ACTION_LIST.Keys.Count > 0 ? ACTION_LIST.Keys.Max() : -1);
             gbase.id = max_id + 1;
-            GESTURE_LIST.Add(max_id+1, gbase.name);
-            GESTURE_CONFIG.Add(max_id + 1, gbase);
+            ACTION_LIST.Add(max_id+1, gbase.name);
+            ACTION_CONFIG.Add(max_id + 1, gbase);
 
             return true;
         }
 
         public bool RemoveGestureConfig(string gname)
         {
-            if (!GESTURE_LIST.ContainsValue(gname))
+            if (!ACTION_LIST.ContainsValue(gname))
                 return false;
 
             // remove from data structure
-            int gid = GESTURE_LIST.FirstOrDefault(x => x.Value == gname).Key;
-            GESTURE_CONFIG.Remove(gid);
-            GESTURE_LIST.Remove(gid);
+            int gid = ACTION_LIST.FirstOrDefault(x => x.Value == gname).Key;
+            ACTION_CONFIG.Remove(gid);
+            ACTION_LIST.Remove(gid);
 
             // delete config file
             string filename = GESTURE_DATABASE_DIR + gname + ".xml";
@@ -141,7 +119,7 @@ namespace KinectMotionAnalyzer.Processors
             return true;
         }
 
-        public bool SaveGestureConfig(GestureTemplateBase config)
+        public bool SaveGestureConfig(ActionTemplateBase config)
         {
             
             // write config file for each gesture model
@@ -180,12 +158,12 @@ namespace KinectMotionAnalyzer.Processors
             return true;
         }
 
-        public GestureTemplateBase LoadGestureConfig(string filename, int gid)
+        public ActionTemplateBase LoadGestureConfig(string filename, int gid)
         {
             if (!File.Exists(filename))
                 return null;
 
-            GestureTemplateBase basis = new GestureTemplateBase();
+            ActionTemplateBase basis = new ActionTemplateBase();
 
             XmlDocument doc = new XmlDocument();
             doc.Load(filename);
@@ -210,8 +188,8 @@ namespace KinectMotionAnalyzer.Processors
             if (!Directory.Exists(GESTURE_DATABASE_DIR))
                 return false;
 
-            GESTURE_LIST.Clear();
-            GESTURE_CONFIG.Clear();
+            ACTION_LIST.Clear();
+            ACTION_CONFIG.Clear();
 
             // look for config xml file under database root directory: XXX.xml
             IEnumerable<string> gesture_config_files = Directory.EnumerateFiles(GESTURE_DATABASE_DIR, "*.xml");
@@ -223,12 +201,12 @@ namespace KinectMotionAnalyzer.Processors
                 string gesture_name = g_cfile.Substring(slash_id + 1, g_cfile.Length - slash_id - 5);
 
                 // add to list
-                GESTURE_LIST.Add(gid, gesture_name);
+                ACTION_LIST.Add(gid, gesture_name);
 
                 // read configuration file
-                GestureTemplateBase cur_basis = LoadGestureConfig(g_cfile, gid);
+                ActionTemplateBase cur_basis = LoadGestureConfig(g_cfile, gid);
 
-                GESTURE_CONFIG.Add(gid, cur_basis);
+                ACTION_CONFIG.Add(gid, cur_basis);
 
                 gid++;
             }
@@ -247,9 +225,9 @@ namespace KinectMotionAnalyzer.Processors
                 return false;
 
             // clear
-            GESTURE_LIST.Clear();
-            GESTURE_CONFIG.Clear();
-            GESTURE_DATABASE.Clear();
+            ACTION_LIST.Clear();
+            ACTION_CONFIG.Clear();
+            ACTION_DATABASE.Clear();
 
             // load all gesture config
             if (!LoadAllGestureConfig())
@@ -259,16 +237,16 @@ namespace KinectMotionAnalyzer.Processors
             }
 
             // load actual gesture data for each type
-            foreach (int gid in GESTURE_LIST.Keys)
+            foreach (int gid in ACTION_LIST.Keys)
             {
-                string gdir = GESTURE_DATABASE_DIR + GESTURE_LIST[gid] + "\\";
-                List<Gesture> cur_gestures = new List<Gesture>();
+                string gdir = GESTURE_DATABASE_DIR + ACTION_LIST[gid] + "\\";
+                List<Action> cur_gestures = new List<Action>();
                 IEnumerable<string> gesture_files = Directory.EnumerateFiles(gdir, "*.xml");
                 foreach (string filename in gesture_files)
                 {
-                    Gesture gtemp = new Gesture();
+                    Action gtemp = new Action();
                     KinectRecorder.ReadFromSkeletonXMLFile(filename, out gtemp.data);
-                    gtemp.name = GESTURE_LIST[gid];
+                    gtemp.name = ACTION_LIST[gid];
 
                     if (gtemp.data.Count > gesture_max_len)
                         gesture_max_len = gtemp.data.Count;
@@ -280,11 +258,11 @@ namespace KinectMotionAnalyzer.Processors
 
                 // add to database
                 if (cur_gestures.Count > 0)
-                    GESTURE_DATABASE.Add(gid, cur_gestures);
+                    ACTION_DATABASE.Add(gid, cur_gestures);
             }
 
             // no actual model data
-            if (GESTURE_DATABASE.Count == 0)
+            if (ACTION_DATABASE.Count == 0)
                 return false;
 
             return true;
@@ -296,7 +274,7 @@ namespace KinectMotionAnalyzer.Processors
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        private ArrayList PreprocessGesture(Gesture input, int gid)
+        private ArrayList PreprocessGesture(Action input, int gid)
         {
             ArrayList dtw_data = new ArrayList();
             // each frame
@@ -313,7 +291,7 @@ namespace KinectMotionAnalyzer.Processors
 
                 foreach (Joint j in input.data[i].Joints)
                 {
-                    if (GESTURE_CONFIG[gid].jointWeights[j.JointType] > 0)
+                    if (ACTION_CONFIG[gid].jointWeights[j.JointType] > 0)
                     {
                         Point p = new Point(j.Position.X, j.Position.Y);
                         pts.Add(p);
@@ -352,21 +330,21 @@ namespace KinectMotionAnalyzer.Processors
         /// <summary>
         /// match to each database template
         /// </summary>
-        public double MatchToDatabase(Gesture input, out string res)
+        public double MatchToDatabase(Action input, out string res)
         {
 
             // find the most similar gesture in database to test gesture
             double mindist = double.PositiveInfinity;
             res = "Unknown";
-            foreach (int gid in GESTURE_DATABASE.Keys)
+            foreach (int gid in ACTION_DATABASE.Keys)
             {
-                foreach (Gesture temp in GESTURE_DATABASE[gid])
+                foreach (Action temp in ACTION_DATABASE[gid])
                 {
-                    double dist = GestureSimilarity(input, temp, gid);
+                    double dist = ActionSimilarity(input, temp, gid);
                     if(dist < mindist)
                     {
                         mindist = dist;
-                        res = GESTURE_LIST[gid];
+                        res = ACTION_LIST[gid];
                     }
                 }
             }
@@ -378,12 +356,12 @@ namespace KinectMotionAnalyzer.Processors
         /// <summary>
         /// measure similarity between input gesture and a gesture template
         /// </summary>
-        public double GestureSimilarity(Gesture input, Gesture template, int gid)
+        public double ActionSimilarity(Action input, Action template, int gid)
         {
             ArrayList input_data = PreprocessGesture(input, gid);
             ArrayList temp_data = PreprocessGesture(template, gid);
 
-            double dist = DynamicTimeWarping(input_data, temp_data, GESTURE_CONFIG[gid].jointWeights);
+            double dist = DynamicTimeWarping(input_data, temp_data, ACTION_CONFIG[gid].jointWeights);
 
             return dist;
         }
