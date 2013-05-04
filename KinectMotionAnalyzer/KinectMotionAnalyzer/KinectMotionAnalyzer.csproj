@@ -140,6 +140,9 @@
     <Compile Include="UI\AddActionWindow.xaml.cs">
       <DependentUpon>AddActionWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\DTWPreview.xaml.cs">
+      <DependentUpon>DTWPreview.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\MotionAnalyzerWindow_FMS.xaml.cs">
       <DependentUpon>MotionAnalyzerWindow_FMS.xaml</DependentUpon>
     </Compile>
@@ -199,6 +202,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\AddActionWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\DTWPreview.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

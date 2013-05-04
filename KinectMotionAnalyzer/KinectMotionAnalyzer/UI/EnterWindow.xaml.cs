@@ -43,6 +43,12 @@ namespace KinectMotionAnalyzer.UI
                 MotionAnalyzerWindow_User userWin = new MotionAnalyzerWindow_User();
                 userWin.ShowDialog();
             }
+
+            if (actionMatchingRadioBtn.IsChecked.Value)
+            {
+                DTWPreview dtwWin = new DTWPreview();
+                dtwWin.ShowDialog();
+            }
         }
 
     }

@@ -63,6 +63,12 @@ namespace KinectMotionAnalyzer.Processors
         private Dictionary<int, List<Action>> ACTION_DATABASE = 
             new Dictionary<int, List<Action>>();
 
+        // accumulated cost matrix
+        private double[,] DTW = null;
+
+        // optimal warping path
+        private List<Point> WarpingPath = null;
+
         // maximum and minimum gesture length in database: used to define a valid test gesture
         public int action_min_len = 0;
         public int action_max_len = 0;
@@ -372,33 +378,84 @@ namespace KinectMotionAnalyzer.Processors
         /// seq 1 -> seq 2
         /// </summary>
         public double DynamicTimeWarping(
-            ArrayList input1, ArrayList input2, Dictionary<JointType, float> weights)
+            ArrayList query, ArrayList target, Dictionary<JointType, float> weights)
         {
-            if (input1 == null || input2 == null || input1.Count == 0 || input2.Count == 0)
+            if (query == null || target == null || query.Count == 0 || target.Count == 0)
                 return -1;
 
-            // perform DTW to align two arrays
-            int length1 = input1.Count;
-            int length2 = input2.Count;
-            double[,] DTW = new double[length1+1, length2+1];   // make an extra space for 0 match
+            #region perform DTW to align two arrays
+            int N = query.Count;
+            int M = target.Count;
+            DTW = new double[N + 1, M + 1];   // make an extra space for 0 match
 
-            for (int i = 1; i <= length1; i++)
+            for (int i = 1; i <= N; i++)
                 DTW[i, 0] = double.PositiveInfinity;
-            for (int j = 1; j <= length2; j++)
+            for (int j = 1; j <= M; j++)
                 DTW[0, j] = double.PositiveInfinity;
             DTW[0, 0] = 0;
 
-            for(int i=1; i<=length1; i++)
+            for (int i = 1; i <= N; i++)
             {
                 // match to j position
-                for(int j=1; j<=length2; j++)
+                for (int j = 1; j <= M; j++)
                 {
-                    double cost = Tools.Dist2((double[])input1[i - 1], (double[])input2[j - 1]);
-                    DTW[i, j] = cost + Math.Min(DTW[i-1, j], Math.Min(DTW[i, j-1], DTW[i-1, j-1]));
+                    double cost = Tools.Dist2((double[])query[i - 1], (double[])target[j - 1]);
+                    DTW[i, j] = cost + Math.Min(DTW[i - 1, j], Math.Min(DTW[i, j - 1], DTW[i - 1, j - 1]));
                 }
             }
+            #endregion
+            
 
-            return DTW[length1, length2];
+            #region fetch optimal warping paths
+            WarpingPath = new List<Point>();
+            WarpingPath.Add(new Point(N, M));
+            int cur_n = N;
+            int cur_m = M;
+            while (true)
+            {
+                if (cur_n == 1 && cur_m == 1)
+                {
+                    WarpingPath.Add(new Point(1, 1));
+                    break;
+                }
+
+                if (cur_n == 1 && cur_m != 1)
+                {
+                    cur_m--;
+                    WarpingPath.Add(new Point(cur_n, cur_m));
+                }
+                if (cur_m == 1 && cur_n != 1)
+                {
+                    cur_n--;
+                    WarpingPath.Add(new Point(cur_n, cur_m));
+                }
+
+                // compare dtw value to decide next match
+                if (DTW[cur_n - 1, cur_m - 1] < DTW[cur_n - 1, cur_m] &&
+                    DTW[cur_n - 1, cur_m - 1] < DTW[cur_n, cur_m - 1])
+                {
+                    cur_n--;
+                    cur_m--;
+                    WarpingPath.Add(new Point(cur_n, cur_m));
+                }
+                if (DTW[cur_n - 1, cur_m] < DTW[cur_n - 1, cur_m - 1] &&
+                    DTW[cur_n - 1, cur_m] < DTW[cur_n - 1, cur_m])
+                {
+                    cur_n--;
+                    WarpingPath.Add(new Point(cur_n, cur_m));
+                }
+                if (DTW[cur_n, cur_m - 1] < DTW[cur_n - 1, cur_m] &&
+                    DTW[cur_n, cur_m - 1] < DTW[cur_n - 1, cur_m - 1])
+                {
+                    cur_m--;
+                    WarpingPath.Add(new Point(cur_n, cur_m));
+                }
+            }
+            #endregion
+            
+
+
+            return DTW[N, M];
         }
 
         
