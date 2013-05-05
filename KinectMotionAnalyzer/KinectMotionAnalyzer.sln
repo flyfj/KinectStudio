@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KinectMotionAnalyzer", "KinectMotionAnalyzer\KinectMotionAnalyzer.csproj", "{C4F6EF01-B07D-4466-AC6F-6B92582855F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NDtw", "NDtw\NDtw.csproj", "{572EB90F-7F5D-484D-A701-C7FF1556FE32}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,18 +31,6 @@ Global
 		{C4F6EF01-B07D-4466-AC6F-6B92582855F5}.Release|x64.Build.0 = Release|x64
 		{C4F6EF01-B07D-4466-AC6F-6B92582855F5}.Release|x86.ActiveCfg = Release|x86
 		{C4F6EF01-B07D-4466-AC6F-6B92582855F5}.Release|x86.Build.0 = Release|x86
-		{572EB90F-7F5D-484D-A701-C7FF1556FE32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{572EB90F-7F5D-484D-A701-C7FF1556FE32}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{572EB90F-7F5D-484D-A701-C7FF1556FE32}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{572EB90F-7F5D-484D-A701-C7FF1556FE32}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{572EB90F-7F5D-484D-A701-C7FF1556FE32}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{572EB90F-7F5D-484D-A701-C7FF1556FE32}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{572EB90F-7F5D-484D-A701-C7FF1556FE32}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{572EB90F-7F5D-484D-A701-C7FF1556FE32}.Release|Any CPU.Build.0 = Release|Any CPU
-		{572EB90F-7F5D-484D-A701-C7FF1556FE32}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{572EB90F-7F5D-484D-A701-C7FF1556FE32}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{572EB90F-7F5D-484D-A701-C7FF1556FE32}.Release|x64.ActiveCfg = Release|Any CPU
-		{572EB90F-7F5D-484D-A701-C7FF1556FE32}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

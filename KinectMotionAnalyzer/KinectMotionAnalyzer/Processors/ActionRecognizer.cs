@@ -40,7 +40,7 @@ namespace KinectMotionAnalyzer.Processors
         {
             foreach (JointType type in Enum.GetValues(typeof(JointType)))
             {
-                jointWeights[type] = 0;
+                jointWeights[type] = 1;
             }
         }
     }
@@ -76,6 +76,7 @@ namespace KinectMotionAnalyzer.Processors
 
         public ActionRecognizer()
         {
+            ACTION_CONFIG.Add(0, new ActionTemplateBase());
         }
 
 
@@ -439,7 +440,7 @@ namespace KinectMotionAnalyzer.Processors
                     WarpingPath.Add(new Point(cur_n, cur_m));
                 }
                 if (DTW[cur_n - 1, cur_m] < DTW[cur_n - 1, cur_m - 1] &&
-                    DTW[cur_n - 1, cur_m] < DTW[cur_n - 1, cur_m])
+                    DTW[cur_n - 1, cur_m] < DTW[cur_n, cur_m - 1])
                 {
                     cur_n--;
                     WarpingPath.Add(new Point(cur_n, cur_m));
@@ -453,11 +454,26 @@ namespace KinectMotionAnalyzer.Processors
             }
             #endregion
             
-
-
             return DTW[N, M];
         }
 
+        public int GetMatchingTargetFrame(int query_frame_id)
+        {
+            if (WarpingPath == null)
+                return -1;
+
+            int target_id = 0;
+            foreach (Point curp in WarpingPath)
+            {
+                if (curp.X == query_frame_id + 1)
+                {
+                    target_id = (int)curp.Y;
+                    break;
+                }
+            }
+
+            return target_id - 1;   // start from 1
+        }
         
 
         private float DistBetweenPose(Skeleton pose1, Skeleton pose2, Dictionary<JointType, float> weights)

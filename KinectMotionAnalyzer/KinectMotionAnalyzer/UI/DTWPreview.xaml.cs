@@ -22,9 +22,10 @@ namespace KinectMotionAnalyzer.UI
     public partial class DTWPreview : Window
     {
         // tools
-        private KinectDataManager query_kinect_data_manager;
-        private KinectDataManager target_kinect_data_manager;
-        private KinectSensor kinect_sensor;
+        private KinectDataManager query_kinect_data_manager = null;
+        private KinectDataManager target_kinect_data_manager = null;
+        private KinectSensor kinect_sensor = null;
+        private ActionRecognizer actionRecognizer = null;
 
         // sign
         bool ifDoSmoothing = true;
@@ -32,6 +33,7 @@ namespace KinectMotionAnalyzer.UI
         bool isTargetReplaying = false;
         bool isQueryCapturing = false;
         bool isTargetCapturing = false;
+        bool isCheckingMatching = false;
 
         // record params
         private int MAX_ALLOW_FRAME = 500;  // no more than this number for color and skeleton to avoid memory issue
@@ -185,24 +187,30 @@ namespace KinectMotionAnalyzer.UI
                 byte[] colorData = new byte[frame.PixelDataLength];
                 frame.CopyPixelDataTo(colorData);
 
-                if (isQueryCapturing && ifAddSkeleton)
+                if (isQueryCapturing)
                 {
-                    // remove oldest frame
-                    if (query_color_frame_rec_buffer.Count == MAX_ALLOW_FRAME)
-                        query_color_frame_rec_buffer.RemoveAt(0);
+                    if (ifAddSkeleton)
+                    {
+                        // remove oldest frame
+                        if (query_color_frame_rec_buffer.Count == MAX_ALLOW_FRAME)
+                            query_color_frame_rec_buffer.RemoveAt(0);
 
-                    query_color_frame_rec_buffer.Add(colorData);
+                        query_color_frame_rec_buffer.Add(colorData);
+                    }
 
                     query_kinect_data_manager.UpdateColorData(frame);
                 }
 
-                if (this.isTargetCapturing && ifAddSkeleton)
+                if (this.isTargetCapturing)
                 {
-                    // remove oldest frame
-                    if (target_color_frame_rec_buffer.Count == MAX_ALLOW_FRAME)
-                        target_color_frame_rec_buffer.RemoveAt(0);
+                    if (ifAddSkeleton)
+                    {
+                        // remove oldest frame
+                        if (target_color_frame_rec_buffer.Count == MAX_ALLOW_FRAME)
+                            target_color_frame_rec_buffer.RemoveAt(0);
 
-                    target_color_frame_rec_buffer.Add(colorData);
+                        target_color_frame_rec_buffer.Add(colorData);
+                    }
 
                     target_kinect_data_manager.UpdateColorData(frame);
                 }
@@ -218,6 +226,7 @@ namespace KinectMotionAnalyzer.UI
             query_color_frame_rec_buffer = new List<byte[]>();
             target_color_frame_rec_buffer = new List<byte[]>();
             target_skeleton_rec_buffer = new List<Skeleton>();
+            actionRecognizer = new ActionRecognizer();
 
             // init kinect
             if (!InitKinect())
@@ -230,6 +239,12 @@ namespace KinectMotionAnalyzer.UI
 
             DeactivateQueryReplay();
             DeactivateTargetReplay();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (kinect_sensor != null)
+                kinect_sensor.Stop();
         }
 
 #region replay management
@@ -354,6 +369,20 @@ namespace KinectMotionAnalyzer.UI
                     queryVideoSliderLabel.Content = queryVideoSlider.Value.ToString();
                 }
             }
+
+            if (this.isCheckingMatching)
+            {
+                int cur_frame_id = (int)queryVideoSlider.Value;
+
+                // show matched target frame
+                int target_id = actionRecognizer.GetMatchingTargetFrame(cur_frame_id);
+
+                target_kinect_data_manager.UpdateColorData(target_color_frame_rec_buffer[target_id], 640, 480);
+                target_kinect_data_manager.UpdateSkeletonData(target_skeleton_rec_buffer[target_id]);
+
+                // update label
+                queryVideoSliderLabel.Content = queryVideoSlider.Value.ToString();
+            }
         }
 
         private void targetVideoSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -427,6 +456,8 @@ namespace KinectMotionAnalyzer.UI
             if (kinect_sensor == null)
                 return;
 
+            isCheckingMatching = false;
+
             if (!this.isQueryCapturing)
             {
                 // reset buffer
@@ -435,6 +466,7 @@ namespace KinectMotionAnalyzer.UI
                 // set signs
                 queryCaptureBtn.Content = "Stop";
                 this.isQueryCapturing = true;
+                targetCaptureBtn.IsEnabled = false;
 
                 // start kinect
                 if (!kinect_sensor.IsRunning)
@@ -451,6 +483,7 @@ namespace KinectMotionAnalyzer.UI
 
                 kinect_sensor.Stop();
                 this.isQueryCapturing = false;
+                targetCaptureBtn.IsEnabled = true;
 
                 // prepare for replay
                 this.ActivateQueryReplay(query_color_frame_rec_buffer, query_skeleton_rec_buffer);
@@ -463,6 +496,8 @@ namespace KinectMotionAnalyzer.UI
             if (kinect_sensor == null)
                 return;
 
+            isCheckingMatching = false;
+
             if (!this.isTargetCapturing)
             {
                 // reset buffer
@@ -471,6 +506,7 @@ namespace KinectMotionAnalyzer.UI
                 // set signs
                 targetCaptureBtn.Content = "Stop";
                 this.isTargetCapturing = true;
+                queryCaptureBtn.IsEnabled = false;
 
                 // start kinect
                 if (!kinect_sensor.IsRunning)
@@ -487,6 +523,7 @@ namespace KinectMotionAnalyzer.UI
 
                 kinect_sensor.Stop();
                 this.isTargetCapturing = false;
+                queryCaptureBtn.IsEnabled = true;
 
                 // prepare for replay
                 this.ActivateTargetReplay(target_color_frame_rec_buffer, target_skeleton_rec_buffer);
@@ -494,7 +531,68 @@ namespace KinectMotionAnalyzer.UI
             }
         }
 
-        
+        private void matchBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (query_skeleton_rec_buffer.Count == 0 || 
+                target_skeleton_rec_buffer.Count == 0 || 
+                !isQueryReplaying || 
+                !isTargetReplaying)
+            {
+                MessageBox.Show("Capture query and target action first");
+                return;
+            }
+
+            this.isQueryReplaying = false;
+            this.isTargetReplaying = false;
+
+            // trim query action
+            int query_start_id = (int)queryVideoSlider.SelectionStart;
+            int query_end_id = (int)queryVideoSlider.SelectionEnd;
+            // remove end part first so front id will not change
+            if (query_color_frame_rec_buffer.Count > 0 &&
+                query_skeleton_rec_buffer.Count > 0)
+            {
+                // clean data
+                query_color_frame_rec_buffer.RemoveRange(query_end_id + 1, Math.Max(query_color_frame_rec_buffer.Count - query_end_id - 1, 0));
+                query_color_frame_rec_buffer.RemoveRange(0, query_start_id);
+
+                query_skeleton_rec_buffer.RemoveRange(query_end_id + 1, Math.Max(query_skeleton_rec_buffer.Count - query_end_id - 1, 0));
+                query_skeleton_rec_buffer.RemoveRange(0, query_start_id);
+            }
+
+            // trim target action
+            int target_start_id = (int)targetVideoSlider.SelectionStart;
+            int target_end_id = (int)targetVideoSlider.SelectionEnd;
+            // remove end part first so front id will not change
+            if (target_color_frame_rec_buffer.Count > 0 &&
+                target_skeleton_rec_buffer.Count > 0)
+            {
+                // clean data
+                target_color_frame_rec_buffer.RemoveRange(target_end_id + 1, Math.Max(target_color_frame_rec_buffer.Count - target_end_id - 1, 0));
+                target_color_frame_rec_buffer.RemoveRange(0, target_start_id);
+
+                target_skeleton_rec_buffer.RemoveRange(target_end_id + 1, Math.Max(target_skeleton_rec_buffer.Count - target_end_id - 1, 0));
+                target_skeleton_rec_buffer.RemoveRange(0, target_start_id);
+            }
+
+            ActivateQueryReplay(query_color_frame_rec_buffer, query_skeleton_rec_buffer);
+            DeactivateTargetReplay();
+
+            // do matching using dtw
+            KinectMotionAnalyzer.Processors.Action queryAction = new KinectMotionAnalyzer.Processors.Action();
+            queryAction.name = "Query";
+            queryAction.data = query_skeleton_rec_buffer;
+            KinectMotionAnalyzer.Processors.Action targetAction = new KinectMotionAnalyzer.Processors.Action();
+            targetAction.name = "Target";
+            targetAction.data = target_skeleton_rec_buffer;
+
+            double dist = actionRecognizer.ActionSimilarity(queryAction, targetAction, 0);
+            statusbarLabel.Content = "Action distance: " + dist;
+
+            this.isCheckingMatching = true;
+        }
+
+
 
     }
 }
