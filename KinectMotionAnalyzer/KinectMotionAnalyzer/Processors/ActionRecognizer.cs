@@ -45,6 +45,13 @@ namespace KinectMotionAnalyzer.Processors
         }
     }
 
+    /// <summary>
+    /// feedback information
+    /// </summary>
+    public class Feedback
+    {
+
+    };
 
     /// <summary>
     /// recognizer based on dtw
@@ -492,6 +499,12 @@ namespace KinectMotionAnalyzer.Processors
             //dist /= sumw;
 
             return dist / pose1.Joints.Count;
+        }
+
+
+        public void GenerateFeedbacks(Action query, Action target)
+        {
+
         }
     }
 }
