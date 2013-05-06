@@ -576,22 +576,14 @@ namespace KinectMotionAnalyzer.UI
                 if (preview_win.selectedActionId < 0)
                     return;
 
-                // retrieve action from database
                 try
                 {
                     using (MotionDBContext dbcontext = new MotionDBContext())
                     {
                         //MessageBox.Show(dbcontext.Database.Connection.ConnectionString);
 
-                        //foreach (KinectAction ac in dbcontext.Actions)
-                        //{
-                        //    if (ac.ColorFrames != null)
-                        //        MessageBox.Show(ac.ColorFrames.Count.ToString());
-                            
-                        //}
-                        //return;
-
-                        var query = from ac in dbcontext.Actions.Include("ColorFrames").Include("DepthFrames").Include("Skeletons.JointsData")
+                        // retrieve action from database
+                        var query = from ac in dbcontext.Actions.Include("ColorFrames").Include("Skeletons.JointsData")
                                     where ac.Id == preview_win.selectedActionId
                                     select ac;
 
