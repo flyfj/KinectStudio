@@ -305,11 +305,11 @@ namespace KinectMotionAnalyzer.Processors
 
                 foreach (Joint j in input.data[i].Joints)
                 {
-                    if (ACTION_CONFIG[gid].jointWeights[j.JointType] > 0)
-                    {
+                    //if (ACTION_CONFIG[gid].jointWeights[j.JointType] > 0)
+                    //{
                         Point p = new Point(j.Position.X, j.Position.Y);
                         pts.Add(p);
-                    }
+                    //}
                 }
 
                 // Center the data
@@ -431,11 +431,13 @@ namespace KinectMotionAnalyzer.Processors
                 {
                     cur_m--;
                     WarpingPath.Add(new Point(cur_n, cur_m));
+                    continue;
                 }
                 if (cur_m == 1 && cur_n != 1)
                 {
                     cur_n--;
                     WarpingPath.Add(new Point(cur_n, cur_m));
+                    continue;
                 }
 
                 // compare dtw value to decide next match
@@ -445,18 +447,21 @@ namespace KinectMotionAnalyzer.Processors
                     cur_n--;
                     cur_m--;
                     WarpingPath.Add(new Point(cur_n, cur_m));
+                    continue;
                 }
                 if (DTW[cur_n - 1, cur_m] < DTW[cur_n - 1, cur_m - 1] &&
                     DTW[cur_n - 1, cur_m] < DTW[cur_n, cur_m - 1])
                 {
                     cur_n--;
                     WarpingPath.Add(new Point(cur_n, cur_m));
+                    continue;
                 }
                 if (DTW[cur_n, cur_m - 1] < DTW[cur_n - 1, cur_m] &&
                     DTW[cur_n, cur_m - 1] < DTW[cur_n - 1, cur_m - 1])
                 {
                     cur_m--;
                     WarpingPath.Add(new Point(cur_n, cur_m));
+                    continue;
                 }
             }
             #endregion
