@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Microsoft.Kinect;
 using KinectMotionAnalyzer.Processors;
+using KinectMotionAnalyzer.Model;
 
 namespace KinectMotionAnalyzer.UI
 {
@@ -278,7 +279,8 @@ namespace KinectMotionAnalyzer.UI
             isQueryReplaying = true;
 
             // update view
-            query_kinect_data_manager.UpdateColorData(color_frame_rec_buffer[min_frame_id], 640, 480);
+            //if (triggerVideoCheckBox.IsChecked.Value)
+                query_kinect_data_manager.UpdateColorData(color_frame_rec_buffer[min_frame_id], 640, 480);
             query_kinect_data_manager.UpdateSkeletonData(skeleton_rec_buffer[min_frame_id]);
         }
 
@@ -311,7 +313,8 @@ namespace KinectMotionAnalyzer.UI
             this.isTargetReplaying = true;
 
             // update view
-            target_kinect_data_manager.UpdateColorData(target_color_frame_rec_buffer[min_frame_id], 640, 480);
+            //if (triggerVideoCheckBox.IsChecked.Value)
+                target_kinect_data_manager.UpdateColorData(target_color_frame_rec_buffer[min_frame_id], 640, 480);
             target_kinect_data_manager.UpdateSkeletonData(this.target_skeleton_rec_buffer[min_frame_id]);
         }
 
@@ -362,7 +365,8 @@ namespace KinectMotionAnalyzer.UI
                 int cur_frame_id = (int)queryVideoSlider.Value;
                 if (query_skeleton_rec_buffer.Count > cur_frame_id && query_color_frame_rec_buffer.Count > cur_frame_id)
                 {
-                    query_kinect_data_manager.UpdateColorData(query_color_frame_rec_buffer[cur_frame_id], 640, 480);
+                    //if (triggerVideoCheckBox.IsChecked.Value)
+                        query_kinect_data_manager.UpdateColorData(query_color_frame_rec_buffer[cur_frame_id], 640, 480);
                     query_kinect_data_manager.UpdateSkeletonData(query_skeleton_rec_buffer[cur_frame_id]);
 
                     // update label
@@ -377,7 +381,8 @@ namespace KinectMotionAnalyzer.UI
                 // show matched target frame
                 int target_id = actionRecognizer.GetMatchingTargetFrame(cur_frame_id);
 
-                target_kinect_data_manager.UpdateColorData(target_color_frame_rec_buffer[target_id], 640, 480);
+                //if (triggerVideoCheckBox.IsChecked.Value)
+                    target_kinect_data_manager.UpdateColorData(target_color_frame_rec_buffer[target_id], 640, 480);
                 target_kinect_data_manager.UpdateSkeletonData(target_skeleton_rec_buffer[target_id]);
 
                 // update label
@@ -394,7 +399,8 @@ namespace KinectMotionAnalyzer.UI
                 int cur_frame_id = (int)targetVideoSlider.Value;
                 if (target_skeleton_rec_buffer.Count > cur_frame_id && target_color_frame_rec_buffer.Count > cur_frame_id)
                 {
-                    target_kinect_data_manager.UpdateColorData(target_color_frame_rec_buffer[cur_frame_id], 640, 480);
+                    //if (triggerVideoCheckBox.IsChecked.Value)
+                        target_kinect_data_manager.UpdateColorData(target_color_frame_rec_buffer[cur_frame_id], 640, 480);
                     target_kinect_data_manager.UpdateSkeletonData(target_skeleton_rec_buffer[cur_frame_id]);
 
                     // update label
@@ -507,6 +513,7 @@ namespace KinectMotionAnalyzer.UI
                 targetCaptureBtn.Content = "Stop";
                 this.isTargetCapturing = true;
                 queryCaptureBtn.IsEnabled = false;
+                targetLoadBtn.IsEnabled = false;
 
                 // start kinect
                 if (!kinect_sensor.IsRunning)
@@ -524,6 +531,7 @@ namespace KinectMotionAnalyzer.UI
                 kinect_sensor.Stop();
                 this.isTargetCapturing = false;
                 queryCaptureBtn.IsEnabled = true;
+                targetLoadBtn.IsEnabled = true;
 
                 // prepare for replay
                 this.ActivateTargetReplay(target_color_frame_rec_buffer, target_skeleton_rec_buffer);
@@ -592,7 +600,76 @@ namespace KinectMotionAnalyzer.UI
             this.isCheckingMatching = true;
         }
 
+        private void targetLoadBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (kinect_sensor == null)
+                return;
 
+            if (kinect_sensor != null && kinect_sensor.IsRunning)
+                return;
+
+            // read action bank from database and populate window control to show
+            ActionDatabasePreview preview_win = new ActionDatabasePreview();
+            preview_win.dbActionTypeList.Items.Clear();
+            try
+            {
+                using (MotionDBContext dbcontext = new MotionDBContext())
+                {
+                    foreach (ActionType cur_type in dbcontext.ActionTypes)
+                        preview_win.dbActionTypeList.Items.Add(cur_type.Name);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            if (preview_win.ShowDialog().Value)
+            {
+                // get replay action id
+                if (preview_win.selectedActionId < 0)
+                    return;
+
+                try
+                {
+                    using (MotionDBContext dbcontext = new MotionDBContext())
+                    {
+                        //MessageBox.Show(dbcontext.Database.Connection.ConnectionString);
+
+                        // retrieve action from database
+                        var query = from ac in dbcontext.Actions.Include("ColorFrames").Include("Skeletons.JointsData")
+                                    where ac.Id == preview_win.selectedActionId
+                                    select ac;
+
+                        if (query != null)
+                        {
+                            foreach (var q in query)
+                            {
+                                KinectAction sel_action = q as KinectAction;
+                                List<DepthImagePixel[]> depth_buffer = new List<DepthImagePixel[]>();
+                                if (!Tools.ConvertFromKinectAction(
+                                        sel_action,
+                                        out target_color_frame_rec_buffer,
+                                        out depth_buffer,
+                                        out target_skeleton_rec_buffer))
+                                {
+                                    MessageBox.Show("Fail to load database action.");
+                                    return;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+
+                // activate replay
+                ActivateTargetReplay(target_color_frame_rec_buffer, target_skeleton_rec_buffer);
+            }
+        }
 
     }
 }

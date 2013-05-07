@@ -135,6 +135,9 @@ namespace KinectMotionAnalyzer.Processors
 
         public void UpdateColorData(ColorImageFrame frame)
         {
+            if (frame == null)
+                return;
+
             // update property value
             if (colorPixelData == null)
             {
@@ -158,13 +161,16 @@ namespace KinectMotionAnalyzer.Processors
 
         public void UpdateColorData(byte[] colorPixelData, int width, int height)
         {
-            if (colorPixelData == null)
-                return;
-
             if (ColorStreamBitmap == null)
             {
                 ColorStreamBitmap = new WriteableBitmap(width, height, 96, 96,
                     PixelFormats.Bgr32, null);
+            }
+
+            if (colorPixelData == null)
+            {
+                colorPixelData = new byte[width * height];
+                colorPixelData = colorPixelData.Select(n => n = 0).ToArray<byte>();
             }
 
             int stride = ColorStreamBitmap.PixelWidth * sizeof(int);
