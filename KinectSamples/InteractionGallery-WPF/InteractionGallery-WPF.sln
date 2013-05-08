@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InteractionGallery-WPF", "InteractionGallery-WPF.csproj", "{2E073D57-EA4E-496D-A22F-DA2E1961262C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Kinect.Toolkit", "..\Microsoft.Kinect.Toolkit\Microsoft.Kinect.Toolkit.csproj", "{C6F9C31B-6130-4443-A5CC-EF0664552ECD}"
@@ -16,7 +16,6 @@ Global
 		{2E073D57-EA4E-496D-A22F-DA2E1961262C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2E073D57-EA4E-496D-A22F-DA2E1961262C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E073D57-EA4E-496D-A22F-DA2E1961262C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2E073D57-EA4E-496D-A22F-DA2E1961262C}.Release|Any CPU.Build.0 = Release|Any CPU	
 		{C6F9C31B-6130-4443-A5CC-EF0664552ECD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C6F9C31B-6130-4443-A5CC-EF0664552ECD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6F9C31B-6130-4443-A5CC-EF0664552ECD}.Release|Any CPU.ActiveCfg = Release|Any CPU

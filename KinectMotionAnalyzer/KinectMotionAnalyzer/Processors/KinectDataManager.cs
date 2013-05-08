@@ -649,6 +649,5 @@ namespace KinectMotionAnalyzer.Processors
 #endregion
 
 
-        
     }
 }
