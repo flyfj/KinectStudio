@@ -1,0 +1,66 @@
+﻿<UserControl x:Class="KinectMotionAnalyzer.UI.AngleSelection"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:k="http://schemas.microsoft.com/kinect/2013"
+             mc:Ignorable="d" 
+             d:DesignHeight="640" d:DesignWidth="480" Loaded="UserControl_Loaded">
+    <Viewbox Stretch="Fill">
+            <!--<k:KinectRegion x:Name="kinectRegion" CursorPressingColor="Black" IsCursorVisible="True">-->
+        <Grid Background="White">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Background="White" Grid.Column="0">
+                <Image Height="469" HorizontalAlignment="Left" Margin="18,15,0,0" Name="skeleton_img" Stretch="Fill" VerticalAlignment="Top"  Source="/KinectMotionAnalyzer;component/Resources/kinect_skeleton.png" />
+                <TextBlock x:Name="NotifyText"  Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="48" Margin="30,0,0,0"></TextBlock>
+                <k:KinectCircleButton x:Name="HandRight" Click="JointButtonClick"  Height="25" Width="25" Margin="18,77,490,397" />
+                <k:KinectCircleButton x:Name="HandLeft" Click="JointButtonClick"  Height="25" Width="25" Margin="457,75,52,398" />
+                <k:KinectCircleButton x:Name="WristRight" Click="JointButtonClick"  Height="25" Width="25" Margin="10,116,499,357" />
+                <k:KinectCircleButton x:Name="ElbowRight" Click="JointButtonClick"  Height="25" Width="25" Margin="38,131,471,342" />
+                <k:KinectCircleButton x:Name="ShoulderRight" Click="JointButtonClick"  Height="25" Width="25" Margin="81,149,430,326" />
+                <k:KinectCircleButton x:Name="Head" Click="JointButtonClick"  Height="25" Width="25" Margin="189,63,320,410" />
+                <k:KinectCircleButton x:Name="ShoulderCenter" Click="JointButtonClick"  Height="25" Width="25" Margin="290,63,219,410" />
+                <k:KinectCircleButton x:Name="WristLeft" Click="JointButtonClick"  Height="25" Width="25" Margin="465,116,44,357" />
+                <k:KinectCircleButton x:Name="ElbowLeft" Click="JointButtonClick"  Height="25" Width="25" Margin="430,132,79,341" />
+                <k:KinectCircleButton x:Name="ShoulderLeft" Click="JointButtonClick"  Height="25" Width="25" Margin="400,149,109,324" />
+                <k:KinectCircleButton x:Name="Spine" Click="JointButtonClick"  Height="25" Width="25" Margin="198,181,311,292" />
+                <k:KinectCircleButton x:Name="HipCenter" Click="JointButtonClick"  Height="25" Width="25" Margin="376,196,133,277"/>
+                <k:KinectCircleButton x:Name="HipRight" Click="JointButtonClick"  Height="25" Width="25" Margin="138,229,373,246" />
+                <k:KinectCircleButton x:Name="HipLeft" Click="JointButtonClick"  Height="25" Width="25" Margin="346,231,165,244" />
+                <k:KinectCircleButton x:Name="KneeRight" Click="JointButtonClick"  Height="25" Width="25" Margin="102,330,409,145" />
+                <k:KinectCircleButton x:Name="KneeLeft" Click="JointButtonClick"  Height="25" Width="25" Margin="393,329,116,144" />
+                <k:KinectCircleButton x:Name="AnkleLeft" Click="JointButtonClick"  Height="25" Width="25" Margin="311,422,199,53" />
+                <k:KinectCircleButton x:Name="AnkleRight" Click="JointButtonClick"  Height="25" Width="25" Margin="209,421,300,52" />
+                <k:KinectCircleButton x:Name="FootLeft" Click="JointButtonClick"  Height="25" Width="25" Margin="428,415,81,33" />
+                <k:KinectCircleButton x:Name="FootRight" Click="JointButtonClick"  Height="25" Width="25" Margin="45,427,463,46" />
+            </Grid>
+
+            <Grid HorizontalAlignment="Left"  VerticalAlignment="Top" Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <k:KinectCircleButton x:Name="XY" Click="PlaneButtonClick" Content="XY" Height="25" Width="25" HorizontalAlignment="Left" Margin="10,100,0,0" VerticalAlignment="Top" Grid.Row="0"/>
+                <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontSize="20">XY Plane</TextBlock>
+                <k:KinectCircleButton x:Name="YZ" Click="PlaneButtonClick" Content="YZ" Height="25" Width="25" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Grid.Row="1"/>
+                <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20">YZ Plane</TextBlock>
+                <k:KinectCircleButton x:Name="XZ" Click="PlaneButtonClick" Content="XZ" Height="25" Width="25" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Grid.Row="2"/>
+                <TextBlock Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20">XZ Plane</TextBlock>
+                <Image x:Name="coordinatesImg" Source="/KinectMotionAnalyzer;component/Resources/skeletonCoordinates.png" Margin="0,30,10,0" Height="150" Width="150" Grid.Row="3"/>
+                <TextBlock Grid.Row="4" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20">Done</TextBlock>
+                <k:KinectCircleButton x:Name="Done" Click="DoneButtonClick" Height="120" Width="120" HorizontalAlignment="Center"  VerticalAlignment="Center" Grid.Row="4"/>
+                
+            </Grid>
+        </Grid>
+        <!-- </k:KinectRegion> -->
+    </Viewbox>
+</UserControl>

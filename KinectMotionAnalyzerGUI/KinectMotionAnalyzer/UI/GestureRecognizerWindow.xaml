@@ -1,0 +1,50 @@
+﻿<Window x:Class="KinectMotionAnalyzer.UI.GestureRecognizerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="GestureRecognizerWindow" SizeToContent="Height" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" d:DesignWidth="1242" ResizeMode="NoResize" Closing="Window_Closing" Width="1269" Loaded="Window_Loaded">
+    <Grid>
+        <GroupBox Header="Display" Height="461" HorizontalAlignment="Left" Margin="31,12,0,0" Name="groupBox3" VerticalAlignment="Top" Width="452" FontSize="16">
+            <Grid>
+                <Image Name="color_disp_img" Stretch="Uniform" Width="413" Height="414" Margin="11,6,16,13" />
+                <Image Name="ske_disp_img" Height="414" Margin="11,6,16,13" Stretch="Uniform" Width="413" />
+            </Grid>
+        </GroupBox>
+        <Slider HorizontalAlignment="Left" Interval="1" IsEnabled="False" IsSnapToTickEnabled="True" Margin="75,479,0,159" Name="skeletonVideoSlider" Width="345" ValueChanged="skeletonVideoSlider_ValueChanged" />
+        <Label BorderThickness="1" Content="0" FontStretch="Normal" Height="32" HorizontalAlignment="Left" Margin="194,501,0,0" Name="skeletonSliderLabel" VerticalAlignment="Top" Width="126" HorizontalContentAlignment="Center" FontSize="13" VerticalContentAlignment="Center" />
+        <StatusBar Background="#FFB49788" FontSize="18" Height="43" HorizontalAlignment="Left" Margin="12,606,0,0" Name="kinectStatusBar" VerticalAlignment="Top" Width="900">
+            <Label Content="Welcome" Name="statusbarLabel" FontStretch="Medium" FontSize="14" />
+        </StatusBar>
+        <Button Content="Set Start" Height="34" HorizontalAlignment="Left" Margin="81,547,0,0" Name="replay_setStartBtn" VerticalAlignment="Top" Width="92" FontSize="14" Click="replay_setStartBtn_Click" />
+        <Button Content="Set End" Height="34" HorizontalAlignment="Left" Margin="261,547,0,0" Name="replay_setEndBtn" VerticalAlignment="Top" Width="92" FontSize="14" Click="replay_setEndBtn_Click" />
+        <Label BorderThickness="1" Content="0" FontSize="13" FontStretch="Normal" Height="32" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="362,549,0,0" Name="replay_endLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="68" />
+        <Label BorderThickness="1" Content="0" FontSize="13" FontStretch="Normal" Height="32" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="179,549,0,0" Name="replay_startLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="65" />
+        <Button Content="Preview Stream" FontSize="15" Height="40" HorizontalAlignment="Left" Margin="525,62,0,0" Name="previewBtn" VerticalAlignment="Top" Width="182" Click="previewBtn_Click" />
+        <GroupBox Header="Gesture Management" Height="316" HorizontalAlignment="Left" Margin="513,232,0,0" Name="groupBox1" VerticalAlignment="Top" Width="342" FontSize="16">
+            <Grid>
+                <ComboBox Height="34" HorizontalAlignment="Left" Margin="41,22,0,0" Name="gestureComboBox" VerticalAlignment="Top" Width="222" Text="" SnapsToDevicePixels="True" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15">
+                    <ComboBoxItem Content="Choose Gesture" IsEnabled="False" IsSelected="True" />
+                </ComboBox>
+                <Button Content="Add Gesture" FontSize="15" Height="40" HorizontalAlignment="Left" Margin="21,77,0,0" Name="add_gesture_btn" VerticalAlignment="Top" Width="118" Click="add_gesture_btn_Click" />
+                <Button Content="Remove Gesture" FontSize="15" Height="40" HorizontalAlignment="Left" Margin="174,77,0,0" Name="remove_gesture_btn" VerticalAlignment="Top" Width="118" Click="remove_gesture_btn_Click" />
+                <Button Content="Capture" Height="44" HorizontalAlignment="Left" Margin="21,0,0,104" Name="gestureCaptureBtn" VerticalAlignment="Bottom" Width="118" Click="gestureCaptureBtn_Click" IsEnabled="True" FontSize="15" />
+                <Button Content="Save Gesture" FontSize="15" Height="44" HorizontalAlignment="Left" IsEnabled="False" Margin="174,0,0,104" Name="saveGestureBtn" VerticalAlignment="Bottom" Width="118" Click="saveGestureBtn_Click" />
+                <Button Content="Load Gesture" Height="46" HorizontalAlignment="Left" Margin="105,213,0,0" Name="gestureReplayBtn" VerticalAlignment="Top" Width="118" Click="gestureReplayBtn_Click" FontSize="15" />
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Gesture Recognition" Height="354" HorizontalAlignment="Left" Margin="881,40,0,0" Name="groupBox2" VerticalAlignment="Top" Width="336" FontSize="16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="51*" />
+                    <ColumnDefinition Width="233*" />
+                </Grid.ColumnDefinitions>
+                <Label Content="Last Detection" FontSize="16" Height="46" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="28,19,0,0" Name="last_detection_label" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="271" BorderThickness="2" Grid.ColumnSpan="2" />
+                <Label Content="Current Detection" FontSize="16" Height="46" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="28,71,0,0" Name="rec_res_label" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="271" Grid.ColumnSpan="2" />
+                <Button Content="Start Recognition" FontSize="15" Height="43" HorizontalAlignment="Left" Margin="23,129,0,0" Name="gestureRecognitionBtn" VerticalAlignment="Top" Width="155" IsEnabled="True" Click="gestureRecognitionBtn_Click" Grid.Column="1" />
+                <ProgressBar Height="29" HorizontalAlignment="Left" Margin="28,214,0,0" Name="gesture_match_scorebar" VerticalAlignment="Top" Width="271" Maximum="150" Grid.ColumnSpan="2" />
+                <Label Content="Matching Distance" Height="46" HorizontalAlignment="Left" Margin="23,263,0,0" Name="recDistLabel" VerticalAlignment="Top" Width="158" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" Grid.Column="1" />
+            </Grid>
+        </GroupBox>
+        <TextBlock Height="60" HorizontalAlignment="Left" Margin="525,146,0,0" Name="feedback_textblock" Text="User Feedback" VerticalAlignment="Top" Width="330" TextWrapping="Wrap" TextAlignment="Center" FontSize="16" />
+        <CheckBox Content="Save video" Height="27" HorizontalAlignment="Left" Margin="737,68,0,0" Name="saveVideoCheckBox" VerticalAlignment="Top" Width="112" FontSize="16" />
+    </Grid>
+</Window>

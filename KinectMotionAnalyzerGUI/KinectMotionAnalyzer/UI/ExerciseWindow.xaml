@@ -1,0 +1,66 @@
+﻿<Window x:Class="KinectMotionAnalyzer.UI.ExerciseWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:k="http://schemas.microsoft.com/kinect/2013"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:KinectMotionAnalyzer"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" 
+        MinHeight="640"
+        MinWidth="480"
+        Title="ExerciseWindow" ResizeMode="CanResize" Closing="Window_Closing" d:DesignHeight="640" d:DesignWidth="480">
+    
+    <Viewbox Stretch="Fill">
+       
+        <Grid ShowGridLines="True">
+            <k:KinectRegion x:Name="kinectRegion" CursorPressingColor="Black" IsCursorVisible="True">
+                <Grid x:Name="LayoutRoot" ShowGridLines="True">
+                    <Image Name="color_disp_img" Stretch="Fill" />
+                    <Image Name="ske_disp_img" Stretch="Fill"/>
+
+                    <Grid x:Name ="kinectRegionGrid"  ShowGridLines="True" >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <k:KinectCircleButton x:Name="RecordButton" Click="RecordButtonClick"  Height="77" Grid.Row="0" Grid.Column="0">
+                            <Image x:Name="recordButtonImage" Source="/KinectMotionAnalyzer;component/Resources/record_start.png" />
+                        </k:KinectCircleButton>
+                        <k:KinectCircleButton x:Name="AnglesButton" Click="AnglesButtonClick"  Height="77" Grid.Row="0" Grid.Column="2" >
+                            <Image x:Name="angleButtonImage" Source="/KinectMotionAnalyzer;component/Resources/angleButton.png"/>
+                        </k:KinectCircleButton>
+
+                        <!--- <Image>
+                                <Image.Source>
+                                    <DrawingImage>
+                                        <DrawingImage.Drawing>
+                                            <GeometryDrawing>
+                                                <GeometryDrawing.Pen>
+                                                    <Pen Brush="Black" Thickness="10"></Pen>
+                                                </GeometryDrawing.Pen>
+                                                <GeometryDrawing.Geometry>
+                                                    <PathGeometry>
+                                                        F1M128,165.4404L143.44,150.0004L128,134.5594L134.533,128.0004L149.973,143.4404L165.44,128.0004L172,134.5324L156.532,150.0004L172,165.4674L165.44,172.0004L149.973,
+                                            156.5594L134.533,172.0004z
+                                                    </PathGeometry>
+                                                </GeometryDrawing.Geometry>
+                                            </GeometryDrawing>
+                                        </DrawingImage.Drawing>
+                                    </DrawingImage>
+                                </Image.Source>
+                            </Image> -->
+
+                    </Grid>
+                </Grid>
+            </k:KinectRegion>
+        </Grid>
+
+    </Viewbox>
+
+</Window>
