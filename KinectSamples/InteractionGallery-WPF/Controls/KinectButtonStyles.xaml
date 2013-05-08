@@ -1,0 +1,124 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:k="http://schemas.microsoft.com/kinect/2013">
+
+    <!-- All KinectTileButtons play a sound on mouse/hand pointer enter and on selection -->
+    <Style TargetType="{x:Type k:KinectTileButton}">
+        <Style.Triggers>
+            <EventTrigger>
+                <EventTrigger.RoutedEvent>k:KinectRegion.HandPointerEnter</EventTrigger.RoutedEvent>
+                <SoundPlayerAction Source="pack://application:,,,/Content/Navigation/button-enter.wav" />
+            </EventTrigger>
+            <EventTrigger RoutedEvent="Button.MouseEnter">
+                <SoundPlayerAction Source="pack://application:,,,/Content/Navigation/button-enter.wav" />
+            </EventTrigger>
+            <EventTrigger RoutedEvent="Button.Click">
+                <SoundPlayerAction Source="pack://application:,,,/Content/Navigation/button-select.wav" />
+            </EventTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- All KinectCircleButtons play a sound on mouse/hand pointer enter and on selection -->
+    <Style x:Key="KinectCircleButtons" TargetType="k:KinectCircleButton">
+        <Style.Triggers>
+            <EventTrigger>
+                <EventTrigger.RoutedEvent>k:KinectRegion.HandPointerEnter</EventTrigger.RoutedEvent>
+                <SoundPlayerAction Source="pack://application:,,,/Content/Navigation/button-enter.wav" />
+            </EventTrigger>
+            <EventTrigger RoutedEvent="Button.MouseEnter">
+                <SoundPlayerAction Source="pack://application:,,,/Content/Navigation/button-enter.wav" />
+            </EventTrigger>
+            <EventTrigger RoutedEvent="Button.Click">
+                <SoundPlayerAction Source="pack://application:,,,/Content/Navigation/button-select.wav" />
+            </EventTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Larger KinectTileButton style -->
+    <Style TargetType="{x:Type k:KinectTileButton}" 
+           BasedOn="{StaticResource {x:Type k:KinectTileButton}}" 
+           x:Key="LargeKinectTileButton">
+        <Setter Property="Width" Value="330" />
+        <Setter Property="Height" Value="330" />
+        <Setter Property="FontSize" Value="36" />
+    </Style>
+
+
+    <Style x:Key="BackButtonStyle" TargetType="k:KinectCircleButton" BasedOn="{StaticResource KinectCircleButtons}">
+        <Setter Property="Content" Value="{StaticResource ArrowLeft}"/>
+        <Setter Property="Label" Value="Back"/>
+        <Setter Property="LabelPosition" Value="Bottom"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Foreground" Value="#511C74"/>
+    </Style>
+
+    <Style x:Key="NextButtonStyle" TargetType="k:KinectCircleButton" BasedOn="{StaticResource KinectCircleButtons}">
+        <Setter Property="Content" Value="{StaticResource ArrowRight}"/>
+        <Setter Property="Label" Value="Next"/>
+        <Setter Property="LabelPosition" Value="Bottom"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+    </Style>
+
+    <Style x:Key="UpButtonStyle" TargetType="k:KinectCircleButton" BasedOn="{StaticResource KinectCircleButtons}">
+        <Setter Property="Content" Value="{StaticResource ArrowUp}"/>
+        <Setter Property="Label" Value="Next"/>
+        <Setter Property="LabelPosition" Value="Bottom"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="Foreground" Value="#5A5B5B"/>
+    </Style>
+
+    <Style x:Key="DownButtonStyle" TargetType="k:KinectCircleButton" BasedOn="{StaticResource KinectCircleButtons}">
+        <Setter Property="Content" Value="{StaticResource ArrowDown}"/>
+        <Setter Property="Label" Value="Next"/>
+        <Setter Property="LabelPosition" Value="Bottom"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="Foreground" Value="#5A5B5B"/>
+    </Style>
+
+    <Style x:Key="PlayButtonStyle" TargetType="k:KinectCircleButton" BasedOn="{StaticResource KinectCircleButtons}">
+        <Setter Property="Content" Value="{StaticResource PlayGlyph}"/>
+        <Setter Property="Width" Value="225"/>
+        <Setter Property="Height" Value="225"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="LabelPosition" Value="None"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="ContentPressedForeground" Value="Black" />
+    </Style>
+
+    <Style x:Key="PauseButtonStyle" TargetType="k:KinectCircleButton" BasedOn="{StaticResource KinectCircleButtons}">
+        <Setter Property="Content" Value="{StaticResource PauseGlyph}"/>
+        <Setter Property="Width" Value="225"/>
+        <Setter Property="Height" Value="225"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="LabelPosition" Value="None"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="ContentPressedForeground" Value="Black" />
+    </Style>
+
+    <Style x:Key="ReplayButtonStyle" TargetType="k:KinectCircleButton" BasedOn="{StaticResource KinectCircleButtons}">
+        <Setter Property="Content" Value="{StaticResource ReplayGlyph}"/>
+        <Setter Property="Width" Value="225"/>
+        <Setter Property="Height" Value="225"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="LabelPosition" Value="None"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="ContentPressedForeground" Value="Black" />
+    </Style>
+
+    <Style x:Key="CancelButtonStyle" TargetType="{x:Type k:KinectCircleButton}" BasedOn="{StaticResource KinectCircleButtons}">
+        <Setter Property="Content" Value="{StaticResource XGlyph}"/>
+        <Setter Property="Label" Value="Cancel"/>
+        <Setter Property="LabelPosition" Value="None"/>
+        <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="ContentPressedForeground" Value="Black" />
+    </Style>
+
+</ResourceDictionary>

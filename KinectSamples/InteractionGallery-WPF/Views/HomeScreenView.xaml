@@ -1,0 +1,52 @@
+﻿<UserControl x:Class="Microsoft.Samples.Kinect.InteractionGallery.Views.HomeScreenView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:k="http://schemas.microsoft.com/kinect/2013"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:c="clr-namespace:Microsoft.Samples.Kinect.InteractionGallery.Controls"
+             xmlns:m="clr-namespace:Microsoft.Samples.Kinect.InteractionGallery.Models"
+             xmlns:u="clr-namespace:Microsoft.Samples.Kinect.InteractionGallery.Utilities"
+             HorizontalAlignment="Stretch"
+             VerticalAlignment="Stretch"
+             Background="{StaticResource BackgroundGradientBrush}"
+             u:VisualStateHelper.VisualStateProperty="{Binding VisualStateName}">
+    <Grid>
+        <ContentPresenter Content="{Binding NavigationManager}" />
+
+        <k:KinectItemsControl VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0, 251, 0, 0" MinHeight="660"
+                              Orientation="Horizontal" ItemsSource="{Binding Experiences}" LabelMemberPath="Name" ItemContainerStyle="{StaticResource LargeKinectTileButton}">
+            <u:CommandOnEventHelper.AssociationEntry>
+                <u:CommandOnEventAssociation Command="{Binding ExperienceSelectedCommand}" Event="ItemClick"/>
+            </u:CommandOnEventHelper.AssociationEntry>
+            <k:KinectItemsControl.Template>
+                <!-- Re-template the KinectItemsControl to not have a KinectScrollViewer but keep everything else it has -->
+                <ControlTemplate TargetType="{x:Type ItemsControl}">
+                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+                        <ItemsPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                    </Border>
+                </ControlTemplate>
+            </k:KinectItemsControl.Template>
+            <k:KinectItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Image Source="{Binding ImageUri}" />
+                        <!-- Optional semi-transparent overlay image -->
+                        <Grid Background="#5A5B5B" Opacity="0.8">
+                            <Grid.Style>
+                                <Style TargetType="Grid">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding OverlayImageUri}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
+                            <Image Source="{Binding OverlayImageUri, TargetNullValue={x:Null}}" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="None" Margin="0, 0, 0, 74" />
+                        </Grid>
+                    </Grid>
+                </DataTemplate>
+            </k:KinectItemsControl.ItemTemplate>
+        </k:KinectItemsControl>
+    </Grid>
+</UserControl>

@@ -1,0 +1,13 @@
+﻿<ArticleModel Title="DRAMATIC CLOUDS" xmlns="clr-namespace:Microsoft.Samples.Kinect.InteractionGallery.Models;assembly=InteractionGallery-WPF" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ArticleModel.ImageUris>
+        <x:Uri>pack://application:,,,/Content/ArticleScreen/beach.jpg</x:Uri>
+        <x:Uri>pack://application:,,,/Content/ArticleScreen/clouds.jpg</x:Uri>
+        <x:Uri>pack://application:,,,/Content/ArticleScreen/fireworks.jpg</x:Uri>
+    </ArticleModel.ImageUris>
+    <ArticleModel.Paragraphs>
+        <x:String>The best user experiences are context aware: The interface should adapt as the distance between the user and the Kinect changes. The interface should respond to the number and engagement of users. The placement of controls should be designed based on expected user movements or actions.</x:String>
+        <x:String>Each input method is best at something and worst at something: Users will choose the input which requires the least overall effort for a given scenario. Users tend to stick to a single input when not given a reason to change. Inputs should be reliable, consistent, and convenient, otherwise users will look for alternative options. Switching inputs should happen naturally, or at natural transition points in the scenario.</x:String>
+        <x:String>Confident users are happy users: It is important to keep interactions simple and easy to learn and master. Avoid misinterpreting user intent. To increase confidence, use input combinations such as voice and gesture together. Give constant feedback so users always know what’s happening and what to expect.</x:String>
+        <x:String>The strongest designs come after user testing: Kinect enables a lot of new interactions, but also new challenges. It is especially hard to guess what will work and what will not ahead of time. Sometimes minor adjustments can make a huge difference. User test often and early, and plan time into your schedule for multiple adjustments to your design.</x:String>
+    </ArticleModel.Paragraphs>
+</ArticleModel>

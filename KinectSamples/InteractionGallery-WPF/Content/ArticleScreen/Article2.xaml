@@ -1,0 +1,16 @@
+﻿<ArticleModel Title="DARLING HARBOUR" xmlns="clr-namespace:Microsoft.Samples.Kinect.InteractionGallery.Models;assembly=InteractionGallery-WPF" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ArticleModel.ImageUris>
+        <x:Uri>pack://application:,,,/Content/ArticleScreen/hamlet.jpg</x:Uri>
+        <x:Uri>pack://application:,,,/Content/ArticleScreen/operahouse.jpg</x:Uri>
+        <x:Uri>pack://application:,,,/Content/ArticleScreen/sydney.jpg</x:Uri>
+    </ArticleModel.ImageUris>
+    <ArticleModel.Paragraphs>
+        <x:String>How you setup the environment where your Kinect application is used can make a huge difference in perceived reliability and usability. Controlling as many of the following factors as possible will help make your user experience shine and reduce the likelihood of disrupted interactions. Whenever possible, test your application early and often in the environment in which you plan to use it.</x:String>
+        <x:String>People and Crowds: If the environment you are designing for will have many people moving around the sensor, make sure you use the right tracking mode and design your space so that other people won’t walk between the active user and the Kinect.</x:String>
+        <x:String>Ambient Noise: If you are relying on voice as an input method, keep in mind that the environment should be very quiet for it to be reliable. If you cannot control the noise level of the environment, try having the user interact closer to the sensor. If it is too noisy, voice may not be the right input method.</x:String>
+        <x:String>Screen Size and Resolution: Choose an appropriate display for the distance at which you expect users to interact. Remember that the size of your interface will depend on how far back your users are and what they can comfortably see.</x:String>
+        <x:String>Lighting: Avoid environments that have large amounts of natural light as it will make skeletal tracking less reliable. The depth camera won’t work in direct sunlight or any full spectrum lighting. Dim lighting is fine for depth but will degrade the RGB image quality.</x:String>
+        <x:String>Extra Objects or Clothing: Items that drastically change the shape of a human wearing or holding them may confuse skeletal tracking. Also, items or clothing material that is reflective will interfere with the IR reflection and make skeletal tracking less reliable.</x:String>
+        <x:String>Sensor Placement: When placing the sensor, it is helpful if the camera is directly facing the subjects it expected to track. It is helpful if the sensor can see the floor so it can better orient itself. Avoid extreme tilt angles.</x:String>
+    </ArticleModel.Paragraphs>
+</ArticleModel>

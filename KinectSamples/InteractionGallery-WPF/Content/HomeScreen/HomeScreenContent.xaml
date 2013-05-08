@@ -1,0 +1,34 @@
+﻿<List x:TypeArguments="mskbm:ExperienceOptionModel" xmlns="clr-namespace:System.Collections.Generic;assembly=mscorlib" xmlns:mskbm="clr-namespace:Microsoft.Samples.Kinect.InteractionGallery.Models;assembly=InteractionGallery-WPF" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <mskbm:ExperienceOptionModel 
+        Name="VIDEO" 
+        ImageUri="pack://application:,,,/Content/HomeScreen/01.png"
+        OverlayImageUri="pack://application:,,,/Content/HomeScreen/play-overlay.png"
+        NavigableContextName="Video" 
+        NavigableContextParameter="Content/Videos/K4W.wmv" />
+    <mskbm:ExperienceOptionModel 
+        Name="VIDEO" 
+        ImageUri="pack://application:,,,/Content/HomeScreen/02.png"
+        OverlayImageUri="pack://application:,,,/Content/HomeScreen/play-overlay.png"
+        NavigableContextName="Video" 
+        NavigableContextParameter="Content/Videos/K4W_NISSAN.wmv" />
+    <mskbm:ExperienceOptionModel 
+        Name="PANNABLE MAP" 
+        ImageUri="pack://application:,,,/Content/HomeScreen/03.png"
+        NavigableContextName="PannableContent" 
+        NavigableContextParameter="pack://application:,,,/Content/PannableContentScreen/WorldMap.xaml" />
+    <mskbm:ExperienceOptionModel 
+        Name="ARTICLE" 
+        ImageUri="pack://application:,,,/Content/HomeScreen/04.png" 
+        NavigableContextName="Article" 
+        NavigableContextParameter="pack://application:,,,/Content/ArticleScreen/Article2.xaml" />
+    <mskbm:ExperienceOptionModel 
+        Name="ARTICLE" 
+        ImageUri="pack://application:,,,/Content/HomeScreen/05.png" 
+        NavigableContextName="Article" 
+        NavigableContextParameter="pack://application:,,,/Content/ArticleScreen/Article1.xaml" />
+    <mskbm:ExperienceOptionModel 
+        Name="ARTICLE" 
+        ImageUri="pack://application:,,,/Content/HomeScreen/06.png" 
+        NavigableContextName="Article" 
+        NavigableContextParameter="pack://application:,,,/Content/ArticleScreen/Article2.xaml" />
+</List>

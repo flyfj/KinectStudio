@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="Microsoft.Samples.Kinect.InteractionGallery.Controls.NavigationBanner"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:k="http://schemas.microsoft.com/kinect/2013"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:Height="250"
+             d:DesignWidth="1000">
+    
+    <Grid>
+        <Image Source="/InteractionGallery-WPF;component/Content/Navigation/logo.png" Height="71" Width="178" Margin="75, 85, 0, 0" HorizontalAlignment="Left" VerticalAlignment="Top"
+               Visibility="{Binding CanGoBack, ConverterParameter=False, Converter={StaticResource InvertibleBooleanToVisibilityConverter}}" />
+
+        <k:KinectCircleButton Style="{StaticResource BackButtonStyle}" Margin="45, 45, 0, 0" HorizontalAlignment="Left" VerticalAlignment="Top" LabelPosition="None"
+                Visibility="{Binding CanGoBack, Converter={StaticResource InvertibleBooleanToVisibilityConverter}}"
+                Command="{Binding NavigateBackCommand}">
+            <Grid>
+                <Rectangle Fill="Transparent" Margin="-100 -100 -155 -155"/>
+                <ContentPresenter Content="{StaticResource ArrowLeft}"/>
+            </Grid>
+        </k:KinectCircleButton>
+    </Grid>
+</UserControl>

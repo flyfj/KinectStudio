@@ -61,6 +61,15 @@ namespace Microsoft.Kinect.Toolkit.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Parameter of type {0} not of of expected type {1}.
+        /// </summary>
+        internal static string DelegateCommandCastException {
+            get {
+                return ResourceManager.GetString("DelegateCommandCastException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to All set!.
         /// </summary>
         internal static string MessageAllSet {

@@ -245,9 +245,8 @@ namespace Microsoft.Kinect.Toolkit
         /// <summary>
         /// Determines if the retry command is available
         /// </summary>
-        /// <param name="o">Command parameter</param>
         /// <returns>true if retry is valid, false otherwise</returns>
-        private bool CanRetry(object o)
+        private bool CanRetry()
         {
             // You can retry if another app was using the sensor the last
             // time we tried.  You can also retry if the only problem was
@@ -279,7 +278,7 @@ namespace Microsoft.Kinect.Toolkit
             this.UpdateState();
         }
 
-        private void Retry(object o)
+        private void Retry()
         {
             if (this.KinectSensorChooser != null)
             {

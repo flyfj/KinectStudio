@@ -1,0 +1,5 @@
+﻿<PannableContentModel xmlns="clr-namespace:Microsoft.Samples.Kinect.InteractionGallery.Models;assembly=InteractionGallery-WPF" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <PannableContentModel.ImageUri>
+        <x:Uri>pack://application:,,,/Content/PannableContentScreen/PannableMapImage.jpg</x:Uri>
+    </PannableContentModel.ImageUri>
+</PannableContentModel>

@@ -1,0 +1,128 @@
+﻿<UserControl x:Class="Microsoft.Samples.Kinect.InteractionGallery.Views.ArticleView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:k="http://schemas.microsoft.com/kinect/2013"
+             xmlns:u="clr-namespace:Microsoft.Samples.Kinect.InteractionGallery.Utilities"
+             xmlns:controls="clr-namespace:Microsoft.Samples.Kinect.InteractionGallery.Controls"
+             Name="ArticleViewControl"
+             mc:Ignorable="d" 
+             HorizontalAlignment="Stretch"
+             VerticalAlignment="Stretch"
+             Background="{StaticResource BackgroundGradientBrush}"
+             u:VisualStateHelper.VisualStateProperty="{Binding VisualStateName}">
+
+    <UserControl.Resources>
+        <Style TargetType="{x:Type k:KinectTileButton}" 
+           BasedOn="{StaticResource {x:Type k:KinectTileButton}}" 
+           x:Key="KinectTileButton390X219">
+            <Setter Property="Width" Value="390" />
+            <Setter Property="Height" Value="219" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <ContentPresenter Content="{Binding NavigationManager}" />
+
+        <Grid Margin="50, 180, 50, 0" HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="165"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="75"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Foreground="#5A5B5B" FontFamily="Segoe UI" FontWeight="Light" FontSize="50" TextWrapping="Wrap" Text="{Binding Title,FallbackValue=Title}" HorizontalAlignment="Left" Margin="0, 0, 0, 60" />
+
+            <k:KinectItemsControl Grid.Row="1" ItemsSource="{Binding Images}" HorizontalAlignment="Left" Margin="0, 0, 0, 30" 
+                                  ItemContainerStyle="{StaticResource KinectTileButton390X219}"
+                                  ItemClick="OnDisplayFullImage">
+                <k:KinectItemsControl.Template>
+                    <!-- Re-template the KinectItemsControl to not have a KinectScrollViewer but keep everything else it has -->
+                    <ControlTemplate TargetType="{x:Type ItemsControl}">
+                        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+                            <ItemsPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        </Border>
+                    </ControlTemplate>
+                </k:KinectItemsControl.Template>
+                <k:KinectItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Image Source="{Binding}" Width="390" Height="219" />
+                    </DataTemplate>
+                </k:KinectItemsControl.ItemTemplate>
+                <k:KinectItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical" />
+                    </ItemsPanelTemplate>
+                </k:KinectItemsControl.ItemsPanel>
+            </k:KinectItemsControl>
+
+            <k:KinectScrollViewer Name="ArticleScrollViewer" Grid.Row="1" Grid.Column="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible" ContentMargin="0" MinWidth="220" HoverBackground="#110000FF">
+                <ItemsControl ItemsSource="{Binding Paragraphs}" HorizontalAlignment="Left">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Foreground="#989898" FontFamily="Segoe UI" FontWeight="Regular" FontSize="30" 
+                                       TextWrapping="Wrap" Text="{Binding}" Margin="0, 0, 0, 20" Padding="10, 0, 20, 0" MinWidth="200" MaxWidth="945" TextAlignment="Justify" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Vertical" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </k:KinectScrollViewer>
+            
+        </Grid>
+
+        <Grid Name="OverlayGrid" Visibility="Hidden">
+            <Grid.Background>
+                <SolidColorBrush Color="#5A5B5B" Opacity="0.8"></SolidColorBrush>
+            </Grid.Background>
+
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup x:Name="TransitionStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="FadeIn">
+                        <Storyboard>
+                            <DoubleAnimation From="0" To="1" Storyboard.TargetProperty="Opacity" Duration="0:0:0.5"></DoubleAnimation>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility">
+                                <DiscreteObjectKeyFrame KeyTime="0:0:0">
+                                    <DiscreteObjectKeyFrame.Value>
+                                        <Visibility>Visible</Visibility>
+                                    </DiscreteObjectKeyFrame.Value>
+                                </DiscreteObjectKeyFrame>
+                            </ObjectAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </VisualState>
+                    <VisualState x:Name="FadeOut">
+                        <Storyboard>
+                            <DoubleAnimation From="1" To="0" Storyboard.TargetProperty="Opacity" Duration="0:0:0.5"></DoubleAnimation>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility">
+                                <DiscreteObjectKeyFrame KeyTime="0:0:0.5">
+                                    <DiscreteObjectKeyFrame.Value>
+                                        <Visibility>Hidden</Visibility>
+                                    </DiscreteObjectKeyFrame.Value>
+                                </DiscreteObjectKeyFrame>
+                            </ObjectAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+            <Viewbox MaxHeight="720" MaxWidth="1280" Margin="60 60 60 60">
+                <Canvas Width="1280" Height="720">
+                    <Border BorderThickness="3" BorderBrush="White" Width="1280" Height="720">
+                        <Image Source="{Binding ElementName=ArticleViewControl, Path=SelectedImage}"></Image>
+                    </Border>
+                    <k:KinectCircleButton Style="{StaticResource CancelButtonStyle}" Canvas.Right="-153" Canvas.Top="-153" 
+                            Foreground="White" Height="200" Width="200" Click="OnCloseFullImage" />
+                </Canvas>
+            </Viewbox>
+        </Grid>
+    </Grid>
+</UserControl>

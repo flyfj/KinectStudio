@@ -1,0 +1,275 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2E073D57-EA4E-496D-A22F-DA2E1961262C}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Samples.Kinect.InteractionGallery</RootNamespace>
+    <AssemblyName>InteractionGallery-WPF</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <Optimize>false</Optimize>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Kinect">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(KINECTSDK10_DIR)\Assemblies\Microsoft.Kinect.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="Controls\NavigationBanner.xaml.cs">
+      <DependentUpon>NavigationBanner.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PromptControl.cs" />
+    <Compile Include="Controls\TransitioningContentControl.cs" />
+    <Compile Include="Controls\VideoPlayer.cs" />
+    <Compile Include="Converters\InvertibleBooleanToPromptStateConverter.cs" />
+    <Compile Include="Converters\InvertibleBooleanToVisibilityConverter.cs" />
+    <Compile Include="Converters\MultiplicationConverter.cs" />
+    <Compile Include="Converters\NegationConverter.cs" />
+    <Compile Include="Models\ArticleModel.cs" />
+    <Compile Include="Models\ExperienceOptionModel.cs" />
+    <Compile Include="Models\PannableContentModel.cs" />
+    <Compile Include="Navigation\ExportNavigableAttribute.cs" />
+    <Compile Include="Navigation\IExportNavigableMetadata.cs" />
+    <Compile Include="Navigation\INavigableContext.cs" />
+    <Compile Include="Navigation\DefaultNavigableContexts.cs" />
+    <Compile Include="Navigation\NavigationManager.cs" />
+    <Compile Include="Utilities\CommandOnEventAssociation.cs" />
+    <Compile Include="Utilities\CommandOnEventHelper.cs" />
+    <Compile Include="Utilities\EngagementStateManager.cs" />
+    <Compile Include="Utilities\EventQueueSection.cs" />
+    <Compile Include="Utilities\MouseMovementDetector.cs" />
+    <Compile Include="Utilities\NavigationHelper.cs" />
+    <Compile Include="Utilities\WindowBezelHelper.cs" />
+    <Compile Include="Utilities\PackUriHelper.cs" />
+    <Compile Include="Utilities\PromptState.cs" />
+    <Compile Include="Utilities\UserActivityMeter.cs" />
+    <Compile Include="Utilities\UserActivityRecord.cs" />
+    <Compile Include="Utilities\VisualStateHelper.cs" />
+    <Compile Include="ViewModels\ArticleViewModel.cs" />
+    <Compile Include="ViewModels\HomeScreenViewModel.cs" />
+    <Compile Include="ViewModels\KinectController.cs" />
+    <Compile Include="ViewModels\AttractScreenViewModel.cs" />
+    <Compile Include="ViewModels\PannableContentViewModel.cs" />
+    <Compile Include="ViewModels\VideoViewModel.cs" />
+    <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Compile Include="Views\ArticleView.xaml.cs">
+      <DependentUpon>ArticleView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AttractScreenView.xaml.cs">
+      <DependentUpon>AttractScreenView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\HomeScreenView.xaml.cs">
+      <DependentUpon>HomeScreenView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PannableContentView.xaml.cs">
+      <DependentUpon>PannableContentView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\VideoView.xaml.cs">
+      <DependentUpon>VideoView.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Common\StandardStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Resource Include="Content\PannableContentScreen\WorldMap.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Page Include="Controls\KinectButtonStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\PromptControlStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\VideoPlayerStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PannableContentView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\VideoView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Resource Include="Content\HomeScreen\HomeScreenContent.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Content\ArticleScreen\Article1.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Content\ArticleScreen\Article2.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Page Include="Controls\NavigationBanner.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ViewDataTemplate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ArticleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AttractScreenView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\HomeScreenView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Resource Include="Content\AttractScreen\AttractScreenContent.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Page Include="Controls\TransitioningContentControlStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Models\AttractImageModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Kinect.Toolkit.Controls\Microsoft.Kinect.Toolkit.Controls.csproj">
+      <Project>{4508C4D1-85BB-4F3F-9E3B-CC93D231C65D}</Project>
+      <Name>Microsoft.Kinect.Toolkit.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Microsoft.Kinect.Toolkit\Microsoft.Kinect.Toolkit.csproj">
+      <Project>{C6F9C31B-6130-4443-A5CC-EF0664552ECD}</Project>
+      <Name>Microsoft.Kinect.Toolkit</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Content\Navigation\logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Content\AttractScreen\bridge.png" />
+    <Resource Include="Content\AttractScreen\flower.png" />
+    <Resource Include="Content\AttractScreen\hall.png" />
+    <Resource Include="Content\AttractScreen\palmtree.png" />
+    <Resource Include="Content\AttractScreen\sunset.png" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Icon.ico" />
+    <Resource Include="Content\Navigation\button-enter.wav" />
+    <Resource Include="Content\Navigation\button-select.wav" />
+    <Resource Include="Content\HomeScreen\01.png" />
+    <Resource Include="Content\HomeScreen\02.png" />
+    <Resource Include="Content\HomeScreen\03.png" />
+    <Resource Include="Content\HomeScreen\04.png" />
+    <Resource Include="Content\HomeScreen\05.png" />
+    <Resource Include="Content\HomeScreen\06.png" />
+    <Resource Include="Content\HomeScreen\play-overlay.png" />
+	<Resource Include="Content\PannableContentScreen\PannableMapImage.jpg" />
+    <Content Include="Content\Videos\K4W.wmv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Videos\K4W_NISSAN.wmv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Content\ArticleScreen\beach.jpg" />
+    <Resource Include="Content\ArticleScreen\clouds.jpg" />
+    <Resource Include="Content\ArticleScreen\fireworks.jpg" />
+    <Resource Include="Content\ArticleScreen\hamlet.jpg" />
+    <Resource Include="Content\ArticleScreen\operahouse.jpg" />
+    <Resource Include="Content\ArticleScreen\sydney.jpg" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

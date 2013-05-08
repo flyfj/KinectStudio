@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="Microsoft.Samples.Kinect.InteractionGallery.Views.VideoView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:k="http://schemas.microsoft.com/kinect/2013"
+             xmlns:c="clr-namespace:Microsoft.Samples.Kinect.InteractionGallery.Controls"
+             xmlns:u="clr-namespace:Microsoft.Samples.Kinect.InteractionGallery.Utilities"
+             HorizontalAlignment="Stretch"
+             VerticalAlignment="Stretch"
+             Background="{StaticResource BackgroundGradientBrush}"
+             u:VisualStateHelper.VisualStateProperty="{Binding VisualStateName}">
+
+    <Grid Background="Black">
+        <c:VideoPlayer Source="{Binding Video}" IsPlaying="{Binding CanPause}" ShowProgressBar="{Binding IsUserInteracting}"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <u:CommandOnEventHelper.AssociationEntry>
+                <u:CommandOnEventAssociation Command="{Binding VideoResetNotification}" Event="VideoEnded"/>
+            </u:CommandOnEventHelper.AssociationEntry>
+        </c:VideoPlayer>
+
+        <Grid Visibility="{Binding IsUserInteracting, Converter={StaticResource InvertibleBooleanToVisibilityConverter}}">
+            <ContentPresenter Content="{Binding NavigationManager}" VerticalAlignment="Top" />
+
+            <k:KinectCircleButton Style="{StaticResource PlayButtonStyle}" Visibility="{Binding CanResume, Converter={StaticResource InvertibleBooleanToVisibilityConverter}}"
+                        Command="{Binding PlayCommand}"/>
+
+            <k:KinectCircleButton Style="{StaticResource PauseButtonStyle}" Visibility="{Binding CanPause, Converter={StaticResource InvertibleBooleanToVisibilityConverter}}"
+                        Command="{Binding PauseCommand}"/>
+
+            <k:KinectCircleButton Style="{StaticResource ReplayButtonStyle}" Visibility="{Binding CanReplay, Converter={StaticResource InvertibleBooleanToVisibilityConverter}}"
+                        Command="{Binding PlayCommand}"/>
+        </Grid>
+    </Grid>
+</UserControl>
+

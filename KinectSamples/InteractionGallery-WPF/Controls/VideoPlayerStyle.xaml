@@ -1,0 +1,55 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Microsoft.Samples.Kinect.InteractionGallery.Controls">
+
+    <Style TargetType="controls:VideoPlayer">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:VideoPlayer">
+                    <Grid>
+                        <MediaElement x:Name="MediaElementSite" LoadedBehavior="Manual" ScrubbingEnabled="True" />
+
+                        <Grid VerticalAlignment="Bottom" Margin="100, 0, 100, 75" Visibility="{TemplateBinding ShowProgressBar, Converter={StaticResource InvertibleBooleanToVisibilityConverter}}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock x:Name="CurrentProgressSite" Grid.Column="0" VerticalAlignment="Center" Margin="0, 0, 0, 5"
+                                       FontFamily="Segoe UI" FontSize="24" FontWeight="Regular" Foreground="White">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect BlurRadius="5" ShadowDepth="0" Color="Black" />
+                                </TextBlock.Effect>
+                            </TextBlock>
+
+                            <ProgressBar x:Name="VideoProgressBarSite" Grid.Column="1" Margin="15, 0, 15, 0">
+                                <ProgressBar.Template>
+                                    <ControlTemplate TargetType="{x:Type ProgressBar}">
+                                        <Grid>
+                                            <Rectangle Name="PART_Track" Fill="White" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                                                <Rectangle.Effect>
+                                                    <DropShadowEffect BlurRadius="5" ShadowDepth="0" Color="Black" />
+                                                </Rectangle.Effect>
+                                            </Rectangle>
+                                                
+                                            <Rectangle Name="PART_Indicator" Height="17" Fill="#989898" HorizontalAlignment="Left" />
+                                        </Grid>
+                                    </ControlTemplate>
+                                </ProgressBar.Template>
+                            </ProgressBar>
+
+                            <TextBlock x:Name="DurationSite" Grid.Column="2" VerticalAlignment="Center" Margin="0, 0, 0, 5"
+                                       FontFamily="Segoe UI" FontSize="24" FontWeight="Regular" Foreground="White">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect BlurRadius="5" ShadowDepth="0" Color="Black" />
+                                </TextBlock.Effect>
+                            </TextBlock>
+                        </Grid>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

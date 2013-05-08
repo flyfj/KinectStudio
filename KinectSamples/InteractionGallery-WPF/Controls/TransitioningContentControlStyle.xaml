@@ -1,0 +1,84 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Microsoft.Samples.Kinect.InteractionGallery.Controls">
+
+    <Style TargetType="controls:TransitioningContentControl">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:TransitioningContentControl">
+                    <Grid>
+                        <Grid.Resources>
+                            <Storyboard x:Key="SlideStoryboard">
+                                <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="CurrentContentPresentationSite" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)">
+                                    <EasingDoubleKeyFrame KeyTime="00:00:00" Value="{Binding Path=ActualWidth, ElementName=CurrentContentPresentationSite}"/>
+                                    <EasingDoubleKeyFrame KeyTime="00:00:01.000" Value="0">
+                                        <EasingDoubleKeyFrame.EasingFunction>
+                                            <ExponentialEase EasingMode="EaseInOut" Exponent="2.0"/>
+                                        </EasingDoubleKeyFrame.EasingFunction>
+                                    </EasingDoubleKeyFrame>
+                                </DoubleAnimationUsingKeyFrames>
+
+                                <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="PreviousContentPresentationSite" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)">
+                                    <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                                    <EasingDoubleKeyFrame KeyTime="00:00:01.000" Value="{Binding ActualWidth, ElementName=PreviousContentPresentationSite, Converter={StaticResource NegationConverter}}">
+                                        <EasingDoubleKeyFrame.EasingFunction>
+                                            <ExponentialEase EasingMode="EaseInOut" Exponent="2.0"/>
+                                        </EasingDoubleKeyFrame.EasingFunction>
+                                    </EasingDoubleKeyFrame>
+                                </DoubleAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </Grid.Resources>
+                        
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="TransitionStates">
+                                <VisualState x:Name="Normal" />
+
+                                <VisualState x:Name="Fade">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="CurrentContentPresentationSite" 
+                                                                        Storyboard.TargetProperty="(UIElement.Opacity)">
+                                            <SplineDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                                            <SplineDoubleKeyFrame KeyTime="00:00:01.000" Value="1"/>
+                                        </DoubleAnimationUsingKeyFrames>
+                                        
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="PreviousContentPresentationSite" 
+                                                                        Storyboard.TargetProperty="(UIElement.Opacity)">
+                                            <SplineDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+                                            <SplineDoubleKeyFrame KeyTime="00:00:01.000" Value="0"/>
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+
+                                <VisualState x:Name="SlideLeft" />
+                                
+                                <VisualStateGroup.Transitions>
+                                    <!-- Storyboards inside a ContentTemplate must be freezable and thus contain no bindings. Work around by using a static resource -->
+                                    <VisualTransition From="Normal" To="SlideLeft" Storyboard="{StaticResource SlideStoryboard}" />
+                                </VisualStateGroup.Transitions>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        
+                        <ContentPresenter
+                            x:Name="PreviousContentPresentationSite"
+                            Content="{x:Null}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}">
+                            <ContentPresenter.RenderTransform>
+                                <TranslateTransform/>
+                            </ContentPresenter.RenderTransform>
+                        </ContentPresenter>
+
+                        <ContentPresenter 
+                            x:Name="CurrentContentPresentationSite"
+                            Content="{x:Null}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}">
+                            <ContentPresenter.RenderTransform>
+                                <TranslateTransform/>
+                            </ContentPresenter.RenderTransform>
+                        </ContentPresenter>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

@@ -4,6 +4,7 @@ using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Markup;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
@@ -35,4 +36,6 @@ using System.Windows;
 
 [assembly: NeutralResourcesLanguageAttribute("en-US")]
 [assembly: CLSCompliant(true)]
-[assembly: AssemblyVersion("1.6.0.0")]
+[assembly: AssemblyVersion("1.7.0.0")]
+[assembly: XmlnsDefinition("http://schemas.microsoft.com/kinect/2013", "Microsoft.Kinect.Toolkit")]
+[assembly: XmlnsPrefix("http://schemas.microsoft.com/kinect/2013", "k")]

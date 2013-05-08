@@ -1,0 +1,30 @@
+﻿<Application x:Class="Microsoft.Samples.Kinect.InteractionGallery.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:Microsoft.Samples.Kinect.InteractionGallery.Converters">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <converters:NegationConverter x:Key="NegationConverter" />
+                    <converters:InvertibleBooleanToVisibilityConverter x:Key="InvertibleBooleanToVisibilityConverter" />
+                    <converters:MultiplicationConverter x:Key="MultiplicationConverter" />
+                    <converters:InvertibleBooleanToPromptStateConverter x:Key="InvertibleBooleanToPromptStateConverter" />
+                    <ExponentialEase x:Key="ExponentialEasingFunction" EasingMode="EaseInOut" Exponent="2.0"/>
+                    <LinearGradientBrush x:Key="BackgroundGradientBrush" StartPoint="0, 0.5" EndPoint="1, 0.5">
+                        <GradientStop Color="#E6E6E6" Offset="0.0" />
+                        <GradientStop Color="#FFFFFF" Offset="0.5" />
+                        <GradientStop Color="#E6E6E6" Offset="1.0" />
+                    </LinearGradientBrush>
+                    <SolidColorBrush x:Key="KinectPurpleBrush" Color="#FF511C74"/>
+                </ResourceDictionary>
+                <ResourceDictionary Source="ViewDataTemplate.xaml" />
+                <ResourceDictionary Source="Common/StandardStyles.xaml"/>
+                <ResourceDictionary Source="Controls/KinectButtonStyles.xaml" />
+                <ResourceDictionary Source="Controls/PromptControlStyles.xaml" />
+                <ResourceDictionary Source="Controls/TransitioningContentControlStyle.xaml" />
+                <ResourceDictionary Source="Controls/VideoPlayerStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
