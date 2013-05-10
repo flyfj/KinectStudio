@@ -377,10 +377,15 @@ namespace KinectMotionAnalyzer.UI
             if (this.isCheckingMatching)
             {
                 int cur_frame_id = (int)queryVideoSlider.Value;
-
-                // show matched target frame
                 int target_id = actionRecognizer.GetMatchingTargetFrame(cur_frame_id);
 
+                // overlay target skeleton on query skeleton
+                Skeleton[] skes = new Skeleton[2];
+                skes[0] = query_skeleton_rec_buffer[cur_frame_id];
+                skes[1] = target_skeleton_rec_buffer[target_id];
+                query_kinect_data_manager.UpdateSkeletonData(skes);
+
+                // show matched target frame
                 //if (triggerVideoCheckBox.IsChecked.Value)
                     target_kinect_data_manager.UpdateColorData(target_color_frame_rec_buffer[target_id], 640, 480);
                 target_kinect_data_manager.UpdateSkeletonData(target_skeleton_rec_buffer[target_id]);

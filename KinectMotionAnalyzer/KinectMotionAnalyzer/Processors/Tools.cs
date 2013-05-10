@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Kinect;
 using System.Windows.Media.Media3D;
 using KinectMotionAnalyzer.Model;
+using System.Windows;
 
 
 namespace KinectMotionAnalyzer.Processors
@@ -110,6 +111,45 @@ namespace KinectMotionAnalyzer.Processors
             //}
 
             return true;
+        }
+
+        static public void AlignSkeletons(Skeleton inputSke, Skeleton targetSke)
+        {
+            // align input to target
+            
+            // get input scale
+            Point shoulderRight = new Point(
+                inputSke.Joints[JointType.ShoulderRight].Position.X,
+                inputSke.Joints[JointType.ShoulderRight].Position.Y);
+            Point shoulderLeft = new Point(
+                inputSke.Joints[JointType.ShoulderLeft].Position.X,
+                inputSke.Joints[JointType.ShoulderLeft].Position.Y);
+            double inputShoulderDist =
+               Math.Sqrt(Math.Pow((shoulderLeft.X - shoulderRight.X), 2) +
+                         Math.Pow((shoulderLeft.Y - shoulderRight.Y), 2));
+
+            // get target scale
+            shoulderRight = new Point(
+                targetSke.Joints[JointType.ShoulderRight].Position.X,
+                targetSke.Joints[JointType.ShoulderRight].Position.Y);
+            shoulderLeft = new Point(
+                targetSke.Joints[JointType.ShoulderLeft].Position.X,
+                targetSke.Joints[JointType.ShoulderLeft].Position.Y);
+            double targetShoulderDist =
+               Math.Sqrt(Math.Pow((shoulderLeft.X - shoulderRight.X), 2) +
+                         Math.Pow((shoulderLeft.Y - shoulderRight.Y), 2));
+
+            // Center the data
+            var center = new Point(
+                targetSke.Joints[JointType.ShoulderCenter].Position.X,
+                targetSke.Joints[JointType.ShoulderCenter].Position.Y);
+            for (int k = 0; k < pts.Count; k++)
+                pts[k] = new Point(pts[k].X - center.X, pts[k].Y - center.Y);
+
+            // Normalization of the coordinates
+           
+            for (int k = 0; k < pts.Count; k++)
+                pts[k] = new Point(pts[k].X / shoulderDist, pts[k].Y / shoulderDist);
         }
     }
 }
