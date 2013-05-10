@@ -113,43 +113,80 @@ namespace KinectMotionAnalyzer.Processors
             return true;
         }
 
-        static public void AlignSkeletons(Skeleton inputSke, Skeleton targetSke)
+        // 
+        static public Skeleton AlignSkeletons(Skeleton inputSke, Skeleton targetSke)
         {
             // align input to target
-            
+            Skeleton alignedInput = new Skeleton();
+
             // get input scale
-            Point shoulderRight = new Point(
+            Point3D shoulderRight = new Point3D(
                 inputSke.Joints[JointType.ShoulderRight].Position.X,
-                inputSke.Joints[JointType.ShoulderRight].Position.Y);
-            Point shoulderLeft = new Point(
+                inputSke.Joints[JointType.ShoulderRight].Position.Y,
+                inputSke.Joints[JointType.ShoulderRight].Position.Z);
+            Point3D shoulderLeft = new Point3D(
                 inputSke.Joints[JointType.ShoulderLeft].Position.X,
-                inputSke.Joints[JointType.ShoulderLeft].Position.Y);
-            double inputShoulderDist =
-               Math.Sqrt(Math.Pow((shoulderLeft.X - shoulderRight.X), 2) +
-                         Math.Pow((shoulderLeft.Y - shoulderRight.Y), 2));
+                inputSke.Joints[JointType.ShoulderLeft].Position.Y,
+                inputSke.Joints[JointType.ShoulderLeft].Position.Z);
+            float inputShoulderDist =
+               (float)Math.Sqrt(
+                        Math.Pow((shoulderLeft.X - shoulderRight.X), 2) +
+                         Math.Pow((shoulderLeft.Y - shoulderRight.Y), 2) +
+                         Math.Pow((shoulderLeft.Z - shoulderRight.Z), 2)
+                         );
 
             // get target scale
-            shoulderRight = new Point(
+            shoulderRight = new Point3D(
                 targetSke.Joints[JointType.ShoulderRight].Position.X,
-                targetSke.Joints[JointType.ShoulderRight].Position.Y);
-            shoulderLeft = new Point(
+                targetSke.Joints[JointType.ShoulderRight].Position.Y,
+                targetSke.Joints[JointType.ShoulderRight].Position.Z);
+            shoulderLeft = new Point3D(
                 targetSke.Joints[JointType.ShoulderLeft].Position.X,
-                targetSke.Joints[JointType.ShoulderLeft].Position.Y);
-            double targetShoulderDist =
-               Math.Sqrt(Math.Pow((shoulderLeft.X - shoulderRight.X), 2) +
-                         Math.Pow((shoulderLeft.Y - shoulderRight.Y), 2));
+                targetSke.Joints[JointType.ShoulderLeft].Position.Y,
+                targetSke.Joints[JointType.ShoulderLeft].Position.Z);
+            float targetShoulderDist =
+               (float)Math.Sqrt(
+                        Math.Pow((shoulderLeft.X - shoulderRight.X), 2) +
+                         Math.Pow((shoulderLeft.Y - shoulderRight.Y), 2) +
+                         Math.Pow((shoulderLeft.Z - shoulderRight.Z), 2)
+                         );
+     
+            var inputCenter = new Point3D(
+                inputSke.Joints[JointType.ShoulderCenter].Position.X,
+                inputSke.Joints[JointType.ShoulderCenter].Position.Y,
+                inputSke.Joints[JointType.ShoulderCenter].Position.Z);
 
-            // Center the data
-            var center = new Point(
+            var targetCenter = new Point3D(
                 targetSke.Joints[JointType.ShoulderCenter].Position.X,
-                targetSke.Joints[JointType.ShoulderCenter].Position.Y);
-            for (int k = 0; k < pts.Count; k++)
-                pts[k] = new Point(pts[k].X - center.X, pts[k].Y - center.Y);
+                targetSke.Joints[JointType.ShoulderCenter].Position.Y,
+                targetSke.Joints[JointType.ShoulderCenter].Position.Z);
 
-            // Normalization of the coordinates
-           
-            for (int k = 0; k < pts.Count; k++)
-                pts[k] = new Point(pts[k].X / shoulderDist, pts[k].Y / shoulderDist);
+            // align
+            foreach (Joint curjoint in inputSke.Joints)
+            {
+                Joint newjoint = new Joint();
+                SkeletonPoint newPoint = new SkeletonPoint();
+                newPoint.X = curjoint.Position.X - (float)inputCenter.X;
+                newPoint.Y = curjoint.Position.Y - (float)inputCenter.Y;
+                newPoint.Z = curjoint.Position.Z - (float)inputCenter.Z;
+                // normalize scaling
+                newPoint.X /= inputShoulderDist;
+                newPoint.Y /= inputShoulderDist;
+                newPoint.Z /= inputShoulderDist;
+                // scale to target
+                newPoint.X *= targetShoulderDist;
+                newPoint.Y *= targetShoulderDist;
+                newPoint.Z *= targetShoulderDist;
+                // move to target center
+                newPoint.X += (float)targetCenter.X;
+                newPoint.Y += (float)targetCenter.Y;
+                newPoint.Z += (float)targetCenter.Z;
+
+                newjoint.Position = newPoint;
+                alignedInput.Joints[curjoint.JointType] = newjoint;
+            }
+
+            return alignedInput;
         }
     }
 }

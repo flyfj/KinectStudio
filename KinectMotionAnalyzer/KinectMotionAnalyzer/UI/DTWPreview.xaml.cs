@@ -366,7 +366,7 @@ namespace KinectMotionAnalyzer.UI
                 if (query_skeleton_rec_buffer.Count > cur_frame_id && query_color_frame_rec_buffer.Count > cur_frame_id)
                 {
                     //if (triggerVideoCheckBox.IsChecked.Value)
-                        query_kinect_data_manager.UpdateColorData(query_color_frame_rec_buffer[cur_frame_id], 640, 480);
+                    query_kinect_data_manager.UpdateColorData(query_color_frame_rec_buffer[cur_frame_id], 640, 480);
                     query_kinect_data_manager.UpdateSkeletonData(query_skeleton_rec_buffer[cur_frame_id]);
 
                     // update label
@@ -381,14 +381,15 @@ namespace KinectMotionAnalyzer.UI
 
                 // overlay target skeleton on query skeleton
                 Skeleton[] skes = new Skeleton[2];
-                skes[0] = query_skeleton_rec_buffer[cur_frame_id];
+                skes[0] = Tools.AlignSkeletons(
+                    query_skeleton_rec_buffer[cur_frame_id], 
+                    target_skeleton_rec_buffer[target_id]);
                 skes[1] = target_skeleton_rec_buffer[target_id];
-                query_kinect_data_manager.UpdateSkeletonData(skes);
 
                 // show matched target frame
                 //if (triggerVideoCheckBox.IsChecked.Value)
-                    target_kinect_data_manager.UpdateColorData(target_color_frame_rec_buffer[target_id], 640, 480);
-                target_kinect_data_manager.UpdateSkeletonData(target_skeleton_rec_buffer[target_id]);
+                target_kinect_data_manager.UpdateColorData(target_color_frame_rec_buffer[target_id], 640, 480);
+                target_kinect_data_manager.UpdateSkeletonData(skes);
 
                 // update label
                 queryVideoSliderLabel.Content = queryVideoSlider.Value.ToString();
