@@ -1,0 +1,200 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:k="http://schemas.microsoft.com/kinect/2013"
+                    >
+
+
+    <!--Paths and styles for the KinectCircleButtons-->
+    <PathGeometry x:Key="LeftFacingArrowGeometry">
+        M182.5703,143.3564L182.5703,155.3564L142.5703,155.3564C148.2363,161.3564,153.9043,167.3564,159.5703,173.3564L143.5703,173.3564L120.4803,149.3564L144.5703,
+        125.3564L160.7373,125.3564L142.5703,143.3564z
+    </PathGeometry>
+    <PathGeometry x:Key="PlayGlyphGeometry">
+        F1M134.9404,128L173.4494,150L134.9404,172z
+    </PathGeometry>
+    <PathGeometry x:Key="PauseGlyphGeometry">
+        F1M166.4922,169.2256C166.4922,169.5996,166.4242,169.9546,166.2812,170.2906C166.1422,170.6276,165.9452,170.9216,165.6932,171.1746C165.4412,171.4266,165.1462,171.6266,
+        164.8102,171.7766C164.4742,171.9266,164.1192,171.9996,163.7482,171.9996L158.2522,171.9996C157.8812,171.9996,157.5252,171.9266,157.1892,171.7766C156.8532,171.6266,
+        156.5582,171.4266,156.3062,171.1746C156.0542,170.9216,155.8572,170.6276,155.7172,170.2906C155.5762,169.9546,155.5082,169.5996,155.5082,169.2256L155.5082,
+        130.7746C155.5082,130.4006,155.5762,130.0456,155.7172,129.7096C155.8572,129.3726,156.0542,129.0796,156.3062,128.8266C156.5582,128.5746,156.8532,128.3746,157.1892,
+        128.2246C157.5252,128.0746,157.8812,127.9996,158.2522,127.9996L163.7482,127.9996C164.1192,127.9996,164.4742,128.0746,164.8102,128.2246C165.1462,128.3746,165.4412,
+        128.5746,165.6932,128.8266C165.9452,129.0796,166.1422,129.3726,166.2812,129.7096C166.4242,130.0456,166.4922,130.4006,166.4922,130.7746z M144.4942,169.2256C144.4942,
+        169.5996,144.4232,169.9546,144.2832,170.2906C144.1422,170.6276,143.9472,170.9216,143.6952,171.1746C143.4422,171.4266,143.1482,171.6266,142.8122,171.7766C142.4752,
+        171.9266,142.1212,171.9996,141.7472,171.9996L136.2252,171.9996C135.8512,171.9996,135.5022,171.9266,135.1752,171.7766C134.8472,171.6266,134.5582,171.4266,134.3062,
+        171.1746C134.0542,170.9216,133.8572,170.6276,133.7182,170.2906C133.5772,169.9546,133.5082,169.5996,133.5082,169.2256L133.5082,130.7746C133.5082,130.4006,133.5772,
+        130.0456,133.7182,129.7096C133.8572,129.3726,134.0542,129.0796,134.3062,128.8266C134.5582,128.5746,134.8472,128.3746,135.1752,128.2246C135.5022,128.0746,135.8512,
+        127.9996,136.2252,127.9996L141.7472,127.9996C142.1212,127.9996,142.4752,128.0746,142.8122,128.2246C143.1482,128.3746,143.4422,128.5746,143.6952,128.8266C143.9472,
+        129.0796,144.1422,129.3726,144.2832,129.7096C144.4232,130.0456,144.4942,130.4006,144.4942,130.7746z
+    </PathGeometry>
+    <PathGeometry x:Key="SkipBackGlyphGeometry">
+        F1M170.627,166.4785L143.133,149.9995L170.627,133.4925z M129.373,130.7745C129.373,130.4005,129.448,130.0445,129.597,129.7085C129.747,129.3735,129.948,129.0785,130.2,
+        128.8265C130.452,128.5745,130.747,128.3745,131.083,128.2235C131.419,128.0745,131.774,127.9995,132.148,127.9995L134.866,127.9995C135.24,127.9995,135.595,128.0745,
+        135.931,128.2235C136.267,128.3745,136.562,128.5745,136.814,128.8265C137.066,129.0785,137.263,129.3735,137.402,129.7085C137.543,130.0445,137.612,130.4005,137.612,
+        130.7745L137.612,169.2245C137.612,169.5985,137.543,169.9535,137.402,170.2905C137.263,170.6255,137.066,170.9195,136.814,171.1725C136.562,171.4245,136.267,171.6255,
+        135.931,171.7755C135.595,171.9245,135.24,171.9995,134.866,171.9995L132.148,171.9995C131.774,171.9995,131.419,171.9245,131.083,171.7755C130.747,171.6255,130.452,
+        171.4245,130.2,171.1725C129.948,170.9195,129.747,170.6255,129.597,170.2905C129.448,169.9535,129.373,169.5985,129.373,169.2245z
+    </PathGeometry>
+    <PathGeometry x:Key="SkipNextGlyphGeometry">
+        F1M129.373,133.4922L156.867,149.9992L129.373,166.4782z M170.627,169.2242C170.627,169.5982,170.553,169.9532,170.402,170.2902C170.254,170.6262,170.053,170.9202,169.8,
+        171.1732C169.548,171.4252,169.254,171.6262,168.917,171.7752C168.581,171.9252,168.227,172.0002,167.852,172.0002L165.134,172.0002C164.76,172.0002,164.405,171.9252,
+        164.068,171.7752C163.732,171.6262,163.438,171.4252,163.186,171.1732C162.934,170.9202,162.737,170.6262,162.598,170.2902C162.457,169.9532,162.388,169.5982,162.388,
+        169.2242L162.388,130.7742C162.388,130.4002,162.457,130.0452,162.598,129.7092C162.737,129.3732,162.934,129.0782,163.186,128.8262C163.438,128.5742,163.732,128.3742,
+        164.068,128.2232C164.405,128.0742,164.76,128.0002,165.134,128.0002L167.852,128.0002C168.227,128.0002,168.581,128.0742,168.917,128.2232C169.254,128.3742,169.548,
+        128.5742,169.8,128.8262C170.053,129.0782,170.254,129.3732,170.402,129.7092C170.553,130.0452,170.627,130.4002,170.627,130.7742z
+    </PathGeometry>
+    <PathGeometry x:Key="ReplayGlyphGeometry">
+        F1M175.1689,148.5361C175.3249,149.7171,175.4029,150.8971,175.4029,152.0781C175.4029,153.7271,175.2469,155.3681,174.9349,157.0001C174.6219,158.6321,174.1489,160.2241,
+        173.5149,161.7781C172.8819,163.3321,172.0909,164.8211,171.1459,166.2441C170.1979,167.6681,169.0929,169.0051,167.8249,170.2551C166.5929,171.4701,165.2729,172.5341,
+        163.8659,173.4451C162.4599,174.3561,160.9969,175.1161,159.4799,175.7231C157.9599,176.3311,156.4049,176.7871,154.8169,177.0911C153.2299,177.3941,151.6279,177.5471,
+        150.0129,177.5471C148.3629,177.5471,146.7279,177.3901,145.1049,177.0781C143.4809,176.7651,141.9009,176.2921,140.3639,175.6591C138.8279,175.0241,137.3479,174.2351,
+        135.9249,173.2891C134.5009,172.3431,133.1639,171.2351,131.9139,169.9691C130.6979,168.7361,129.6359,167.4121,128.7239,165.9971C127.8129,164.5821,127.0489,163.1151,
+        126.4329,161.5961C125.8149,160.0771,125.3559,158.5151,125.0519,156.9091C124.7479,155.3031,124.5969,153.6921,124.5969,152.0781C124.5969,150.4291,124.7529,148.7931,
+        125.0649,147.1691C125.3779,145.5461,125.8509,143.9621,126.4839,142.4171C127.1179,140.8721,127.9079,139.3881,128.8549,137.9641C129.7999,136.5401,130.9069,135.2031,
+        132.1749,133.9531C133.4069,132.7381,134.7309,131.6791,136.1459,130.7761C137.5609,129.8741,139.0229,129.1221,140.5339,128.5231C142.0439,127.9251,143.5979,127.4741,
+        145.1949,127.1691C146.7919,126.8661,148.3899,126.7141,149.9869,126.7141L149.9869,116.4531L163.9719,130.4371L150.0129,144.4221L150.0129,134.3171C147.7379,134.3171,
+        145.5239,134.7341,143.3719,135.5671C141.2199,136.4011,139.2739,137.6771,137.5389,139.3951C135.7689,141.1491,134.4399,143.1291,133.5549,145.3331C132.6689,147.5381,
+        132.2269,149.7951,132.2269,152.1041C132.2269,154.3791,132.6479,156.5971,133.4889,158.7581C134.3309,160.9191,135.6119,162.8681,137.3309,164.6031C138.1979,165.4891,
+        139.1319,166.2661,140.1299,166.9341C141.1279,167.6031,142.1699,168.1581,143.2549,168.6011C144.3399,169.0441,145.4509,169.3741,146.5889,169.5911C147.7259,169.8081,
+        148.8669,169.9161,150.0129,169.9161C152.2859,169.9161,154.4949,169.4961,156.6399,168.6531C158.7839,167.8111,160.7329,166.5311,162.4869,164.8121C163.3719,163.9441,
+        164.1439,163.0071,164.8039,162.0001C165.4639,160.9931,166.0149,159.9511,166.4579,158.8751C166.9009,157.7991,167.2349,156.6871,167.4599,155.5421C167.6869,154.3951,
+        167.7999,153.2501,167.7999,152.1041C167.7999,150.9411,167.6769,149.7521,167.4349,148.5361z
+    </PathGeometry>
+    <PathGeometry x:Key="XGlyphGeometry">
+        F1M128,165.4404L143.44,150.0004L128,134.5594L134.533,128.0004L149.973,143.4404L165.44,128.0004L172,134.5324L156.532,150.0004L172,165.4674L165.44,172.0004L149.973,
+        156.5594L134.533,172.0004z
+    </PathGeometry>
+    <PathGeometry x:Key="CheckmarkGlyphGeometry">
+        F1M126.6177,151.6338L124.9307,149.8158C124.7377,149.5698,124.6407,149.3058,124.6407,149.0248C124.6407,148.6918,124.7727,148.3928,125.0357,148.1288L129.8847,
+        143.5708C130.1127,143.3788,130.3857,143.2818,130.7007,143.2818C130.8587,143.2818,131.0167,143.3118,131.1757,143.3738C131.3327,143.4358,131.4647,143.5278,131.5707,
+        143.6498L144.9287,158.0638L167.9297,128.4478C168.1937,128.1498,168.5097,127.9998,168.8767,127.9998C169.1587,127.9998,169.4047,128.0878,169.6157,128.2638L174.9117,
+        132.3478C175.0167,132.4358,175.1177,132.5618,175.2147,132.7298C175.3107,132.8968,175.3597,133.0508,175.3597,133.1908C175.3597,133.4888,175.2717,133.7708,175.0957
+        ,134.0328L145.5347,171.9998z
+    </PathGeometry>
+    <Path x:Key="ArrowLeft" Height="48" Canvas.Left="0" Stretch="Uniform" Canvas.Top="0" Width="48" x:Shared="False"
+          Data="{StaticResource LeftFacingArrowGeometry}"
+          Fill="{Binding FallbackValue=Black, Path=ContentForeground,RelativeSource={RelativeSource AncestorType={x:Type k:KinectCircleButton}}}">
+        <Path.RenderTransformOrigin>0.5,0.5</Path.RenderTransformOrigin>
+        <Path.RenderTransform>
+            <RotateTransform Angle="0"/>
+        </Path.RenderTransform>
+    </Path>
+    <Path x:Key="ArrowRight" Height="48" Canvas.Left="0" Stretch="Uniform" Canvas.Top="0" Width="48" x:Shared="False"
+          Data="{StaticResource LeftFacingArrowGeometry}"
+          Fill="{Binding Path=ContentForeground,RelativeSource={RelativeSource AncestorType={x:Type k:KinectCircleButton}}, FallbackValue=Black}">
+        <Path.RenderTransformOrigin>0.5,0.5</Path.RenderTransformOrigin>
+        <Path.RenderTransform>
+            <RotateTransform Angle="180"/>
+        </Path.RenderTransform>
+    </Path>
+    <Path x:Key="ArrowUp" Height="48" Canvas.Left="0" Stretch="Uniform" Canvas.Top="0" Width="48" x:Shared="False"
+          Data="{StaticResource LeftFacingArrowGeometry}"
+          Fill="{Binding Path=ContentForeground,RelativeSource={RelativeSource AncestorType={x:Type k:KinectCircleButton}}, FallbackValue=Black}">
+        <Path.RenderTransformOrigin>0.5,0.5</Path.RenderTransformOrigin>
+        <Path.RenderTransform>
+            <RotateTransform Angle="90"/>
+        </Path.RenderTransform>
+    </Path>
+    <Path x:Key="ArrowDown" Height="48" Canvas.Left="0" Stretch="Uniform" Canvas.Top="0" Width="48" x:Shared="False"
+          Data="{StaticResource LeftFacingArrowGeometry}"
+          Fill="{Binding Path=ContentForeground,RelativeSource={RelativeSource AncestorType={x:Type k:KinectCircleButton}}, FallbackValue=Black}">
+        <Path.RenderTransformOrigin>0.5,0.5</Path.RenderTransformOrigin>
+        <Path.RenderTransform>
+            <RotateTransform Angle="270"/>
+        </Path.RenderTransform>
+    </Path>
+    <Path x:Key="PlayGlyph" Height="44" Width="38.509" Stretch="Uniform" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="14,0,0,0"
+          Data="{StaticResource PlayGlyphGeometry}" x:Shared="False"
+          Fill="{Binding Path=ContentForeground,RelativeSource={RelativeSource AncestorType={x:Type k:KinectCircleButton}}}"
+          />
+    <Path x:Key="PauseGlyph" Height="48" Canvas.Left="0" Stretch="Uniform" Canvas.Top="0" Width="48"
+          Data="{StaticResource PauseGlyphGeometry}" x:Shared="False"
+          Fill="{Binding Path=ContentForeground,RelativeSource={RelativeSource AncestorType={x:Type k:KinectCircleButton}}}"
+          />
+    <Path x:Key="SkipBackGlyph" Height="48" Canvas.Left="0" Stretch="Uniform" Canvas.Top="0" Width="48"
+          Data="{StaticResource SkipBackGlyphGeometry}" x:Shared="False"
+          Fill="{Binding Path=ContentForeground,RelativeSource={RelativeSource AncestorType={x:Type k:KinectCircleButton}}}"
+          />
+    <Path x:Key="SkipNextGlyph" Height="48" Canvas.Left="0" Stretch="Uniform" Canvas.Top="0" Width="48"
+          Data="{StaticResource SkipNextGlyphGeometry}" x:Shared="False"
+          Fill="{Binding Path=ContentForeground,RelativeSource={RelativeSource AncestorType={x:Type k:KinectCircleButton}}}"
+          />
+    <Path x:Key="ReplayGlyph" Height="48" Canvas.Left="0" Stretch="Uniform" Canvas.Top="0" Width="48"
+          Data="{StaticResource ReplayGlyphGeometry}" x:Shared="False"
+          Fill="{Binding Path=ContentForeground,RelativeSource={RelativeSource AncestorType={x:Type k:KinectCircleButton}}}"
+          />
+    <Path x:Key="XGlyph" Height="48" Canvas.Left="0" Stretch="Uniform" Canvas.Top="0" Width="48"
+          Data="{StaticResource XGlyphGeometry}" x:Shared="False"
+          Fill="{Binding Path=ContentForeground,RelativeSource={RelativeSource AncestorType={x:Type k:KinectCircleButton}}}"
+          />
+    <Path x:Key="CheckmarkGlyph" Height="48" Canvas.Left="0" Stretch="Uniform" Canvas.Top="0" Width="48"
+          Data="{StaticResource CheckmarkGlyphGeometry}" x:Shared="False"
+          Fill="{Binding Path=ContentForeground,RelativeSource={RelativeSource AncestorType={x:Type k:KinectCircleButton}}}"
+          />
+
+    <Style x:Key="BackButtonStyle" TargetType="{x:Type k:KinectCircleButton}">
+        <Setter Property="Content" Value="{StaticResource ArrowLeft}"/>
+        <Setter Property="Label" Value="Back"/>
+        <Setter Property="LabelPosition" Value="Bottom"/>
+        <Setter Property="Foreground" Value="Black"/>
+    </Style>
+    <Style x:Key="NextButtonStyle" TargetType="{x:Type k:KinectCircleButton}">
+        <Setter Property="Content" Value="{StaticResource ArrowRight}"/>
+        <Setter Property="Label" Value="Next"/>
+        <Setter Property="LabelPosition" Value="Bottom"/>
+        <Setter Property="Foreground" Value="Black"/>
+    </Style>
+    <Style x:Key="UpButtonStyle" TargetType="{x:Type k:KinectCircleButton}">
+        <Setter Property="Content" Value="{StaticResource ArrowUp}"/>
+        <Setter Property="Label" Value="Up"/>
+        <Setter Property="LabelPosition" Value="Bottom"/>
+        <Setter Property="Foreground" Value="Black"/>
+    </Style>
+    <Style x:Key="DownButtonStyle" TargetType="{x:Type k:KinectCircleButton}">
+        <Setter Property="Content" Value="{StaticResource ArrowDown}"/>
+        <Setter Property="Label" Value="Down"/>
+        <Setter Property="LabelPosition" Value="Bottom"/>
+        <Setter Property="Foreground" Value="Black"/>
+    </Style>
+    <Style x:Key="PlayButtonStyle" TargetType="{x:Type k:KinectCircleButton}">
+        <Setter Property="Content" Value="{StaticResource PlayGlyph}"/>
+        <Setter Property="Label" Value="Play"/>
+        <Setter Property="LabelPosition" Value="Bottom"/>
+        <Setter Property="Foreground" Value="Black"/>
+    </Style>
+    <Style x:Key="PauseButtonStyle" TargetType="{x:Type k:KinectCircleButton}">
+        <Setter Property="Content" Value="{StaticResource PauseGlyph}"/>
+        <Setter Property="Label" Value="Pause"/>
+        <Setter Property="LabelPosition" Value="Bottom"/>
+        <Setter Property="Foreground" Value="Black"/>
+    </Style>
+    <Style x:Key="SkipBackButtonStyle" TargetType="{x:Type k:KinectCircleButton}">
+        <Setter Property="Content" Value="{StaticResource SkipBackGlyph}"/>
+        <Setter Property="Label" Value="Skip"/>
+        <Setter Property="LabelPosition" Value="Bottom"/>
+        <Setter Property="Foreground" Value="Black"/>
+    </Style>
+    <Style x:Key="SkipNextButtonStyle" TargetType="{x:Type k:KinectCircleButton}">
+        <Setter Property="Content" Value="{StaticResource SkipNextGlyph}"/>
+        <Setter Property="Label" Value="Skip"/>
+        <Setter Property="LabelPosition" Value="Bottom"/>
+        <Setter Property="Foreground" Value="Black"/>
+    </Style>
+    <Style x:Key="ReplayButtonStyle" TargetType="{x:Type k:KinectCircleButton}">
+        <Setter Property="Content" Value="{StaticResource ReplayGlyph}"/>
+        <Setter Property="Label" Value="Replay"/>
+        <Setter Property="LabelPosition" Value="Bottom"/>
+        <Setter Property="Foreground" Value="Black"/>
+    </Style>
+    <Style x:Key="CancelButtonStyle" TargetType="{x:Type k:KinectCircleButton}">
+        <Setter Property="Content" Value="{StaticResource XGlyph}"/>
+        <Setter Property="Label" Value="Cancel"/>
+        <Setter Property="LabelPosition" Value="None"/>
+        <Setter Property="Foreground" Value="Black"/>
+    </Style>
+    <Style x:Key="OkButtonStyle" TargetType="{x:Type k:KinectCircleButton}">
+        <Setter Property="Content" Value="{StaticResource CheckmarkGlyph}"/>
+        <Setter Property="Label" Value="Ok"/>
+        <Setter Property="LabelPosition" Value="None"/>
+        <Setter Property="Foreground" Value="Black"/>
+    </Style>
+</ResourceDictionary>

@@ -1,0 +1,13 @@
+﻿<Window x:Class="KinectInteractionTest.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:k="http://schemas.microsoft.com/kinect/2013"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="600.919" Width="901.379" Loaded="Window_Loaded">
+    <Grid>
+        <k:KinectSensorChooserUI HorizontalAlignment="Center" VerticalAlignment="Top" Name="sensorChooserUI" Height="62" Margin="414,0,417,0" Width="62"></k:KinectSensorChooserUI>
+        <k:KinectRegion Name="kinectRegionUI"></k:KinectRegion>
+        <k:KinectUserViewer VerticalAlignment="Top" HorizontalAlignment="Center" 
+                            k:KinectRegion.KinectRegion="{Binding ElementName=kinectRegionUI}" Height="100" />
+        <k:KinectTileButton Name="testBtn" Label="Press" Click="OnButtonClick"></k:KinectTileButton>
+    </Grid>
+</Window>
