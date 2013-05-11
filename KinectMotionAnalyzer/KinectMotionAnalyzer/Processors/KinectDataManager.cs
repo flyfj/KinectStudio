@@ -100,8 +100,11 @@ namespace KinectMotionAnalyzer.Processors
         private readonly Brush trackedJointBrush = new SolidColorBrush(Color.FromArgb(255, 68, 192, 68));
         private readonly Brush inferredJointBrush = Brushes.Yellow;
 
-        private readonly Pen trackedBonePen = new Pen(Brushes.Green, 3);
+        private readonly Pen trackedBonePen = new Pen(Brushes.Green, 2);
         private readonly Pen inferredBonePen = new Pen(Brushes.Gray, 1);
+
+        // color array
+        private readonly List<Pen> BonePenList = new List<Pen>();
 
         /// <summary>
         /// Drawing group for skeleton rendering output
@@ -128,6 +131,12 @@ namespace KinectMotionAnalyzer.Processors
 
             // Create an skeleton image source that we can use in our image control
             this.skeletonImageSource = new DrawingImage(this.drawingGroup);
+
+            // add pens
+            BonePenList.Add(new Pen(Brushes.Red, 2));
+            BonePenList.Add(new Pen(Brushes.Yellow, 2));
+            BonePenList.Add(new Pen(Brushes.Blue, 2));
+            BonePenList.Add(new Pen(Brushes.Green, 2));
         }
 
 
@@ -272,13 +281,15 @@ namespace KinectMotionAnalyzer.Processors
 
                 if (skeletons.Length != 0)
                 {
+                    int cnt = -1;
                     foreach (Skeleton skel in skeletons)
                     {
+                        cnt++;
                         RenderClippedEdges(skel, dc);
 
                         if (skel.TrackingState == SkeletonTrackingState.Tracked)
                         {
-                            this.DrawBonesAndJoints(skel, dc);
+                            this.DrawBonesAndJoints(skel, dc, BonePenList[cnt % BonePenList.Count]);
                         }
                         else if (skel.TrackingState == SkeletonTrackingState.PositionOnly)
                         {
@@ -313,7 +324,7 @@ namespace KinectMotionAnalyzer.Processors
 
                 if (ske.TrackingState == SkeletonTrackingState.Tracked)
                 {
-                    this.DrawBonesAndJoints(ske, dc);
+                    this.DrawBonesAndJoints(ske, dc, trackedBonePen);
                 }
                 else if (ske.TrackingState == SkeletonTrackingState.PositionOnly)
                 {
@@ -374,39 +385,39 @@ namespace KinectMotionAnalyzer.Processors
         /// <summary>
         /// Draws a skeleton's bones and joints
         /// </summary>
-        private void DrawBonesAndJoints(Skeleton skeleton, DrawingContext drawingContext)
+        private void DrawBonesAndJoints(Skeleton skeleton, DrawingContext drawingContext, Pen drawPen)
         {
             // nothing to measure, display whole skeleton
             if (toMeasureUnits == null || toMeasureUnits.Count == 0)
             {
                 // Render Torso
-                this.DrawBone(skeleton, drawingContext, JointType.Head, JointType.ShoulderCenter);
-                this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderLeft);
-                this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderRight);
-                this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.Spine);
-                this.DrawBone(skeleton, drawingContext, JointType.Spine, JointType.HipCenter);
-                this.DrawBone(skeleton, drawingContext, JointType.HipCenter, JointType.HipLeft);
-                this.DrawBone(skeleton, drawingContext, JointType.HipCenter, JointType.HipRight);
+                this.DrawBone(skeleton, drawingContext, JointType.Head, JointType.ShoulderCenter, drawPen);
+                this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderLeft, drawPen);
+                this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderRight, drawPen);
+                this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.Spine, drawPen);
+                this.DrawBone(skeleton, drawingContext, JointType.Spine, JointType.HipCenter, drawPen);
+                this.DrawBone(skeleton, drawingContext, JointType.HipCenter, JointType.HipLeft, drawPen);
+                this.DrawBone(skeleton, drawingContext, JointType.HipCenter, JointType.HipRight, drawPen);
 
                 // Left Arm
-                this.DrawBone(skeleton, drawingContext, JointType.ShoulderLeft, JointType.ElbowLeft);
-                this.DrawBone(skeleton, drawingContext, JointType.ElbowLeft, JointType.WristLeft);
-                this.DrawBone(skeleton, drawingContext, JointType.WristLeft, JointType.HandLeft);
+                this.DrawBone(skeleton, drawingContext, JointType.ShoulderLeft, JointType.ElbowLeft, drawPen);
+                this.DrawBone(skeleton, drawingContext, JointType.ElbowLeft, JointType.WristLeft, drawPen);
+                this.DrawBone(skeleton, drawingContext, JointType.WristLeft, JointType.HandLeft, drawPen);
 
                 // Right Arm
-                this.DrawBone(skeleton, drawingContext, JointType.ShoulderRight, JointType.ElbowRight);
-                this.DrawBone(skeleton, drawingContext, JointType.ElbowRight, JointType.WristRight);
-                this.DrawBone(skeleton, drawingContext, JointType.WristRight, JointType.HandRight);
+                this.DrawBone(skeleton, drawingContext, JointType.ShoulderRight, JointType.ElbowRight, drawPen);
+                this.DrawBone(skeleton, drawingContext, JointType.ElbowRight, JointType.WristRight, drawPen);
+                this.DrawBone(skeleton, drawingContext, JointType.WristRight, JointType.HandRight, drawPen);
 
                 // Left Leg
-                this.DrawBone(skeleton, drawingContext, JointType.HipLeft, JointType.KneeLeft);
-                this.DrawBone(skeleton, drawingContext, JointType.KneeLeft, JointType.AnkleLeft);
-                this.DrawBone(skeleton, drawingContext, JointType.AnkleLeft, JointType.FootLeft);
+                this.DrawBone(skeleton, drawingContext, JointType.HipLeft, JointType.KneeLeft, drawPen);
+                this.DrawBone(skeleton, drawingContext, JointType.KneeLeft, JointType.AnkleLeft, drawPen);
+                this.DrawBone(skeleton, drawingContext, JointType.AnkleLeft, JointType.FootLeft, drawPen);
 
                 // Right Leg
-                this.DrawBone(skeleton, drawingContext, JointType.HipRight, JointType.KneeRight);
-                this.DrawBone(skeleton, drawingContext, JointType.KneeRight, JointType.AnkleRight);
-                this.DrawBone(skeleton, drawingContext, JointType.AnkleRight, JointType.FootRight);
+                this.DrawBone(skeleton, drawingContext, JointType.HipRight, JointType.KneeRight, drawPen);
+                this.DrawBone(skeleton, drawingContext, JointType.KneeRight, JointType.AnkleRight, drawPen);
+                this.DrawBone(skeleton, drawingContext, JointType.AnkleRight, JointType.FootRight, drawPen);
 
                 // Render Joints
                 foreach (Joint joint in skeleton.Joints)
@@ -458,7 +469,7 @@ namespace KinectMotionAnalyzer.Processors
                         DrawJoint(skeleton.Joints[unit.boneJoint2], drawingContext);
 
                         // draw bone
-                        this.DrawBone(skeleton, drawingContext, unit.boneJoint1, unit.boneJoint2);
+                        this.DrawBone(skeleton, drawingContext, unit.boneJoint1, unit.boneJoint2, drawPen);
 
                         // show bone plane angle
                         if (cur_joint_status.ContainsKey(unit.boneJoint1))
@@ -528,7 +539,7 @@ namespace KinectMotionAnalyzer.Processors
         /// <param name="jointType0">joint to start drawing from</param>
         /// <param name="jointType1">joint to end drawing at</param>
         private void DrawBone(
-            Skeleton skeleton, DrawingContext drawingContext, JointType jointType0, JointType jointType1)
+            Skeleton skeleton, DrawingContext drawingContext, JointType jointType0, JointType jointType1, Pen drawPen)
         {
             Joint joint0 = skeleton.Joints[jointType0];
             Joint joint1 = skeleton.Joints[jointType1];
@@ -548,10 +559,9 @@ namespace KinectMotionAnalyzer.Processors
             }
 
             // We assume all drawn bones are inferred unless BOTH joints are tracked
-            Pen drawPen = this.inferredBonePen;
             if (joint0.TrackingState == JointTrackingState.Tracked && joint1.TrackingState == JointTrackingState.Tracked)
             {
-                drawPen = this.trackedBonePen;
+                //drawPen = this.trackedBonePen;
                 drawingContext.DrawLine(drawPen,
                 SkeletonPointToScreen(joint0.Position),
                 SkeletonPointToScreen(joint1.Position));

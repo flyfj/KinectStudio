@@ -118,6 +118,7 @@ namespace KinectMotionAnalyzer.Processors
         {
             // align input to target
             Skeleton alignedInput = new Skeleton();
+            alignedInput.TrackingState = SkeletonTrackingState.Tracked;
 
             // get input scale
             Point3D shoulderRight = new Point3D(
@@ -164,7 +165,8 @@ namespace KinectMotionAnalyzer.Processors
             // align
             foreach (Joint curjoint in inputSke.Joints)
             {
-                Joint newjoint = new Joint();
+                Joint newjoint = alignedInput.Joints[curjoint.JointType];
+                newjoint.TrackingState = JointTrackingState.Tracked;
                 SkeletonPoint newPoint = new SkeletonPoint();
                 newPoint.X = curjoint.Position.X - (float)inputCenter.X;
                 newPoint.Y = curjoint.Position.Y - (float)inputCenter.Y;
