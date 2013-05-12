@@ -5,9 +5,14 @@
         Title="MainWindow" Height="600.919" Width="901.379" Loaded="Window_Loaded">
     <Grid>
         <k:KinectSensorChooserUI HorizontalAlignment="Center" VerticalAlignment="Top" Name="sensorChooserUI" Height="62" Margin="414,0,417,0" Width="62"></k:KinectSensorChooserUI>
-        <k:KinectRegion Name="kinectRegionUI"></k:KinectRegion>
+        <k:KinectRegion Name="kinectRegionUI">
+            <k:KinectTileButton Name="testBtn" Label="Press"  Click="OnButtonClick">
+                <k:KinectTileButton.Background>
+                    <ImageBrush ImageSource="Resources/holmes.jpg" Stretch="Uniform"/>
+                </k:KinectTileButton.Background>
+            </k:KinectTileButton>
+        </k:KinectRegion>
         <k:KinectUserViewer VerticalAlignment="Top" HorizontalAlignment="Center" 
                             k:KinectRegion.KinectRegion="{Binding ElementName=kinectRegionUI}" Height="100" />
-        <k:KinectTileButton Name="testBtn" Label="Press" Click="OnButtonClick"></k:KinectTileButton>
     </Grid>
 </Window>
