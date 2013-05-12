@@ -149,8 +149,12 @@
     <Compile Include="UI\AddActionWindow.xaml.cs">
       <DependentUpon>AddActionWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Controls\KinectHoverButton.cs" />
     <Compile Include="UI\DTWPreview.xaml.cs">
       <DependentUpon>DTWPreview.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\MainUserWindow.xaml.cs">
+      <DependentUpon>MainUserWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\MotionAnalyzerWindow_FMS.xaml.cs">
       <DependentUpon>MotionAnalyzerWindow_FMS.xaml</DependentUpon>
@@ -218,6 +222,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\MainUserWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\MotionAnalyzerWindow_FMS.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -272,6 +280,7 @@
   <ItemGroup>
     <Resource Include="Resources\FitronixIO_logo.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

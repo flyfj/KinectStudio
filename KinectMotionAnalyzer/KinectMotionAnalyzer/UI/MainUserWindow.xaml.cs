@@ -1,29 +1,33 @@
-﻿//------------------------------------------------------------------------------
-// <copyright file="MainWindow.xaml.cs" company="Microsoft">
-//     Copyright (c) Microsoft Corporation.  All rights reserved.
-// </copyright>
-//------------------------------------------------------------------------------
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+using System.Globalization;
+using Microsoft.Kinect;
+using Microsoft.Kinect.Toolkit;
+using Microsoft.Kinect.Toolkit.Controls;
 
-namespace Microsoft.Samples.Kinect.ControlsBasics
+namespace KinectMotionAnalyzer.UI
 {
-    using System;
-    using System.Globalization;
-    using System.Windows;
-    using System.Windows.Data;
-    using Microsoft.Kinect;
-    using Microsoft.Kinect.Toolkit;
-    using Microsoft.Kinect.Toolkit.Controls;
-
     /// <summary>
-    /// Interaction logic for MainWindow
+    /// Interaction logic for MainUserWindow.xaml
     /// </summary>
-    public partial class MainWindow
+    public partial class MainUserWindow
     {
         public static readonly DependencyProperty PageLeftEnabledProperty = DependencyProperty.Register(
-            "PageLeftEnabled", typeof(bool), typeof(MainWindow), new PropertyMetadata(false));
+            "PageLeftEnabled", typeof(bool), typeof(MainUserWindow), new PropertyMetadata(false));
 
         public static readonly DependencyProperty PageRightEnabledProperty = DependencyProperty.Register(
-            "PageRightEnabled", typeof(bool), typeof(MainWindow), new PropertyMetadata(false));
+            "PageRightEnabled", typeof(bool), typeof(MainUserWindow), new PropertyMetadata(false));
 
         private const double ScrollErrorMargin = 0.001;
 
@@ -34,7 +38,7 @@ namespace Microsoft.Samples.Kinect.ControlsBasics
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow"/> class. 
         /// </summary>
-        public MainWindow()
+        public MainUserWindow()
         {
             this.InitializeComponent();
 
@@ -162,10 +166,10 @@ namespace Microsoft.Samples.Kinect.ControlsBasics
         /// <param name="e">Event arguments</param>
         private void KinectTileButtonClick(object sender, RoutedEventArgs e)
         {
-            var button = (KinectTileButton)e.OriginalSource;
-            var selectionDisplay = new SelectionDisplay(button.Label as string);
-            this.kinectRegionGrid.Children.Add(selectionDisplay);
-            e.Handled = true;
+            //var button = (KinectTileButton)e.OriginalSource;
+            //var selectionDisplay = new SelectionDisplay(button.Label as string);
+            //this.kinectRegionGrid.Children.Add(selectionDisplay);
+            //e.Handled = true;
         }
 
         /// <summary>
@@ -196,5 +200,11 @@ namespace Microsoft.Samples.Kinect.ControlsBasics
             this.PageLeftEnabled = scrollViewer.HorizontalOffset > ScrollErrorMargin;
             this.PageRightEnabled = scrollViewer.HorizontalOffset < scrollViewer.ScrollableWidth - ScrollErrorMargin;
         }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
     }
 }
