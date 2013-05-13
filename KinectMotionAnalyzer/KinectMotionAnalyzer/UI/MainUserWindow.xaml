@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KinectMotionAnalyzer.UI.Controls"
-        Title="Controls Basics"
+        Title="Fitronix"
         Closing="WindowClosing"
         mc:Ignorable="d"
         d:DesignWidth="1200"
@@ -116,7 +116,7 @@
             <Image HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="/KinectMotionAnalyzer;component/Resources/FitronixIO_logo.png" Margin="0 0 0 4" Width="377"/>
             <k:KinectUserViewer k:KinectRegion.KinectRegion="{Binding ElementName=kinectRegion}" Height="100" HorizontalAlignment="Center" VerticalAlignment="Top" />
             <k:KinectSensorChooserUI HorizontalAlignment="Center" VerticalAlignment="Top" Name="sensorChooserUi" />
-            <TextBlock HorizontalAlignment="Right" Margin="0 0 -1 0" VerticalAlignment="Bottom" Foreground="{StaticResource MediumGreyBrush}" FontSize="18">Controls Basics</TextBlock>
+            <TextBlock HorizontalAlignment="Right" Margin="0 0 -1 0" VerticalAlignment="Bottom" Foreground="{StaticResource MediumGreyBrush}" FontSize="18" Text="Virtual Fitness Platform"/>
         </Grid>
 
         <k:KinectRegion Grid.Row="1" x:Name="kinectRegion">
@@ -128,16 +128,32 @@
                 <k:KinectScrollViewer Grid.Row="0" Name="scrollViewer" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Disabled">
                     <WrapPanel VerticalAlignment="Center" x:Name="wrapPanel" Orientation="Vertical" k:KinectTileButton.Click="KinectTileButtonClick">
                         <!-- items for design layout.  They will be replaced at runtime. -->
-                        <k:KinectTileButton Label="1"/>
-                        <k:KinectTileButton Label="2"/>
-                        <k:KinectTileButton Label="3"/>
-                        <k:KinectTileButton Label="4"/>
-                        <k:KinectTileButton Label="5"/>
+                        <k:KinectTileButton Label="Dance">
+                            <k:KinectTileButton.Background>
+                                <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/dance.jpg" Stretch="UniformToFill"/>
+                            </k:KinectTileButton.Background>
+                        </k:KinectTileButton>
+                        <k:KinectTileButton Label="Golf">
+                            <k:KinectTileButton.Background>
+                                <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/tiger_golf.jpg"/>
+                            </k:KinectTileButton.Background>
+                        </k:KinectTileButton>
+                        <k:KinectTileButton Label="Yoga">
+                            <k:KinectTileButton.Background>
+                                <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/yoga.jpg"/>
+                            </k:KinectTileButton.Background>
+                        </k:KinectTileButton>
+                        <k:KinectTileButton Label="FMS">
+                            <k:KinectTileButton.Background>
+                                <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/fms_logo.jpg" Stretch="Uniform"/>
+                            </k:KinectTileButton.Background>
+                        </k:KinectTileButton>
+                        <!--<k:KinectTileButton Label="5"/>
                         <k:KinectTileButton Label="6"/>
                         <k:KinectTileButton Label="7"/>
                         <k:KinectTileButton Label="8"/>
                         <k:KinectTileButton Label="9"/>
-                        <k:KinectTileButton Label="10"/>
+                        <k:KinectTileButton Label="10"/>-->
                     </WrapPanel>
                 </k:KinectScrollViewer>
                 <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0, 10, 0, 10">

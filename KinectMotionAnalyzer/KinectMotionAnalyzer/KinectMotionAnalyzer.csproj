@@ -280,7 +280,11 @@
   <ItemGroup>
     <Resource Include="Resources\FitronixIO_logo.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\dance.jpg" />
+    <Resource Include="Resources\tiger_golf.jpg" />
+    <Resource Include="Resources\yoga.jpg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -53,14 +53,14 @@ namespace KinectMotionAnalyzer.UI
             BindingOperations.SetBinding(this.kinectRegion, KinectRegion.KinectSensorProperty, regionSensorBinding);
 
             // Clear out placeholder content
-            this.wrapPanel.Children.Clear();
+            //this.wrapPanel.Children.Clear();
 
             // Add in display content
-            for (var index = 0; index < 300; ++index)
-            {
-                var button = new KinectTileButton { Label = (index + 1).ToString(CultureInfo.CurrentCulture) };
-                this.wrapPanel.Children.Add(button);
-            }
+            //for (var index = 0; index < 300; ++index)
+            //{
+            //    var button = new KinectTileButton { Label = (index + 1).ToString(CultureInfo.CurrentCulture) };
+            //    this.wrapPanel.Children.Add(button);
+            //}
 
             // Bind listener to scroll viewer scroll position change, and check scroll viewer position
             this.UpdatePagingButtonState();
