@@ -9,11 +9,11 @@
         </Grid.RowDefinitions>
         <GroupBox Header="Choose your task" HorizontalAlignment="Left" Margin="35,131,0,0" VerticalAlignment="Top" Height="184" Width="331" Grid.RowSpan="2" FontSize="20" FontFamily="Stencil" FontWeight="Bold">
             <Grid HorizontalAlignment="Left" Height="158" VerticalAlignment="Top" Width="321" Margin="0,0,-2,-4">
-                <RadioButton x:Name="actionRecordingRadioBtn" Content="Recording Actions" HorizontalAlignment="Left" Margin="10,93,0,0" VerticalAlignment="Top" IsChecked="True" FontSize="16"/>
+                <RadioButton x:Name="actionRecordingRadioBtn" Content="Recording Actions" HorizontalAlignment="Left" Margin="10,93,0,0" VerticalAlignment="Top" FontSize="16"/>
                 <RadioButton x:Name="FMSRadioBtn" Content="FMS Tests" HorizontalAlignment="Left" Margin="10,56,0,0" VerticalAlignment="Top" FontSize="16"/>
                 <Button x:Name="mainEnterBtn" Content="Enter" HorizontalAlignment="Left" Margin="219,56,0,0" VerticalAlignment="Top" Width="92" Height="48" Click="mainEnterBtn_Click"/>
                 <RadioButton x:Name="realtimeRadioBtn" Content="Real-time Analysis" HorizontalAlignment="Left" Margin="10,19,0,0" VerticalAlignment="Top" FontSize="16" IsChecked="True"/>
-                <RadioButton x:Name="actionMatchingRadioBtn" Content="Action Matching" HorizontalAlignment="Left" Margin="10,129,0,0" VerticalAlignment="Top" IsChecked="True" FontSize="16"/>
+                <RadioButton x:Name="actionMatchingRadioBtn" Content="Action Matching" HorizontalAlignment="Left" Margin="10,129,0,0" VerticalAlignment="Top"  FontSize="16"/>
             </Grid>
         </GroupBox>
         <Image HorizontalAlignment="Left" Height="85" Margin="53,28,0,0" VerticalAlignment="Top" Width="298" Source="/KinectMotionAnalyzer;component/Resources/FitronixIO_logo.png" Stretch="Fill"/>

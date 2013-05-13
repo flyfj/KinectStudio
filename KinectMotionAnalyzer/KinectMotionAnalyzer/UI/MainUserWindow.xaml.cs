@@ -131,8 +131,8 @@ namespace KinectMotionAnalyzer.UI
 
                     try
                     {
-                        args.NewSensor.DepthStream.Range = DepthRange.Near;
-                        args.NewSensor.SkeletonStream.EnableTrackingInNearRange = true;
+                        //args.NewSensor.DepthStream.Range = DepthRange.Near;
+                        //args.NewSensor.SkeletonStream.EnableTrackingInNearRange = true;
                     }
                     catch (InvalidOperationException)
                     {
@@ -166,10 +166,15 @@ namespace KinectMotionAnalyzer.UI
         /// <param name="e">Event arguments</param>
         private void KinectTileButtonClick(object sender, RoutedEventArgs e)
         {
-            //var button = (KinectTileButton)e.OriginalSource;
+            sensorChooser.Stop();
+            var button = (KinectTileButton)e.OriginalSource;
+            UserMatchingWindow win = new UserMatchingWindow();
+            win.ShowDialog();
+
+            sensorChooser.Start();
             //var selectionDisplay = new SelectionDisplay(button.Label as string);
             //this.kinectRegionGrid.Children.Add(selectionDisplay);
-            //e.Handled = true;
+            e.Handled = true;
         }
 
         /// <summary>
@@ -203,7 +208,8 @@ namespace KinectMotionAnalyzer.UI
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            
+            this.WindowState = WindowState.Maximized;
+            this.ResizeMode = ResizeMode.NoResize;
         }
 
     }

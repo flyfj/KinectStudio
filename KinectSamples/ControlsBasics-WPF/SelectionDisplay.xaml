@@ -34,7 +34,7 @@
         </EventTrigger>
     </UserControl.Triggers>
     <Grid x:Name="layoutRoot">
-        <Grid x:Name="grid" Background="{StaticResource BlueBrush}" RenderTransformOrigin="0.5,0.5">
+        <Grid x:Name="grid" Background="{StaticResource BlueBrush}" RenderTransformOrigin="1,1">
             <Grid.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
