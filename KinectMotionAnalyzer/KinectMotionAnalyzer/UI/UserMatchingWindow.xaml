@@ -106,26 +106,51 @@
         <SolidColorBrush x:Key="MediumGreyBrush" Color="#ff6e6e6e"/>
     </Window.Resources>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" MinHeight="194"/>
-            <RowDefinition />
-        </Grid.RowDefinitions>
+    <StackPanel Orientation="Vertical">
 
-        <Grid Grid.Row="0"  Margin="10,0,10,77">
-            <Image HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="/KinectMotionAnalyzer;component/Resources/FitronixIO_logo.png" Margin="0,0,0,37" Width="264" Height="80"/>
-            <k:KinectUserViewer k:KinectRegion.KinectRegion="{Binding ElementName=kinectRegion}" Height="100" HorizontalAlignment="Center" VerticalAlignment="Top" />
-            <k:KinectSensorChooserUI HorizontalAlignment="Center" VerticalAlignment="Top" Name="sensorChooserUi" />
-            <k:KinectRegion x:Name="kinectRegion" HorizontalAlignment="Right" Width="100" Padding="20">
-                <k:KinectCircleButton Background="#FFF32020" Height="105" Width="164" Click="KinectCircleButton_Click">
+        <Border BorderBrush="Black" BorderThickness="0" Margin="10,0,10,0">
+            <Grid Grid.Row="0">
+                <Image HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="/KinectMotionAnalyzer;component/Resources/FitronixIO_logo.png" Margin="0,0,0,37" Width="264" Height="80"/>
+                <k:KinectUserViewer k:KinectRegion.KinectRegion="{Binding ElementName=kinectRegion}" Height="100" HorizontalAlignment="Center" VerticalAlignment="Top" />
+                <k:KinectSensorChooserUI HorizontalAlignment="Center" VerticalAlignment="Top" Name="sensorChooserUi" />
+                <k:KinectRegion x:Name="kinectRegion" HorizontalAlignment="Right" Height="150" Padding="20">
+                    <StackPanel Orientation="Horizontal">
+                        <k:KinectCircleButton Width="100" Margin="20"></k:KinectCircleButton>
+                        <k:KinectTileButton Width="109" Label="Play" HorizontalLabelAlignment="Center"  Margin="20" Height="Auto" FontSize="20" HorizontalAlignment="Center"></k:KinectTileButton>
+                        <k:KinectCircleButton Background="#FFF32020" Width="100" Margin="20"  Click="KinectCircleButton_Click"/>
+                    </StackPanel>
+                </k:KinectRegion>
+            </Grid>
+        </Border>
 
-                </k:KinectCircleButton>
-            </k:KinectRegion>
-        </Grid>
-
-        <Grid Margin="0,122,0,0" Grid.RowSpan="2">
-            <Image x:Name="color_query_img" Stretch="Fill" HorizontalAlignment="Center" Width="800"  />
-            <Image x:Name="ske_query_img" Stretch="Fill" HorizontalAlignment="Center" Width="800"  />
-        </Grid>
-    </Grid>
+        <Border BorderBrush="Black" BorderThickness="1" Margin="0,10,0,0" Height="506">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                
+                <Border BorderBrush="Black" BorderThickness="1">
+                <TextBlock Grid.Column="0" TextWrapping="Wrap"  Padding="20" FontFamily="Tw Cen MT Condensed Extra Bold" FontSize="16">
+                    Action recognized
+                    No action
+                </TextBlock>
+                </Border>
+                <Grid Grid.Column="1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20*"/>
+                            <ColumnDefinition Width="60*"/>
+                            <ColumnDefinition Width="20*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <Image Grid.Column="1"  x:Name="color_query_img" Stretch="Fill" HorizontalAlignment="Center"  />
+                        <Image Grid.Column="1"  x:Name="ske_query_img" Stretch="Fill" HorizontalAlignment="Center"  />
+                    </Grid>
+                    
+                </Grid>
+            </Grid>
+        </Border>
+        
+    </StackPanel>
 </Window>

@@ -6,7 +6,7 @@
         NavigableContextName="Video" 
         NavigableContextParameter="Content/Videos/K4W.wmv" />
     <mskbm:ExperienceOptionModel 
-        Name="VIDEO" 
+        Name="VIDEO"
         ImageUri="pack://application:,,,/Content/HomeScreen/02.png"
         OverlayImageUri="pack://application:,,,/Content/HomeScreen/play-overlay.png"
         NavigableContextName="Video" 
