@@ -15,6 +15,7 @@ using System.Globalization;
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit;
 using Microsoft.Kinect.Toolkit.Controls;
+using KinectMotionAnalyzer.UI.Controls;
 
 namespace KinectMotionAnalyzer.UI
 {
@@ -56,11 +57,16 @@ namespace KinectMotionAnalyzer.UI
             //this.wrapPanel.Children.Clear();
 
             // Add in display content
-            //for (var index = 0; index < 300; ++index)
-            //{
-            //    var button = new KinectTileButton { Label = (index + 1).ToString(CultureInfo.CurrentCulture) };
-            //    this.wrapPanel.Children.Add(button);
-            //}
+            for (var index = 5; index < 100; ++index)
+            {
+                var button = new KinectTileButton
+                {
+                    Label = (index + 1).ToString(CultureInfo.CurrentCulture),
+                    Style = FindResource("KinectTileButtonStyle") as Style
+                };
+                button.Margin = new System.Windows.Thickness(10);
+                this.wrapPanel.Children.Add(button);
+            }
 
             // Bind listener to scroll viewer scroll position change, and check scroll viewer position
             this.UpdatePagingButtonState();
@@ -160,24 +166,6 @@ namespace KinectMotionAnalyzer.UI
         }
 
         /// <summary>
-        /// Handle a button click from the wrap panel.
-        /// </summary>
-        /// <param name="sender">Event sender</param>
-        /// <param name="e">Event arguments</param>
-        private void KinectTileButtonClick(object sender, RoutedEventArgs e)
-        {
-            sensorChooser.Stop();
-            var button = (KinectTileButton)e.OriginalSource;
-            UserMatchingWindow win = new UserMatchingWindow();
-            win.ShowDialog();
-
-            sensorChooser.Start();
-            //var selectionDisplay = new SelectionDisplay(button.Label as string);
-            //this.kinectRegionGrid.Children.Add(selectionDisplay);
-            e.Handled = true;
-        }
-
-        /// <summary>
         /// Handle paging right (next button).
         /// </summary>
         /// <param name="sender">Event sender</param>
@@ -210,6 +198,24 @@ namespace KinectMotionAnalyzer.UI
         {
             this.WindowState = WindowState.Maximized;
             this.ResizeMode = ResizeMode.NoResize;
+        }
+
+        private void KinectTileButtonClick(object sender, RoutedEventArgs e)
+        {
+            var button = (KinectTileButton)e.OriginalSource;
+            string caption = button.Label as string;
+            if (caption == "Any Motion")
+            {
+                ActionMatcherView matcherView = new ActionMatcherView(sensorChooser.Kinect);
+                this.mainGrid.Children.Add(matcherView);
+            }
+            if (caption == "FMS")
+            {
+                FMSSelectorView fmsView = new FMSSelectorView(sensorChooser.Kinect);
+                this.mainGrid.Children.Add(fmsView);
+            }
+
+            e.Handled = true;
         }
 
     }

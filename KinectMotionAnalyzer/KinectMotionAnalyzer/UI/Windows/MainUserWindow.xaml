@@ -104,6 +104,13 @@
         <SolidColorBrush x:Key="BlueBrush" Color="#FF00BCF2" />
         
         <SolidColorBrush x:Key="MediumGreyBrush" Color="#ff6e6e6e"/>
+
+        <Style x:Key="KinectTileButtonStyle" TargetType="k:KinectTileButton">
+            <Setter Property="Width" Value="300" />
+            <Setter Property="Height" Value="300" />
+            <Setter Property="Margin" Value="10" />
+        </Style>
+
     </Window.Resources>
 
     <Grid>
@@ -119,54 +126,59 @@
             <TextBlock HorizontalAlignment="Right" Margin="0 0 -1 0" VerticalAlignment="Bottom" Foreground="{StaticResource MediumGreyBrush}" FontSize="18" Text="Virtual Fitness Platform"/>
         </Grid>
 
-        <k:KinectRegion Grid.Row="1" x:Name="kinectRegion">
-            <Grid x:Name="kinectRegionGrid" Margin="10,20,10,20">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="170" />
-                </Grid.RowDefinitions>
-                <k:KinectScrollViewer Grid.Row="0" Name="scrollViewer" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Disabled" Margin="0,0,0,150" Grid.RowSpan="2">
-                    <WrapPanel VerticalAlignment="Center" x:Name="wrapPanel" Orientation="Vertical"
-                               k:KinectTileButton.Click="KinectTileButtonClick">
-                        <!-- items for design layout.  They will be replaced at runtime. -->
-                        <k:KinectTileButton Label="Dance" Margin="20">
-                            <k:KinectTileButton.Background>
-                                <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/dance.jpg" Stretch="UniformToFill"/>
-                            </k:KinectTileButton.Background>
-                        </k:KinectTileButton>
-                        <k:KinectTileButton Label="Golf" Margin="20">
-                            <k:KinectTileButton.Background>
-                                <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/tiger_golf.jpg"/>
-                            </k:KinectTileButton.Background>
-                        </k:KinectTileButton>
-                        <k:KinectTileButton Label="Yoga" Margin="20">
-                            <k:KinectTileButton.Background>
-                                <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/yoga.jpg"/>
-                            </k:KinectTileButton.Background>
-                        </k:KinectTileButton>
-                        <k:KinectTileButton Label="FMS" Margin="20" Width="261">
-                            <k:KinectTileButton.Background>
-                                <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/fms_logo.jpg"/>
-                            </k:KinectTileButton.Background>
-                        </k:KinectTileButton>
-                        <k:KinectTileButton Label="5" Margin="20"/>
-                        <k:KinectTileButton Label="6" Margin="20"/>
-                        <k:KinectTileButton Label="7" Margin="20"/>
-                        <k:KinectTileButton Label="8" Margin="20"/>
-                        <k:KinectTileButton Label="9" Margin="20"/>
-                        <k:KinectTileButton Label="10" Margin="20"/>
-                    </WrapPanel>
-                </k:KinectScrollViewer>
-                <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,34,0,10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="10"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <local:KinectHoverButton Grid.Column="0" Style="{StaticResource KinectHoverButtonScrollLeftStyle}" Click="PageLeftButtonClick" IsEnabled="{Binding ElementName=ControlsBasicsWindow, Path=PageLeftEnabled}"/>
-                    <local:KinectHoverButton Grid.Column="2" Style="{StaticResource KinectHoverButtonScrollRightStyle}" Click="PageRightButtonClick" IsEnabled="{Binding ElementName=ControlsBasicsWindow, Path=PageRightEnabled}"/>
+        <Grid Name="mainGrid" Grid.Row="1">
+            <k:KinectRegion x:Name="kinectRegion">
+                
+                <Grid x:Name="kinectRegionGrid" Margin="10,0,10,20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="70*" />
+                        <RowDefinition Height="30*" />
+                    </Grid.RowDefinitions>
+
+                    <k:KinectScrollViewer Grid.Row="0" Name="scrollViewer" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Disabled">
+                        <WrapPanel VerticalAlignment="Center" x:Name="wrapPanel" Orientation="Horizontal" k:KinectTileButton.Click="KinectTileButtonClick">
+                            <!-- items for design layout.  They will be replaced at runtime. -->
+                            <k:KinectTileButton x:Name="anyMotionBtn" Label="Any Motion" Style="{StaticResource KinectTileButtonStyle}" >
+                                <k:KinectTileButton.Background>
+                                    <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/question.jpg" Stretch="None"/>
+                                </k:KinectTileButton.Background>
+                            </k:KinectTileButton>
+                            <k:KinectTileButton x:Name="fmsBtn" Label="FMS" Style="{StaticResource KinectTileButtonStyle}">
+                                <k:KinectTileButton.Background>
+                                    <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/fms_logo.jpg"/>
+                                </k:KinectTileButton.Background>
+                            </k:KinectTileButton>
+                            <k:KinectTileButton Label="Dance" Style="{StaticResource KinectTileButtonStyle}">
+                                <k:KinectTileButton.Background>
+                                    <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/dance.jpg" Stretch="UniformToFill"/>
+                                </k:KinectTileButton.Background>
+                            </k:KinectTileButton>
+                            <k:KinectTileButton Label="Golf" Style="{StaticResource KinectTileButtonStyle}">
+                                <k:KinectTileButton.Background>
+                                    <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/tiger_golf.jpg"/>
+                                </k:KinectTileButton.Background>
+                            </k:KinectTileButton>
+                            <k:KinectTileButton Label="Yoga" Style="{StaticResource KinectTileButtonStyle}">
+                                <k:KinectTileButton.Background>
+                                    <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/yoga.jpg"/>
+                                </k:KinectTileButton.Background>
+                            </k:KinectTileButton>
+                            <k:KinectTileButton Label="6" Style="{StaticResource KinectTileButtonStyle}"/>
+                        </WrapPanel>
+                    </k:KinectScrollViewer>
+                    
+                    <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,30,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <local:KinectHoverButton Grid.Column="0" Style="{StaticResource KinectHoverButtonScrollLeftStyle}" Click="PageLeftButtonClick" IsEnabled="{Binding ElementName=ControlsBasicsWindow, Path=PageLeftEnabled}"/>
+                        <local:KinectHoverButton Grid.Column="2" Style="{StaticResource KinectHoverButtonScrollRightStyle}" Click="PageRightButtonClick" IsEnabled="{Binding ElementName=ControlsBasicsWindow, Path=PageRightEnabled}"/>
+                    </Grid>
+                    
                 </Grid>
-            </Grid>
-        </k:KinectRegion>
+            </k:KinectRegion>
+        </Grid>
     </Grid>
 </Window>

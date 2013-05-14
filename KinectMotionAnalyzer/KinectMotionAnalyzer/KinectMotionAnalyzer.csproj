@@ -143,38 +143,44 @@
     <Compile Include="Processors\FMSProcessor.cs" />
     <Compile Include="Processors\ActionRecognizer.cs" />
     <Compile Include="Processors\KinectRecorder.cs" />
-    <Compile Include="UI\ActionDatabasePreview.xaml.cs">
+    <Compile Include="UI\Windows\ActionDatabasePreview.xaml.cs">
       <DependentUpon>ActionDatabasePreview.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\AddActionWindow.xaml.cs">
+    <Compile Include="UI\Windows\AddActionWindow.xaml.cs">
       <DependentUpon>AddActionWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Controls\ActionMatcherView.xaml.cs">
+      <DependentUpon>ActionMatcherView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\FMSSelectorView.xaml.cs">
+      <DependentUpon>FMSSelectorView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Controls\KinectHoverButton.cs" />
-    <Compile Include="UI\UserMatchingWindow.xaml.cs">
+    <Compile Include="UI\Windows\UserMatchingWindow.xaml.cs">
       <DependentUpon>UserMatchingWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\DTWPreview.xaml.cs">
+    <Compile Include="UI\Windows\DTWPreview.xaml.cs">
       <DependentUpon>DTWPreview.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\MainUserWindow.xaml.cs">
+    <Compile Include="UI\Windows\MainUserWindow.xaml.cs">
       <DependentUpon>MainUserWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\MotionAnalyzerWindow_FMS.xaml.cs">
+    <Compile Include="UI\Windows\MotionAnalyzerWindow_FMS.xaml.cs">
       <DependentUpon>MotionAnalyzerWindow_FMS.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\EnterWindow.xaml.cs">
+    <Compile Include="UI\Windows\EnterWindow.xaml.cs">
       <DependentUpon>EnterWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\FMSReportWindow.xaml.cs">
+    <Compile Include="UI\Windows\FMSReportWindow.xaml.cs">
       <DependentUpon>FMSReportWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\MotionAnalyzerWindow_User.xaml.cs">
+    <Compile Include="UI\Windows\MotionAnalyzerWindow_User.xaml.cs">
       <DependentUpon>MotionAnalyzerWindow_User.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\MotionAnalyzerWindow_Trainer.xaml.cs">
+    <Compile Include="UI\Windows\MotionAnalyzerWindow_Trainer.xaml.cs">
       <DependentUpon>MotionAnalyzerWindow_Trainer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\MeasurementConfigWin.xaml.cs">
+    <Compile Include="UI\Windows\MeasurementConfigWin.xaml.cs">
       <DependentUpon>MeasurementConfigWin.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
@@ -213,47 +219,55 @@
     <Resource Include="Resources\kinect_skeleton.png" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="UI\ActionDatabasePreview.xaml">
+    <Page Include="UI\Windows\ActionDatabasePreview.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\AddActionWindow.xaml">
+    <Page Include="UI\Windows\AddActionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\UserMatchingWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\DTWPreview.xaml">
+    <Page Include="UI\Controls\ActionMatcherView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\MainUserWindow.xaml">
+    <Page Include="UI\Controls\FMSSelectorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\MotionAnalyzerWindow_FMS.xaml">
+    <Page Include="UI\Windows\UserMatchingWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UI\EnterWindow.xaml">
+    <Page Include="UI\Windows\DTWPreview.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\FMSReportWindow.xaml">
+    <Page Include="UI\Windows\MainUserWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\MotionAnalyzerWindow_User.xaml">
+    <Page Include="UI\Windows\MotionAnalyzerWindow_FMS.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UI\MotionAnalyzerWindow_Trainer.xaml">
+    <Page Include="UI\Windows\EnterWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Windows\FMSReportWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Windows\MotionAnalyzerWindow_User.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UI\MeasurementConfigWin.xaml">
+    <Page Include="UI\Windows\MotionAnalyzerWindow_Trainer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Windows\MeasurementConfigWin.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -291,6 +305,21 @@
     <Resource Include="Resources\dance.jpg" />
     <Resource Include="Resources\tiger_golf.jpg" />
     <Resource Include="Resources\yoga.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\left_arrow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\FMS_Images\hurdle.jpg" />
+    <Resource Include="Resources\FMS_Images\leg_raise.jpg" />
+    <Resource Include="Resources\FMS_Images\lunge.jpg" />
+    <Resource Include="Resources\FMS_Images\push_up.jpg" />
+    <Resource Include="Resources\FMS_Images\shoulder_mobility.jpg" />
+    <Resource Include="Resources\FMS_Images\squat.jpg" />
+    <Resource Include="Resources\FMS_Images\stability.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\question.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

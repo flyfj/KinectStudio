@@ -9,30 +9,36 @@
              Background="Transparent"
              FontFamily="Segoe UI"
              FontSize="30">
+    
     <UserControl.Resources>
         <Storyboard x:Key="OnLoadedStoryboard" Completed="OnLoadedStoryboardCompleted">
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" Storyboard.TargetName="grid">
-                <EasingDoubleKeyFrame KeyTime="0" Value="0.1"/>
+            <!--first appear scale x-->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" Storyboard.TargetName="grid"> 
+                <EasingDoubleKeyFrame KeyTime="0" Value="0.1"/> 
                 <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="1"/>
                 <EasingDoubleKeyFrame KeyTime="0:0:2.2" Value="1"/>
                 <EasingDoubleKeyFrame KeyTime="0:0:2.4" Value="0.1"/>
             </DoubleAnimationUsingKeyFrames>
+            <!--first appear scale y-->
             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" Storyboard.TargetName="grid">
                 <EasingDoubleKeyFrame KeyTime="0" Value="0.1"/>
                 <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="1"/>
                 <EasingDoubleKeyFrame KeyTime="0:0:2.2" Value="1"/>
                 <EasingDoubleKeyFrame KeyTime="0:0:2.4" Value="0.1"/>
             </DoubleAnimationUsingKeyFrames>
+            <!--disappear-->
             <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="grid">
                 <DiscreteObjectKeyFrame KeyTime="0:0:2.4" Value="{x:Static Visibility.Hidden}"/>
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>
     </UserControl.Resources>
+    
     <UserControl.Triggers>
         <EventTrigger RoutedEvent="FrameworkElement.Loaded">
             <BeginStoryboard x:Name="OnLoadedStoryboard_BeginStoryboard" Storyboard="{StaticResource OnLoadedStoryboard}"/>
         </EventTrigger>
     </UserControl.Triggers>
+    
     <Grid x:Name="layoutRoot">
         <Grid x:Name="grid" Background="{StaticResource BlueBrush}" RenderTransformOrigin="1,1">
             <Grid.RenderTransform>

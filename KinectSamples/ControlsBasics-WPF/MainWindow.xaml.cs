@@ -164,7 +164,9 @@ namespace Microsoft.Samples.Kinect.ControlsBasics
         {
             var button = (KinectTileButton)e.OriginalSource;
             var selectionDisplay = new SelectionDisplay(button.Label as string);
-            this.kinectRegionGrid.Children.Add(selectionDisplay);
+            //this.contentGrid.Children.Clear();
+            this.contentGrid.Children.Add(selectionDisplay);
+            //this.kinectRegionGrid.Children.Add(selectionDisplay);
             e.Handled = true;
         }
 

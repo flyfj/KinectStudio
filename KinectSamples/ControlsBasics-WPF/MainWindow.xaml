@@ -116,7 +116,8 @@
             <TextBlock HorizontalAlignment="Right" Margin="0 0 -1 0" VerticalAlignment="Bottom" Foreground="{StaticResource MediumGreyBrush}" FontSize="18">Controls Basics</TextBlock>
         </Grid>
 
-        <k:KinectRegion Grid.Row="1" x:Name="kinectRegion">
+        <Grid Grid.Row="1" Name="contentGrid">
+        <k:KinectRegion  x:Name="kinectRegion">
             <Grid x:Name="kinectRegionGrid" Margin="10,20,10,20">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
@@ -143,10 +144,13 @@
                         <ColumnDefinition Width="10"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
+                    
                     <local:KinectHoverButton Grid.Column="0" Style="{StaticResource KinectHoverButtonScrollLeftStyle}" Click="PageLeftButtonClick" IsEnabled="{Binding ElementName=ControlsBasicsWindow, Path=PageLeftEnabled}"/>
                     <local:KinectHoverButton Grid.Column="2" Style="{StaticResource KinectHoverButtonScrollRightStyle}" Click="PageRightButtonClick" IsEnabled="{Binding ElementName=ControlsBasicsWindow, Path=PageRightEnabled}"/>
+                    
                 </Grid>
             </Grid>
         </k:KinectRegion>
+        </Grid>
     </Grid>
 </Window>
