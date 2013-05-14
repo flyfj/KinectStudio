@@ -206,12 +206,12 @@ namespace KinectMotionAnalyzer.UI
             string caption = button.Label as string;
             if (caption == "Any Motion")
             {
-                ActionMatcherView matcherView = new ActionMatcherView(sensorChooser.Kinect);
+                ActionMatcherView matcherView = new ActionMatcherView(sensorChooser);
                 this.mainGrid.Children.Add(matcherView);
             }
             if (caption == "FMS")
             {
-                FMSSelectorView fmsView = new FMSSelectorView(sensorChooser.Kinect);
+                FMSSelectorView fmsView = new FMSSelectorView(sensorChooser);
                 this.mainGrid.Children.Add(fmsView);
             }
 

@@ -1,16 +1,14 @@
-﻿<UserControl x:Class="KinectMotionAnalyzer.UI.Controls.ActionMatcherView"
+﻿<UserControl x:Class="KinectMotionAnalyzer.UI.Controls.FMSProcessorView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:k="http://schemas.microsoft.com/kinect/2013"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d"
+             xmlns:k="http://schemas.microsoft.com/kinect/2013"
+             mc:Ignorable="d" 
              Background="White"
              d:DesignHeight="500" d:DesignWidth="1000" Loaded="UserControl_Loaded">
 
     <UserControl.Resources>
-        
-        <SolidColorBrush x:Key="BlueBrush" Color="#FF00BCF2" />
 
         <Storyboard x:Key="OnLoadedStoryboard">
             <!--first appear scale x-->
@@ -24,7 +22,7 @@
                 <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="1"/>
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
-        
+
         <Storyboard x:Key="OnEndedStoryboard">
             <!--scale back-->
             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" Storyboard.TargetName="mainGrid">
@@ -53,7 +51,6 @@
             <BeginStoryboard x:Name="OnEndedStoryboard_BeginStoryboard" Storyboard="{StaticResource OnEndedStoryboard}"/>
         </EventTrigger>
     </UserControl.Triggers>
-    
 
     <Border x:Name="globalBorder"  BorderBrush="Black" BorderThickness="1" Margin="0,0,0,0">
         <Grid x:Name="mainGrid"  IsVisibleChanged="mainGrid_IsVisibleChanged">
@@ -75,11 +72,10 @@
 
             <Border BorderBrush="Black" BorderThickness="1" Grid.Column="0">
                 <TextBlock TextWrapping="Wrap"  Padding="20" FontFamily="Tw Cen MT Condensed Extra Bold" FontSize="16">
-                Action recognized
-                No action
+                Functional Movement Screening Tests
                 </TextBlock>
             </Border>
-                
+
             <Grid Grid.Column="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="20*"/>
@@ -94,7 +90,7 @@
             <Border BorderBrush="Black" BorderThickness="1" Grid.Column="2">
                 <k:KinectRegion x:Name="controlKinectRegion" Padding="20">
                     <StackPanel Orientation="Vertical">
-                        <k:KinectTileButton Width="109" Label="Play" HorizontalLabelAlignment="Center"  Margin="20" Height="Auto" FontSize="20" HorizontalAlignment="Center"></k:KinectTileButton>
+                        <k:KinectTileButton Width="109" Label="Process" HorizontalLabelAlignment="Center"  Margin="20" Height="Auto" FontSize="20" HorizontalAlignment="Center"/>
                         <k:KinectCircleButton Name="exitBtn"  Background="#FFF32020" Width="100" Margin="20"/>
                     </StackPanel>
                 </k:KinectRegion>

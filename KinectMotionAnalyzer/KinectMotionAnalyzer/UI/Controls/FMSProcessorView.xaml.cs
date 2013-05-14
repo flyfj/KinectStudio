@@ -9,7 +9,6 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -21,11 +20,10 @@ using Microsoft.Kinect.Toolkit.Controls;
 namespace KinectMotionAnalyzer.UI.Controls
 {
     /// <summary>
-    /// Interaction logic for ActionMatcherView.xaml
+    /// Interaction logic for FMSProcessorView.xaml
     /// </summary>
-    public partial class ActionMatcherView : UserControl
+    public partial class FMSProcessorView : UserControl
     {
-
         private readonly KinectSensorChooser sensorChooser = null;
         private KinectSensor kinect_sensor = null;
         private KinectDataManager query_kinect_data_manager = null;
@@ -37,7 +35,8 @@ namespace KinectMotionAnalyzer.UI.Controls
         private List<Skeleton> query_skeleton_rec_buffer = null; // record skeleton data
         private List<byte[]> query_color_frame_rec_buffer = null; // record video frames
 
-        public ActionMatcherView(KinectSensorChooser chooser)
+
+        public FMSProcessorView(KinectSensorChooser chooser)
         {
             InitializeComponent();
 
@@ -180,8 +179,5 @@ namespace KinectMotionAnalyzer.UI.Controls
             #endregion
 
         }
-
-
- 
     }
 }

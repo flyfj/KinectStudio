@@ -67,7 +67,7 @@
         </Grid.RenderTransform>
 
         <k:KinectRegion x:Name="kinectRegion">
-            <Grid x:Name="kinectRegionGrid" Margin="10,20,10,20">
+            <Grid x:Name="kinectRegionGrid" Margin="10,20,10,20" k:KinectTileButton.Click="KinectTileButtonClick">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50*"/>
                     <RowDefinition Height="50*"/>
@@ -93,7 +93,7 @@
                         </k:KinectTileButton.Background>
                     </k:KinectTileButton>
                     
-                    <k:KinectTileButton Grid.Column="2"  Label="Hurdle Step" Margin="20" Click="KinectTileButtonClick" FontSize="22" HorizontalLabelAlignment="Center" FontWeight="Bold">
+                    <k:KinectTileButton Grid.Column="2"  Label="Hurdle Step" Margin="20" FontSize="22" HorizontalLabelAlignment="Center" FontWeight="Bold">
                         <k:KinectTileButton.Background>
                             <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/FMS_Images/hurdle.jpg" Stretch="Uniform"/>
                         </k:KinectTileButton.Background>

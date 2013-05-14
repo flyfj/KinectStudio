@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Kinect;
+using Microsoft.Kinect.Toolkit;
+using Microsoft.Kinect.Toolkit.Controls;
 
 namespace KinectMotionAnalyzer.UI.Controls
 {
@@ -21,18 +23,27 @@ namespace KinectMotionAnalyzer.UI.Controls
     /// </summary>
     public partial class FMSSelectorView : UserControl
     {
+
+        private readonly KinectSensorChooser sensorChooser = null;
         private KinectSensor kinect_sensor = null;
 
 
-        public FMSSelectorView(KinectSensor kinect)
+        public FMSSelectorView(KinectSensorChooser chooser)
         {
             InitializeComponent();
 
-            kinect_sensor = kinect;
+            sensorChooser = chooser;
         }
 
         private void KinectTileButtonClick(object sender, RoutedEventArgs e)
         {
+            var button = (KinectTileButton)e.OriginalSource;
+            string caption = button.Label as string;
+            if (caption != "Exit")
+            {
+                FMSProcessorView fmsProcessorView = new FMSProcessorView(sensorChooser);
+                this.mainGrid.Children.Add(fmsProcessorView);
+            }
 
         }
 
