@@ -146,6 +146,9 @@
     <Compile Include="UI\Controls\FMSProcessorView.xaml.cs">
       <DependentUpon>FMSProcessorView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Controls\HomeScreenView.xaml.cs">
+      <DependentUpon>HomeScreenView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Windows\ActionDatabasePreview.xaml.cs">
       <DependentUpon>ActionDatabasePreview.xaml</DependentUpon>
     </Compile>
@@ -223,6 +226,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="UI\Controls\FMSProcessorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\HomeScreenView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

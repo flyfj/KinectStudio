@@ -24,15 +24,6 @@ namespace KinectMotionAnalyzer.UI
     /// </summary>
     public partial class MainUserWindow
     {
-        public static readonly DependencyProperty PageLeftEnabledProperty = DependencyProperty.Register(
-            "PageLeftEnabled", typeof(bool), typeof(MainUserWindow), new PropertyMetadata(false));
-
-        public static readonly DependencyProperty PageRightEnabledProperty = DependencyProperty.Register(
-            "PageRightEnabled", typeof(bool), typeof(MainUserWindow), new PropertyMetadata(false));
-
-        private const double ScrollErrorMargin = 0.001;
-
-        private const int PixelScrollByAmount = 20;
 
         private readonly KinectSensorChooser sensorChooser;
 
@@ -52,57 +43,6 @@ namespace KinectMotionAnalyzer.UI
             // Bind the sensor chooser's current sensor to the KinectRegion
             var regionSensorBinding = new Binding("Kinect") { Source = this.sensorChooser };
             BindingOperations.SetBinding(this.kinectRegion, KinectRegion.KinectSensorProperty, regionSensorBinding);
-
-            // Clear out placeholder content
-            //this.wrapPanel.Children.Clear();
-
-            // Add in display content
-            for (var index = 5; index < 100; ++index)
-            {
-                var button = new KinectTileButton
-                {
-                    Label = (index + 1).ToString(CultureInfo.CurrentCulture),
-                    Style = FindResource("KinectTileButtonStyle") as Style
-                };
-                button.Margin = new System.Windows.Thickness(10);
-                this.wrapPanel.Children.Add(button);
-            }
-
-            // Bind listener to scroll viewer scroll position change, and check scroll viewer position
-            this.UpdatePagingButtonState();
-            scrollViewer.ScrollChanged += (o, e) => this.UpdatePagingButtonState();
-        }
-
-        /// <summary>
-        /// CLR Property Wrappers for PageLeftEnabledProperty
-        /// </summary>
-        public bool PageLeftEnabled
-        {
-            get
-            {
-                return (bool)GetValue(PageLeftEnabledProperty);
-            }
-
-            set
-            {
-                this.SetValue(PageLeftEnabledProperty, value);
-            }
-        }
-
-        /// <summary>
-        /// CLR Property Wrappers for PageRightEnabledProperty
-        /// </summary>
-        public bool PageRightEnabled
-        {
-            get
-            {
-                return (bool)GetValue(PageRightEnabledProperty);
-            }
-
-            set
-            {
-                this.SetValue(PageRightEnabledProperty, value);
-            }
         }
 
         /// <summary>
@@ -165,57 +105,12 @@ namespace KinectMotionAnalyzer.UI
             this.sensorChooser.Stop();
         }
 
-        /// <summary>
-        /// Handle paging right (next button).
-        /// </summary>
-        /// <param name="sender">Event sender</param>
-        /// <param name="e">Event arguments</param>
-        private void PageRightButtonClick(object sender, RoutedEventArgs e)
-        {
-            scrollViewer.ScrollToHorizontalOffset(scrollViewer.HorizontalOffset + PixelScrollByAmount);
-        }
-
-        /// <summary>
-        /// Handle paging left (previous button).
-        /// </summary>
-        /// <param name="sender">Event sender</param>
-        /// <param name="e">Event arguments</param>
-        private void PageLeftButtonClick(object sender, RoutedEventArgs e)
-        {
-            scrollViewer.ScrollToHorizontalOffset(scrollViewer.HorizontalOffset - PixelScrollByAmount);
-        }
-
-        /// <summary>
-        /// Change button state depending on scroll viewer position
-        /// </summary>
-        private void UpdatePagingButtonState()
-        {
-            this.PageLeftEnabled = scrollViewer.HorizontalOffset > ScrollErrorMargin;
-            this.PageRightEnabled = scrollViewer.HorizontalOffset < scrollViewer.ScrollableWidth - ScrollErrorMargin;
-        }
-
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            this.holderGrid.Children.Add(new HomeScreenView(sensorChooser));
+
             this.WindowState = WindowState.Maximized;
             this.ResizeMode = ResizeMode.NoResize;
-        }
-
-        private void KinectTileButtonClick(object sender, RoutedEventArgs e)
-        {
-            var button = (KinectTileButton)e.OriginalSource;
-            string caption = button.Label as string;
-            if (caption == "Any Motion")
-            {
-                ActionMatcherView matcherView = new ActionMatcherView(sensorChooser);
-                this.mainGrid.Children.Add(matcherView);
-            }
-            if (caption == "FMS")
-            {
-                FMSSelectorView fmsView = new FMSSelectorView(sensorChooser);
-                this.mainGrid.Children.Add(fmsView);
-            }
-
-            e.Handled = true;
         }
 
     }

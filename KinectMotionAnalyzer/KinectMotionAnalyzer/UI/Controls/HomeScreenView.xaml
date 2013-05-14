@@ -1,21 +1,15 @@
-﻿<Window x:Class="KinectMotionAnalyzer.UI.MainUserWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:k="http://schemas.microsoft.com/kinect/2013"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:KinectMotionAnalyzer.UI.Controls"
-        Title="Fitronix"
-        Closing="WindowClosing"
-        mc:Ignorable="d"
-        d:DesignWidth="1200"
-        d:DesignHeight="700"
-        MinWidth="500"
-        MinHeight="700"
-        FontFamily="Segoe UI" Loaded="Window_Loaded"
-        >
+﻿<UserControl x:Class="KinectMotionAnalyzer.UI.Controls.HomeScreenView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:k="http://schemas.microsoft.com/kinect/2013"
+             xmlns:local="clr-namespace:KinectMotionAnalyzer.UI.Controls"
+             Background="White"
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="1000">
 
-    <Window.Resources>
+    <UserControl.Resources>
         <PathGeometry x:Key="ChevronGeometry" x:Shared="False">
             F1M150.001,146.9932L126.565,169.3822L126.565,153.5962L150.001,130.6182L173.435,153.5962L173.435,169.3822z
         </PathGeometry>
@@ -102,7 +96,7 @@
         </Style>
 
         <SolidColorBrush x:Key="BlueBrush" Color="#FF00BCF2" />
-        
+
         <SolidColorBrush x:Key="MediumGreyBrush" Color="#ff6e6e6e"/>
 
         <Style x:Key="KinectTileButtonStyle" TargetType="k:KinectTileButton">
@@ -111,27 +105,56 @@
             <Setter Property="Margin" Value="10" />
         </Style>
 
-    </Window.Resources>
+    </UserControl.Resources>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+    <Grid x:Name="kinectRegionGrid" Margin="10,0,10,20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="70*" />
+                    <RowDefinition Height="30*" />
+                </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0"  Margin="10 0 10 20">
-            <Image HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="/KinectMotionAnalyzer;component/Resources/FitronixIO_logo.png" Margin="0 0 0 4" Width="377"/>
-            <k:KinectUserViewer Name="userViewer" k:KinectRegion.KinectRegion="{Binding ElementName=kinectRegion}" Height="100" HorizontalAlignment="Center" VerticalAlignment="Top" />
-            <k:KinectSensorChooserUI HorizontalAlignment="Center" VerticalAlignment="Top" Name="sensorChooserUi" />
-            <TextBlock HorizontalAlignment="Right" Margin="0 0 -1 0" VerticalAlignment="Bottom" Foreground="{StaticResource MediumGreyBrush}" FontSize="18" Text="Virtual Fitness Platform"/>
-        </Grid>
+                <k:KinectScrollViewer Grid.Row="0" Name="scrollViewer" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Disabled">
+                    <WrapPanel VerticalAlignment="Center" x:Name="wrapPanel" Orientation="Horizontal" k:KinectTileButton.Click="KinectTileButtonClick">
+                        <!-- items for design layout.  They will be replaced at runtime. -->
+                        <k:KinectTileButton x:Name="anyMotionBtn" Label="Any Motion" Style="{StaticResource KinectTileButtonStyle}" >
+                            <k:KinectTileButton.Background>
+                                <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/question.jpg" Stretch="None"/>
+                            </k:KinectTileButton.Background>
+                        </k:KinectTileButton>
+                        <k:KinectTileButton x:Name="fmsBtn" Label="FMS" Style="{StaticResource KinectTileButtonStyle}">
+                            <k:KinectTileButton.Background>
+                                <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/fms_logo.jpg"/>
+                            </k:KinectTileButton.Background>
+                        </k:KinectTileButton>
+                        <k:KinectTileButton Label="Dance" Style="{StaticResource KinectTileButtonStyle}">
+                            <k:KinectTileButton.Background>
+                                <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/dance.jpg" Stretch="UniformToFill"/>
+                            </k:KinectTileButton.Background>
+                        </k:KinectTileButton>
+                        <k:KinectTileButton Label="Golf" Style="{StaticResource KinectTileButtonStyle}">
+                            <k:KinectTileButton.Background>
+                                <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/tiger_golf.jpg"/>
+                            </k:KinectTileButton.Background>
+                        </k:KinectTileButton>
+                        <k:KinectTileButton Label="Yoga" Style="{StaticResource KinectTileButtonStyle}">
+                            <k:KinectTileButton.Background>
+                                <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/yoga.jpg"/>
+                            </k:KinectTileButton.Background>
+                        </k:KinectTileButton>
+                        <k:KinectTileButton Label="6" Style="{StaticResource KinectTileButtonStyle}"/>
+                    </WrapPanel>
+                </k:KinectScrollViewer>
 
-        <k:KinectRegion Grid.Row="1" Name="kinectRegion">
-            <Grid  Name="holderGrid">
+                <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,30,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <local:KinectHoverButton Grid.Column="0" Style="{StaticResource KinectHoverButtonScrollLeftStyle}" Click="PageLeftButtonClick" IsEnabled="{Binding ElementName=ControlsBasicsWindow, Path=PageLeftEnabled}"/>
+                    <local:KinectHoverButton Grid.Column="2" Style="{StaticResource KinectHoverButtonScrollRightStyle}" Click="PageRightButtonClick" IsEnabled="{Binding ElementName=ControlsBasicsWindow, Path=PageRightEnabled}"/>
+                </Grid>
 
             </Grid>
-        </k:KinectRegion>
-        
-        
-    </Grid>
-</Window>
+
+</UserControl>

@@ -41,6 +41,7 @@ namespace KinectMotionAnalyzer.UI.Controls
             string caption = button.Label as string;
             if (caption != "Exit")
             {
+                sensorChooser.Stop();
                 FMSProcessorView fmsProcessorView = new FMSProcessorView(sensorChooser);
                 this.mainGrid.Children.Add(fmsProcessorView);
             }
@@ -54,6 +55,13 @@ namespace KinectMotionAnalyzer.UI.Controls
                 var parent = (Panel)this.Parent;
                 parent.Children.Remove(this);
             }
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Bind the sensor chooser's current sensor to the KinectRegion
+            var regionSensorBinding = new Binding("Kinect") { Source = this.sensorChooser };
+            BindingOperations.SetBinding(this.kinectRegion, KinectRegion.KinectSensorProperty, regionSensorBinding);
         }
 
 

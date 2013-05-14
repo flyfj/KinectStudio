@@ -41,6 +41,9 @@ namespace KinectMotionAnalyzer.UI.Controls
             InitializeComponent();
 
             sensorChooser = chooser;
+
+            query_skeleton_rec_buffer = new List<Skeleton>();
+            query_color_frame_rec_buffer = new List<byte[]>();
         }
 
         private void mainGrid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -49,6 +52,8 @@ namespace KinectMotionAnalyzer.UI.Controls
             {
                 var parent = (Panel)this.Parent;
                 parent.Children.Remove(this);
+
+                sensorChooser.Start();
             }
         }
 
@@ -99,9 +104,6 @@ namespace KinectMotionAnalyzer.UI.Controls
 
                 // bind event handlers
                 kinect_sensor.AllFramesReady += kinect_allframes_ready;
-
-                query_skeleton_rec_buffer = new List<Skeleton>();
-                query_color_frame_rec_buffer = new List<byte[]>();
 
                 kinect_sensor.Start();
             }
@@ -178,6 +180,15 @@ namespace KinectMotionAnalyzer.UI.Controls
             }
             #endregion
 
+        }
+
+        private void exitBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (kinect_sensor != null && kinect_sensor.IsRunning)
+                kinect_sensor.Stop();
+
+            query_color_frame_rec_buffer.Clear();
+            query_skeleton_rec_buffer.Clear();
         }
     }
 }
