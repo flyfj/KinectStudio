@@ -27,6 +27,7 @@ namespace KinectMotionAnalyzer.UI.Controls
     {
 
         private readonly KinectSensorChooser sensorChooser = null;
+        private readonly MainUserWindow parentWindow = null;
         private KinectSensor kinect_sensor = null;
         private KinectDataManager query_kinect_data_manager = null;
 
@@ -37,11 +38,12 @@ namespace KinectMotionAnalyzer.UI.Controls
         private List<Skeleton> query_skeleton_rec_buffer = null; // record skeleton data
         private List<byte[]> query_color_frame_rec_buffer = null; // record video frames
 
-        public ActionMatcherView(KinectSensorChooser chooser)
+        public ActionMatcherView(KinectSensorChooser chooser, MainUserWindow parentWin)
         {
             InitializeComponent();
 
             sensorChooser = chooser;
+            parentWindow = parentWin;
         }
 
         private void mainGrid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -55,7 +57,6 @@ namespace KinectMotionAnalyzer.UI.Controls
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-
             // Bind the sensor chooser's current sensor to the KinectRegion
             var regionSensorBinding = new Binding("Kinect") { Source = this.sensorChooser };
             BindingOperations.SetBinding(this.controlKinectRegion, KinectRegion.KinectSensorProperty, regionSensorBinding);
@@ -104,7 +105,8 @@ namespace KinectMotionAnalyzer.UI.Controls
                 query_skeleton_rec_buffer = new List<Skeleton>();
                 query_color_frame_rec_buffer = new List<byte[]>();
 
-                kinect_sensor.Start();
+                if (!kinect_sensor.IsRunning)
+                    kinect_sensor.Start();
             }
             
         }
@@ -179,6 +181,20 @@ namespace KinectMotionAnalyzer.UI.Controls
             }
             #endregion
 
+        }
+
+        private void exitBtn_Click(object sender, RoutedEventArgs e)
+        {
+            query_color_frame_rec_buffer.Clear();
+            query_skeleton_rec_buffer.Clear();
+
+            kinect_sensor.AllFramesReady -= kinect_allframes_ready;
+
+            // reactivate parent kinect region
+            parentWindow.kinectRegion.IsEnabled = true;
+
+            // remove itself
+            (this.Parent as Panel).Children.Remove(this);
         }
 
 

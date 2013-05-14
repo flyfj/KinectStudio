@@ -40,9 +40,13 @@ namespace KinectMotionAnalyzer.UI
             this.sensorChooserUi.KinectSensorChooser = this.sensorChooser;
             this.sensorChooser.Start();
 
+            //// Bind the sensor chooser's current sensor to the KinectRegion
+            //var regionSensorBinding1 = new Binding("Kinect") { Source = this.sensorChooser };
+            //BindingOperations.SetBinding(this.winControlKinectRegion, KinectRegion.KinectSensorProperty, regionSensorBinding1);
+
             // Bind the sensor chooser's current sensor to the KinectRegion
-            var regionSensorBinding = new Binding("Kinect") { Source = this.sensorChooser };
-            BindingOperations.SetBinding(this.kinectRegion, KinectRegion.KinectSensorProperty, regionSensorBinding);
+            var regionSensorBinding2 = new Binding("Kinect") { Source = this.sensorChooser };
+            BindingOperations.SetBinding(this.kinectRegion, KinectRegion.KinectSensorProperty, regionSensorBinding2);
         }
 
         /// <summary>
@@ -107,7 +111,7 @@ namespace KinectMotionAnalyzer.UI
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            this.holderGrid.Children.Add(new HomeScreenView(sensorChooser));
+            this.kinectRegionGrid.Children.Add(new HomeScreenView(sensorChooser, this));
 
             this.WindowState = WindowState.Maximized;
             this.ResizeMode = ResizeMode.NoResize;

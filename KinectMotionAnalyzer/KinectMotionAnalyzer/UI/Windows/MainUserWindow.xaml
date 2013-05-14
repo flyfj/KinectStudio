@@ -123,14 +123,17 @@
             <Image HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="/KinectMotionAnalyzer;component/Resources/FitronixIO_logo.png" Margin="0 0 0 4" Width="377"/>
             <k:KinectUserViewer Name="userViewer" k:KinectRegion.KinectRegion="{Binding ElementName=kinectRegion}" Height="100" HorizontalAlignment="Center" VerticalAlignment="Top" />
             <k:KinectSensorChooserUI HorizontalAlignment="Center" VerticalAlignment="Top" Name="sensorChooserUi" />
-            <TextBlock HorizontalAlignment="Right" Margin="0 0 -1 0" VerticalAlignment="Bottom" Foreground="{StaticResource MediumGreyBrush}" FontSize="18" Text="Virtual Fitness Platform"/>
+            <TextBlock HorizontalAlignment="Right" Margin="0 0 200 0" VerticalAlignment="Bottom" Foreground="{StaticResource MediumGreyBrush}" FontSize="18" Text="Virtual Fitness Platform"/>
         </Grid>
 
-        <k:KinectRegion Grid.Row="1" Name="kinectRegion">
-            <Grid  Name="holderGrid">
+        <Grid Name="holderGrid" Grid.Row="1">
+            <k:KinectRegion Name="kinectRegion">
+                <Grid Name="kinectRegionGrid">
 
-            </Grid>
-        </k:KinectRegion>
+                </Grid>
+            </k:KinectRegion>
+        </Grid>
+        
         
         
     </Grid>

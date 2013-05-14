@@ -27,6 +27,7 @@ namespace KinectMotionAnalyzer.UI.Controls
     {
 
         private readonly KinectSensorChooser sensorChooser = null;
+        private readonly MainUserWindow parentWindow = null;
 
         public static readonly DependencyProperty PageLeftEnabledProperty = DependencyProperty.Register(
             "PageLeftEnabled", typeof(bool), typeof(HomeScreenView), new PropertyMetadata(false));
@@ -39,11 +40,13 @@ namespace KinectMotionAnalyzer.UI.Controls
         private const int PixelScrollByAmount = 20;
 
 
-        public HomeScreenView(KinectSensorChooser chooser)
+        public HomeScreenView(KinectSensorChooser chooser, MainUserWindow parentWin)
         {
             InitializeComponent();
 
             sensorChooser = chooser;
+
+            parentWindow = parentWin;
 
             // Add in display content
             for (var index = 5; index < 100; ++index)
@@ -180,12 +183,14 @@ namespace KinectMotionAnalyzer.UI.Controls
             string caption = button.Label as string;
             if (caption == "Any Motion")
             {
-                ActionMatcherView matcherView = new ActionMatcherView(sensorChooser);
-                (this.Parent as Panel).Children.Add(matcherView);
+                ActionMatcherView matcherView = new ActionMatcherView(sensorChooser, parentWindow);
+
+                parentWindow.kinectRegion.IsEnabled = false;
+                parentWindow.holderGrid.Children.Add(matcherView);  
             }
             else if (caption == "FMS")
             {
-                FMSSelectorView fmsView = new FMSSelectorView(sensorChooser);
+                FMSSelectorView fmsView = new FMSSelectorView(sensorChooser, parentWindow);
                 (this.Parent as Panel).Children.Add(fmsView);
             }
         }

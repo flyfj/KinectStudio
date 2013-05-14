@@ -50,12 +50,12 @@
             <BeginStoryboard x:Name="OnLoadedStoryboard_BeginStoryboard" Storyboard="{StaticResource OnLoadedStoryboard}"/>
         </EventTrigger>
 
-        <EventTrigger RoutedEvent="Button.Click" SourceName="exitBtn">
+        <!--<EventTrigger>
             <BeginStoryboard x:Name="OnEndedStoryboard_BeginStoryboard" Storyboard="{StaticResource OnEndedStoryboard}"/>
-        </EventTrigger>
+        </EventTrigger>-->
     </UserControl.Triggers>
 
-    <Grid Name="mainGrid" IsVisibleChanged="mainGrid_IsVisibleChanged">
+    <Grid Name="mainGrid">
         
         <Grid.RenderTransform>
             <TransformGroup>
@@ -66,8 +66,7 @@
             </TransformGroup>
         </Grid.RenderTransform>
 
-        <k:KinectRegion x:Name="kinectRegion">
-            <Grid x:Name="kinectRegionGrid" Margin="10,20,10,20" k:KinectTileButton.Click="KinectTileButtonClick">
+        <Grid x:Name="kinectRegionGrid" Margin="10,20,10,20" k:KinectTileButton.Click="KinectTileButtonClick">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50*"/>
                     <RowDefinition Height="50*"/>
@@ -139,7 +138,6 @@
                 </Grid>
   
             </Grid>
-        </k:KinectRegion>
     </Grid>
 
 </UserControl>

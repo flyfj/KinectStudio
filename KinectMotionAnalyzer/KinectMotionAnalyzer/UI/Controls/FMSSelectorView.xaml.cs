@@ -25,14 +25,15 @@ namespace KinectMotionAnalyzer.UI.Controls
     {
 
         private readonly KinectSensorChooser sensorChooser = null;
-        private KinectSensor kinect_sensor = null;
+        private readonly MainUserWindow parentWindow = null;
 
 
-        public FMSSelectorView(KinectSensorChooser chooser)
+        public FMSSelectorView(KinectSensorChooser chooser, MainUserWindow parentWin)
         {
             InitializeComponent();
 
             sensorChooser = chooser;
+            parentWindow = parentWin;
         }
 
         private void KinectTileButtonClick(object sender, RoutedEventArgs e)
@@ -41,9 +42,15 @@ namespace KinectMotionAnalyzer.UI.Controls
             string caption = button.Label as string;
             if (caption != "Exit")
             {
-                sensorChooser.Stop();
-                FMSProcessorView fmsProcessorView = new FMSProcessorView(sensorChooser);
-                this.mainGrid.Children.Add(fmsProcessorView);
+                FMSProcessorView fmsProcessorView = new FMSProcessorView(sensorChooser, parentWindow);
+                parentWindow.holderGrid.Children.Add(fmsProcessorView);
+
+                // stop parent kinect region
+                parentWindow.kinectRegion.IsEnabled = false;
+            }
+            else
+            {
+                (this.Parent as Panel).Children.Remove(this);
             }
 
         }
@@ -59,9 +66,7 @@ namespace KinectMotionAnalyzer.UI.Controls
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            // Bind the sensor chooser's current sensor to the KinectRegion
-            var regionSensorBinding = new Binding("Kinect") { Source = this.sensorChooser };
-            BindingOperations.SetBinding(this.kinectRegion, KinectRegion.KinectSensorProperty, regionSensorBinding);
+            
         }
 
 
