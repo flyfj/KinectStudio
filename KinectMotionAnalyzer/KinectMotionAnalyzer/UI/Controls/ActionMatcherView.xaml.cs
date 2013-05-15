@@ -107,11 +107,9 @@ namespace KinectMotionAnalyzer.UI.Controls
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            // initialize the sensor chooser and UI
-            //this.sensorChooser = new KinectSensorChooser();
-            //this.sensorChooser.KinectChanged += SensorChooserOnKinectChanged;
-            //this.sensorChooserUi.KinectSensorChooser = this.sensorChooser;
-            //this.sensorChooser.Start();
+            // Bind the sensor chooser's current sensor to the KinectRegion
+            var regionSensorBinding = new Binding("Kinect") { Source = this.sensorChooser };
+            BindingOperations.SetBinding(this.controlKinectRegion, KinectRegion.KinectSensorProperty, regionSensorBinding);
 
             kinect_sensor = sensorChooser.Kinect;
             if (kinect_sensor.IsRunning)
@@ -250,6 +248,8 @@ namespace KinectMotionAnalyzer.UI.Controls
             Panel parentContainer = this.Parent as Panel;
             if (parentContainer.Children.Count > 0)
                 parentContainer.Children.RemoveAt(parentContainer.Children.Count - 1);
+
+            parentWindow.kinectRegion.IsEnabled = true;
 
             kinect_sensor.Start();
         }

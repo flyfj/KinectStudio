@@ -6,7 +6,7 @@
              xmlns:k="http://schemas.microsoft.com/kinect/2013"
              mc:Ignorable="d" 
              Background="White"
-             d:DesignHeight="500" d:DesignWidth="1000" Loaded="UserControl_Loaded">
+             d:DesignHeight="700" d:DesignWidth="1000" Loaded="UserControl_Loaded">
 
     <UserControl.Resources>
 
@@ -72,7 +72,7 @@
             <Grid Grid.Row="0">
                 <Image HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="/KinectMotionAnalyzer;component/Resources/FitronixIO_logo.png" Margin="0 0 0 4" Width="377"/>
                 <k:KinectSensorChooserUI HorizontalAlignment="Center" VerticalAlignment="Top" Name="sensorChooserUi" />
-                <TextBlock HorizontalAlignment="Right" Margin="0 0 50 0" VerticalAlignment="Bottom" FontSize="18" Text="Virtual Fitness Platform"/>
+                <TextBlock HorizontalAlignment="Right" Margin="0 0 50 20" VerticalAlignment="Bottom" FontSize="20" Text="Virtual Fitness Platform" FontWeight="Bold"/>
             </Grid>
 
             <Border BorderBrush="Black" BorderThickness="1" Grid.Row="1">
@@ -84,7 +84,7 @@
                     </Grid.ColumnDefinitions>
 
                     <Border BorderBrush="Black" BorderThickness="1" Grid.Column="0">
-                        <TextBlock TextWrapping="Wrap"  Padding="20" FontFamily="Tw Cen MT Condensed Extra Bold" FontSize="16">
+                        <TextBlock x:Name="infoTextBlock" TextWrapping="Wrap"  Padding="20" FontFamily="Tw Cen MT Condensed Extra Bold" FontSize="20">
                             Action recognized
                             No action
                         </TextBlock>

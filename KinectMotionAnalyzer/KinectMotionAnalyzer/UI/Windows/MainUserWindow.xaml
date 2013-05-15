@@ -122,7 +122,7 @@
 
             <Grid Grid.Row="0"  Margin="10 0 10 10">
                 <Image HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="/KinectMotionAnalyzer;component/Resources/FitronixIO_logo.png" Margin="0 0 0 4" Width="377"/>
-                <k:KinectUserViewer Name="userViewer" k:KinectRegion.KinectRegion="{Binding ElementName=kinectRegion}" Height="100" HorizontalAlignment="Center" VerticalAlignment="Top" />
+                <k:KinectUserViewer Name="userViewer" DefaultUserColor="Purple"  k:KinectRegion.KinectRegion="{Binding ElementName=kinectRegion}" Height="100" HorizontalAlignment="Center" VerticalAlignment="Top" />
                 <k:KinectSensorChooserUI HorizontalAlignment="Center" VerticalAlignment="Top" Name="sensorChooserUi" />
                 <TextBlock HorizontalAlignment="Right" Margin="0 0 200 0" VerticalAlignment="Bottom" Foreground="{StaticResource MediumGreyBrush}" FontSize="18" Text="Virtual Fitness Platform"/>
             </Grid>

@@ -77,7 +77,7 @@
             <Grid Grid.Row="0">
                 <Image HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="/KinectMotionAnalyzer;component/Resources/FitronixIO_logo.png" Margin="0 0 0 4" Width="377"/>
                 <k:KinectSensorChooserUI HorizontalAlignment="Center" VerticalAlignment="Top" Name="sensorChooserUi" />
-                <TextBlock HorizontalAlignment="Right" Margin="0 0 50 0" VerticalAlignment="Bottom" FontSize="18" Text="Virtual Fitness Platform"/>
+                <TextBlock HorizontalAlignment="Right" Margin="0 0 50 20" VerticalAlignment="Bottom" FontSize="22" Text="Virtual Fitness Platform" FontWeight="Bold"/>
             </Grid>
 
             <Border BorderBrush="Black" BorderThickness="1" Grid.Row="1">
@@ -89,7 +89,7 @@
                     </Grid.ColumnDefinitions>
 
                     <Border BorderBrush="Black" BorderThickness="1" Grid.Column="0">
-                        <TextBlock TextWrapping="Wrap"  Padding="20" FontFamily="Tw Cen MT Condensed Extra Bold" FontSize="16">
+                        <TextBlock x:Name="infoTextBlock" TextWrapping="Wrap"  Padding="20" FontFamily="Tw Cen MT Condensed Extra Bold" FontSize="20">
                             Action recognized
                             No action
                         </TextBlock>
@@ -109,12 +109,12 @@
                     </Border>
                    
                     <Border BorderBrush="Black" BorderThickness="1" Grid.Column="2">
+                        <k:KinectRegion x:Name="controlKinectRegion" Padding="20">
                             <StackPanel Orientation="Vertical">
                                 <k:KinectTileButton Width="109" Label="Play" HorizontalLabelAlignment="Center"  Margin="20" Height="Auto" FontSize="20" HorizontalAlignment="Center"></k:KinectTileButton>
                                 <k:KinectCircleButton Name="exitBtn"  Background="#FFF32020" Width="100" Margin="20" Click="exitBtn_Click"/>
                             </StackPanel>
-                        <!--<k:KinectRegion x:Name="controlKinectRegion" Padding="20">
-                        </k:KinectRegion>-->
+                        </k:KinectRegion>
                     </Border>
 
                 </Grid>
