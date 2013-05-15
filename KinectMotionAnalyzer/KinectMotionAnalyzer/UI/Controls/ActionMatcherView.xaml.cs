@@ -33,6 +33,7 @@ namespace KinectMotionAnalyzer.UI.Controls
 
         private bool ifDoSmoothing = true;
         private bool isQueryCapturing = false;
+        private bool ifStartedTracking = false; // sign to indicate if the tracking has started
 
         private int MAX_ALLOW_FRAME = 500;
         private List<Skeleton> query_skeleton_rec_buffer = null; // record skeleton data
@@ -112,12 +113,21 @@ namespace KinectMotionAnalyzer.UI.Controls
             BindingOperations.SetBinding(this.controlKinectRegion, KinectRegion.KinectSensorProperty, regionSensorBinding);
 
             kinect_sensor = sensorChooser.Kinect;
-            if (kinect_sensor.IsRunning)
-                kinect_sensor.Stop();
+        }
 
+        /// <summary>
+        /// stop running kinect and set up kinect for processing use
+        /// call start kinect next
+        /// </summary>
+        private void PrepareKinectForProcessing()
+        {
             // enable data stream
             if (kinect_sensor != null)
             {
+                // stop sensor
+                if (kinect_sensor.IsRunning)
+                    kinect_sensor.Stop();
+
                 // initialize data manager
                 query_kinect_data_manager = new KinectDataManager(ref kinect_sensor);
 
@@ -143,7 +153,6 @@ namespace KinectMotionAnalyzer.UI.Controls
                 else
                     kinect_sensor.SkeletonStream.Enable();
 
-
                 // set query source (must after source has been initialized otherwise it's null forever)
                 query_kinect_data_manager.ColorStreamBitmap = new WriteableBitmap(
                     kinect_sensor.ColorStream.FrameWidth, kinect_sensor.ColorStream.FrameHeight, 96, 96,
@@ -154,15 +163,45 @@ namespace KinectMotionAnalyzer.UI.Controls
                 // bind event handlers
                 kinect_sensor.AllFramesReady += kinect_allframes_ready;
 
-                query_skeleton_rec_buffer = new List<Skeleton>();
-                query_color_frame_rec_buffer = new List<byte[]>();
+                // create data
+                if (query_color_frame_rec_buffer == null)
+                    query_color_frame_rec_buffer = new List<byte[]>();
+                if (query_skeleton_rec_buffer == null)
+                    query_skeleton_rec_buffer = new List<Skeleton>();
 
-                kinect_sensor.Start();
+                this.ifStartedTracking = false;
+
+                // set ui
+                this.controlKinectRegion.IsEnabled = false;
             }
-            
         }
 
-        void kinect_allframes_ready(object sender, AllFramesReadyEventArgs e)
+        /// <summary>
+        /// stop running kinect and set up kinect for interaction use
+        /// just have to call kinect.start next
+        /// </summary>
+        private void PrepareKinectForInteraction()
+        {
+            if (kinect_sensor != null)
+            {
+                // stop sensor
+                if (kinect_sensor.IsRunning)
+                    kinect_sensor.Stop();
+
+                kinect_sensor.AllFramesReady -= kinect_allframes_ready;
+
+                // clear data
+                if (query_color_frame_rec_buffer != null)
+                    query_color_frame_rec_buffer.Clear();
+                if (query_skeleton_rec_buffer != null)
+                    query_skeleton_rec_buffer.Clear();
+
+                // activate kinect region
+                this.controlKinectRegion.IsEnabled = true;
+            }
+        }
+
+        private void kinect_allframes_ready(object sender, AllFramesReadyEventArgs e)
         {
             bool ifAddSkeleton = false;
 
@@ -192,6 +231,10 @@ namespace KinectMotionAnalyzer.UI.Controls
                 {
                     if (tracked_skeleton != null)
                     {
+                        // not started and first successful tracking
+                        if (!ifStartedTracking)
+                            ifStartedTracking = true;
+
                         if (query_skeleton_rec_buffer.Count == MAX_ALLOW_FRAME)
                             query_skeleton_rec_buffer.RemoveAt(0);
 
@@ -199,6 +242,18 @@ namespace KinectMotionAnalyzer.UI.Controls
                         query_skeleton_rec_buffer.Add(tracked_skeleton);
 
                         ifAddSkeleton = true;
+                    }
+                    else
+                    {
+                        // has started but lose tracking
+                        if (ifStartedTracking)
+                        {
+                            // stop processing and start interaction
+                            PrepareKinectForInteraction();
+                            ifStartedTracking = false;
+                            kinect_sensor.Start();
+                            return;
+                        }
                     }
                 }
 
@@ -236,13 +291,7 @@ namespace KinectMotionAnalyzer.UI.Controls
 
         private void exitBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (query_color_frame_rec_buffer != null)
-                query_color_frame_rec_buffer.Clear();
-            if (query_skeleton_rec_buffer != null)
-                query_skeleton_rec_buffer.Clear();
-
-            kinect_sensor.Stop();
-            kinect_sensor.AllFramesReady -= kinect_allframes_ready;
+            PrepareKinectForInteraction();
 
             // remove itself
             Panel parentContainer = this.Parent as Panel;
@@ -254,6 +303,11 @@ namespace KinectMotionAnalyzer.UI.Controls
             kinect_sensor.Start();
         }
 
- 
+        private void startBtn_Click(object sender, RoutedEventArgs e)
+        {
+            PrepareKinectForProcessing();
+            kinect_sensor.Start();
+        }
+
     }
 }

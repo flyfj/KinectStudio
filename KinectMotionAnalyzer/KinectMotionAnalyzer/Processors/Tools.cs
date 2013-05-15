@@ -113,7 +113,7 @@ namespace KinectMotionAnalyzer.Processors
             return true;
         }
 
-        // 
+        // align two skeletons by normalizing size and match center points
         static public Skeleton AlignSkeletons(Skeleton inputSke, Skeleton targetSke)
         {
             // align input to target
