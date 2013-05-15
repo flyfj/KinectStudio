@@ -183,7 +183,6 @@ namespace KinectMotionAnalyzer.UI.Controls
             string caption = button.Label as string;
             if (caption == "Any Motion")
             {
-                //sensorChooser.Stop();
                 ActionMatcherView matcherView = new ActionMatcherView(parentWindow);
                 parentWindow.globalGrid.Children.Add(matcherView);
             }

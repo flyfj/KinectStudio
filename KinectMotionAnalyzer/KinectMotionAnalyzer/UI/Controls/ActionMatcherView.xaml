@@ -109,12 +109,12 @@
                     </Border>
                    
                     <Border BorderBrush="Black" BorderThickness="1" Grid.Column="2">
-                        <k:KinectRegion x:Name="controlKinectRegion" Padding="20">
                             <StackPanel Orientation="Vertical">
                                 <k:KinectTileButton Width="109" Label="Play" HorizontalLabelAlignment="Center"  Margin="20" Height="Auto" FontSize="20" HorizontalAlignment="Center"></k:KinectTileButton>
                                 <k:KinectCircleButton Name="exitBtn"  Background="#FFF32020" Width="100" Margin="20" Click="exitBtn_Click"/>
                             </StackPanel>
-                        </k:KinectRegion>
+                        <!--<k:KinectRegion x:Name="controlKinectRegion" Padding="20">
+                        </k:KinectRegion>-->
                     </Border>
 
                 </Grid>
