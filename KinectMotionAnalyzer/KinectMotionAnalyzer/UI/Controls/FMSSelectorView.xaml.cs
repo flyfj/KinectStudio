@@ -42,7 +42,9 @@ namespace KinectMotionAnalyzer.UI.Controls
             string caption = button.Label as string;
             if (caption != "Exit")
             {
+                parentWindow.kinectRegion.IsEnabled = false;
                 FMSProcessorView fmsProcessorView = new FMSProcessorView(sensorChooser, parentWindow);
+                //(this.Parent as Panel).Children.Add(fmsProcessorView);
                 parentWindow.globalGrid.Children.Add(fmsProcessorView);
             }
             else

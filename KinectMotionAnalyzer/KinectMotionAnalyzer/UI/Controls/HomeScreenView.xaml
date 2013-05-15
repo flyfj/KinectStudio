@@ -100,8 +100,8 @@
         <SolidColorBrush x:Key="MediumGreyBrush" Color="#ff6e6e6e"/>
 
         <Style x:Key="KinectTileButtonStyle" TargetType="k:KinectTileButton">
-            <Setter Property="Width" Value="300" />
-            <Setter Property="Height" Value="300" />
+            <Setter Property="Width" Value="250" />
+            <Setter Property="Height" Value="250" />
             <Setter Property="Margin" Value="10" />
         </Style>
 
@@ -124,7 +124,7 @@
                     <!-- items for design layout.  They will be replaced at runtime. -->
                     <k:KinectTileButton x:Name="anyMotionBtn" Label="Any Motion" Style="{StaticResource KinectTileButtonStyle}" >
                         <k:KinectTileButton.Background>
-                            <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/question.jpg" Stretch="None"/>
+                            <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/question.jpg" Stretch="Uniform"/>
                         </k:KinectTileButton.Background>
                     </k:KinectTileButton>
                     <k:KinectTileButton x:Name="fmsBtn" Label="FMS" Style="{StaticResource KinectTileButtonStyle}">

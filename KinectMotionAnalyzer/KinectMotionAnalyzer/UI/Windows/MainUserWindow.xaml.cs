@@ -77,8 +77,8 @@ namespace KinectMotionAnalyzer.UI
 
                     try
                     {
-                        args.NewSensor.DepthStream.Range = DepthRange.Near;
-                        args.NewSensor.SkeletonStream.EnableTrackingInNearRange = true;
+                        //args.NewSensor.DepthStream.Range = DepthRange.Near;
+                        //args.NewSensor.SkeletonStream.EnableTrackingInNearRange = true;
                     }
                     catch (InvalidOperationException)
                     {
