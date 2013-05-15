@@ -186,16 +186,14 @@ namespace KinectMotionAnalyzer.UI.Controls
 
         private void exitBtn_Click(object sender, RoutedEventArgs e)
         {
-            //if (kinect_sensor != null && kinect_sensor.IsRunning)
-            //    kinect_sensor.Stop();
-
-            query_color_frame_rec_buffer.Clear();
-            query_skeleton_rec_buffer.Clear();
+            if (query_color_frame_rec_buffer != null)
+                query_color_frame_rec_buffer.Clear();
+            if (query_skeleton_rec_buffer != null)
+                query_skeleton_rec_buffer.Clear();
 
             kinect_sensor.AllFramesReady -= kinect_allframes_ready;
 
-            // reactivate parent kinect region
-            parentWindow.kinectRegion.IsEnabled = true;
+            parentWindow.sensorChooserUi.KinectSensorChooser.Start();
 
             // remove itself
             (this.Parent as Panel).Children.Remove(this);

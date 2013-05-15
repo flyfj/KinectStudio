@@ -183,10 +183,9 @@ namespace KinectMotionAnalyzer.UI.Controls
             string caption = button.Label as string;
             if (caption == "Any Motion")
             {
-                ActionMatcherView matcherView = new ActionMatcherView(sensorChooser, parentWindow);
-
-                parentWindow.kinectRegion.IsEnabled = false;
-                parentWindow.holderGrid.Children.Add(matcherView);  
+                //sensorChooser.Stop();
+                ActionMatcherView matcherView = new ActionMatcherView(parentWindow);
+                parentWindow.globalGrid.Children.Add(matcherView);
             }
             else if (caption == "FMS")
             {

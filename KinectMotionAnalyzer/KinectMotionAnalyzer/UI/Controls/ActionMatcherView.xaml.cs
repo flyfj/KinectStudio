@@ -26,7 +26,7 @@ namespace KinectMotionAnalyzer.UI.Controls
     public partial class ActionMatcherView : UserControl
     {
 
-        private readonly KinectSensorChooser sensorChooser = null;
+        private KinectSensorChooser sensorChooser = null;
         private readonly MainUserWindow parentWindow = null;
         private KinectSensor kinect_sensor = null;
         private KinectDataManager query_kinect_data_manager = null;
@@ -38,12 +38,62 @@ namespace KinectMotionAnalyzer.UI.Controls
         private List<Skeleton> query_skeleton_rec_buffer = null; // record skeleton data
         private List<byte[]> query_color_frame_rec_buffer = null; // record video frames
 
-        public ActionMatcherView(KinectSensorChooser chooser, MainUserWindow parentWin)
+        public ActionMatcherView(MainUserWindow parentWin)
         {
             InitializeComponent();
 
-            sensorChooser = chooser;
             parentWindow = parentWin;
+            sensorChooser = parentWin.sensorChooserUi.KinectSensorChooser;
+        }
+
+        /// <summary>
+        /// Called when the KinectSensorChooser gets a new sensor
+        /// </summary>
+        /// <param name="sender">sender of the event</param>
+        /// <param name="args">event arguments</param>
+        private static void SensorChooserOnKinectChanged(object sender, KinectChangedEventArgs args)
+        {
+            if (args.OldSensor != null)
+            {
+                try
+                {
+                    args.OldSensor.DepthStream.Range = DepthRange.Default;
+                    args.OldSensor.SkeletonStream.EnableTrackingInNearRange = false;
+                    args.OldSensor.DepthStream.Disable();
+                    args.OldSensor.SkeletonStream.Disable();
+                }
+                catch (InvalidOperationException)
+                {
+                    // KinectSensor might enter an invalid state while enabling/disabling streams or stream features.
+                    // E.g.: sensor might be abruptly unplugged.
+                }
+            }
+
+            if (args.NewSensor != null)
+            {
+                try
+                {
+                    args.NewSensor.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
+                    args.NewSensor.SkeletonStream.Enable();
+
+                    try
+                    {
+                        //args.NewSensor.DepthStream.Range = DepthRange.Near;
+                        //args.NewSensor.SkeletonStream.EnableTrackingInNearRange = true;
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        // Non Kinect for Windows devices do not support Near mode, so reset back to default mode.
+                        args.NewSensor.DepthStream.Range = DepthRange.Default;
+                        args.NewSensor.SkeletonStream.EnableTrackingInNearRange = false;
+                    }
+                }
+                catch (InvalidOperationException)
+                {
+                    // KinectSensor might enter an invalid state while enabling/disabling streams or stream features.
+                    // E.g.: sensor might be abruptly unplugged.
+                }
+            }
         }
 
         private void mainGrid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -57,6 +107,12 @@ namespace KinectMotionAnalyzer.UI.Controls
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            // initialize the sensor chooser and UI
+            //this.sensorChooser = new KinectSensorChooser();
+            //this.sensorChooser.KinectChanged += SensorChooserOnKinectChanged;
+            //this.sensorChooserUi.KinectSensorChooser = this.sensorChooser;
+            //this.sensorChooser.Start();
+
             // Bind the sensor chooser's current sensor to the KinectRegion
             var regionSensorBinding = new Binding("Kinect") { Source = this.sensorChooser };
             BindingOperations.SetBinding(this.controlKinectRegion, KinectRegion.KinectSensorProperty, regionSensorBinding);
@@ -185,13 +241,16 @@ namespace KinectMotionAnalyzer.UI.Controls
 
         private void exitBtn_Click(object sender, RoutedEventArgs e)
         {
-            query_color_frame_rec_buffer.Clear();
-            query_skeleton_rec_buffer.Clear();
+            if (query_color_frame_rec_buffer != null)
+                query_color_frame_rec_buffer.Clear();
+            if (query_skeleton_rec_buffer != null)
+                query_skeleton_rec_buffer.Clear();
 
             kinect_sensor.AllFramesReady -= kinect_allframes_ready;
 
+            //sensorChooser.Stop();
             // reactivate parent kinect region
-            parentWindow.kinectRegion.IsEnabled = true;
+            //parentWindow.sensorChooserUi.KinectSensorChooser.Start();
 
             // remove itself
             (this.Parent as Panel).Children.Remove(this);
