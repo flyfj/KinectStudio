@@ -192,5 +192,10 @@ namespace KinectMotionAnalyzer.UI.Controls
                 (this.Parent as Panel).Children.Add(fmsView);
             }
         }
+
+        private void exitBtn_Click(object sender, RoutedEventArgs e)
+        {
+            parentWindow.Close();
+        }
     }
 }

@@ -54,11 +54,10 @@
 
     <Border x:Name="globalBorder"  BorderBrush="Black" BorderThickness="1" Margin="0,0,0,0">
         <Grid x:Name="mainGrid">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="20*"/>
-                <ColumnDefinition Width="60*"/>
-                <ColumnDefinition Width="20*"/>
-            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20*"/>
+                <RowDefinition Height="80*"/>
+            </Grid.RowDefinitions>
 
             <!--create transform for grid-->
             <Grid.RenderTransform>
@@ -70,30 +69,50 @@
                 </TransformGroup>
             </Grid.RenderTransform>
 
-            <Border BorderBrush="Black" BorderThickness="1" Grid.Column="0">
-                <TextBlock TextWrapping="Wrap"  Padding="20" FontFamily="Tw Cen MT Condensed Extra Bold" FontSize="16">
-                Functional Movement Screening Tests
-                </TextBlock>
-            </Border>
-
-            <Grid Grid.Column="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="10*"/>
-                    <ColumnDefinition Width="80*"/>
-                    <ColumnDefinition Width="10*"/>
-                </Grid.ColumnDefinitions>
-
-                <Image Grid.Column="1"  x:Name="color_query_img" Stretch="Fill" HorizontalAlignment="Center"  />
-                <Image Grid.Column="1"  x:Name="ske_query_img" Stretch="Fill" HorizontalAlignment="Center"  />
+            <Grid Grid.Row="0">
+                <Image HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="/KinectMotionAnalyzer;component/Resources/FitronixIO_logo.png" Margin="0 0 0 4" Width="377"/>
+                <k:KinectSensorChooserUI HorizontalAlignment="Center" VerticalAlignment="Top" Name="sensorChooserUi" />
+                <TextBlock HorizontalAlignment="Right" Margin="0 0 50 0" VerticalAlignment="Bottom" FontSize="18" Text="Virtual Fitness Platform"/>
             </Grid>
 
-            <Border BorderBrush="Black" BorderThickness="1" Grid.Column="2">
-                <k:KinectRegion x:Name="controlKinectRegion" Padding="20">
-                    <StackPanel Orientation="Vertical">
-                        <k:KinectTileButton Width="109" Label="Process" HorizontalLabelAlignment="Center"  Margin="20" Height="Auto" FontSize="20" HorizontalAlignment="Center"/>
-                        <k:KinectCircleButton Name="exitBtn"  Background="#FFF32020" Width="100" Margin="20" Click="exitBtn_Click"/>
-                    </StackPanel>
-                </k:KinectRegion>
+            <Border BorderBrush="Black" BorderThickness="1" Grid.Row="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="20*"/>
+                        <ColumnDefinition Width="60*"/>
+                        <ColumnDefinition Width="20*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border BorderBrush="Black" BorderThickness="1" Grid.Column="0">
+                        <TextBlock TextWrapping="Wrap"  Padding="20" FontFamily="Tw Cen MT Condensed Extra Bold" FontSize="16">
+                            Action recognized
+                            No action
+                        </TextBlock>
+                    </Border>
+
+                    <Border BorderBrush="Black" BorderThickness="1" Grid.Column="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="10*"/>
+                                <ColumnDefinition Width="80*"/>
+                                <ColumnDefinition Width="10*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Image Grid.Column="1"  x:Name="color_query_img" Stretch="Fill" HorizontalAlignment="Center"  />
+                            <Image Grid.Column="1"  x:Name="ske_query_img" Stretch="Fill" HorizontalAlignment="Center"  />
+                        </Grid>
+                    </Border>
+
+                    <Border BorderBrush="Black" BorderThickness="1" Grid.Column="2">
+                        <StackPanel Orientation="Vertical">
+                            <k:KinectTileButton Width="109" Label="Play" HorizontalLabelAlignment="Center"  Margin="20" Height="Auto" FontSize="20" HorizontalAlignment="Center"></k:KinectTileButton>
+                            <k:KinectCircleButton Name="exitBtn"  Background="#FFF32020" Width="100" Margin="20" Click="exitBtn_Click"/>
+                        </StackPanel>
+                        <!--<k:KinectRegion x:Name="controlKinectRegion" Padding="20">
+                        </k:KinectRegion>-->
+                    </Border>
+                    
+                </Grid>
             </Border>
 
         </Grid>

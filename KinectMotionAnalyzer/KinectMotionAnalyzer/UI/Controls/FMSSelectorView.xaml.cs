@@ -43,10 +43,7 @@ namespace KinectMotionAnalyzer.UI.Controls
             if (caption != "Exit")
             {
                 FMSProcessorView fmsProcessorView = new FMSProcessorView(sensorChooser, parentWindow);
-                parentWindow.mainGrid.Children.Add(fmsProcessorView);
-
-                // stop parent kinect region
-                parentWindow.kinectRegion.IsEnabled = false;
+                parentWindow.globalGrid.Children.Add(fmsProcessorView);
             }
             else
             {

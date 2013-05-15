@@ -40,10 +40,6 @@ namespace KinectMotionAnalyzer.UI
             this.sensorChooserUi.KinectSensorChooser = this.sensorChooser;
             this.sensorChooser.Start();
 
-            //// Bind the sensor chooser's current sensor to the KinectRegion
-            //var regionSensorBinding1 = new Binding("Kinect") { Source = this.sensorChooser };
-            //BindingOperations.SetBinding(this.winControlKinectRegion, KinectRegion.KinectSensorProperty, regionSensorBinding1);
-
             // Bind the sensor chooser's current sensor to the KinectRegion
             var regionSensorBinding2 = new Binding("Kinect") { Source = this.sensorChooser };
             BindingOperations.SetBinding(this.kinectRegion, KinectRegion.KinectSensorProperty, regionSensorBinding2);

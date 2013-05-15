@@ -247,7 +247,9 @@ namespace KinectMotionAnalyzer.UI.Controls
             kinect_sensor.AllFramesReady -= kinect_allframes_ready;
 
             // remove itself
-            (this.Parent as Panel).Children.Remove(this);
+            Panel parentContainer = this.Parent as Panel;
+            if (parentContainer.Children.Count > 0)
+                parentContainer.Children.RemoveAt(parentContainer.Children.Count - 1);
 
             kinect_sensor.Start();
         }

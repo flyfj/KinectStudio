@@ -43,9 +43,6 @@ namespace KinectMotionAnalyzer.UI.Controls
 
             sensorChooser = chooser;
             parentWindow = parentWin;
-
-            query_skeleton_rec_buffer = new List<Skeleton>();
-            query_color_frame_rec_buffer = new List<byte[]>();
         }
 
         private void mainGrid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -61,11 +58,9 @@ namespace KinectMotionAnalyzer.UI.Controls
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            // Bind the sensor chooser's current sensor to the KinectRegion
-            var regionSensorBinding = new Binding("Kinect") { Source = this.sensorChooser };
-            BindingOperations.SetBinding(this.controlKinectRegion, KinectRegion.KinectSensorProperty, regionSensorBinding);
-
             kinect_sensor = sensorChooser.Kinect;
+            if (kinect_sensor.IsRunning)
+                kinect_sensor.Stop();
 
             // enable data stream
             if (kinect_sensor != null)
@@ -105,6 +100,9 @@ namespace KinectMotionAnalyzer.UI.Controls
 
                 // bind event handlers
                 kinect_sensor.AllFramesReady += kinect_allframes_ready;
+
+                query_skeleton_rec_buffer = new List<Skeleton>();
+                query_color_frame_rec_buffer = new List<byte[]>();
 
                 if (!kinect_sensor.IsRunning)
                     kinect_sensor.Start();
@@ -191,12 +189,15 @@ namespace KinectMotionAnalyzer.UI.Controls
             if (query_skeleton_rec_buffer != null)
                 query_skeleton_rec_buffer.Clear();
 
+            kinect_sensor.Stop();
             kinect_sensor.AllFramesReady -= kinect_allframes_ready;
 
-            parentWindow.sensorChooserUi.KinectSensorChooser.Start();
-
             // remove itself
-            (this.Parent as Panel).Children.Remove(this);
+            Panel parentContainer = this.Parent as Panel;
+            if (parentContainer.Children.Count > 0)
+                parentContainer.Children.RemoveAt(parentContainer.Children.Count - 1);
+
+            kinect_sensor.Start();
         }
     }
 }
