@@ -32,7 +32,7 @@ namespace KinectMotionAnalyzer.UI.Controls
         private KinectDataManager query_kinect_data_manager = null;
 
         private bool ifDoSmoothing = true;
-        private bool isQueryCapturing = false;
+        private bool isQueryCapturing = true;
         private bool ifStartedTracking = false; // sign to indicate if the tracking has started
 
         private int MAX_ALLOW_FRAME = 500;
@@ -113,6 +113,9 @@ namespace KinectMotionAnalyzer.UI.Controls
             BindingOperations.SetBinding(this.controlKinectRegion, KinectRegion.KinectSensorProperty, regionSensorBinding);
 
             kinect_sensor = sensorChooser.Kinect;
+
+            PrepareKinectForInteraction();
+            kinect_sensor.Start();
         }
 
         /// <summary>
@@ -173,6 +176,10 @@ namespace KinectMotionAnalyzer.UI.Controls
 
                 // set ui
                 this.controlKinectRegion.IsEnabled = false;
+                this.controlKinectRegion.Visibility = Visibility.Hidden;
+
+                // give prompt
+                this.infoTextBlock.Text = "Processing activated.\nLeave the screen to enable interaction.";
             }
         }
 
@@ -198,6 +205,10 @@ namespace KinectMotionAnalyzer.UI.Controls
 
                 // activate kinect region
                 this.controlKinectRegion.IsEnabled = true;
+                this.controlKinectRegion.Visibility = Visibility.Visible;
+
+                // give prompt
+                this.infoTextBlock.Text = "Interaction activated.\nPress \'Start\' to do motion.";
             }
         }
 
