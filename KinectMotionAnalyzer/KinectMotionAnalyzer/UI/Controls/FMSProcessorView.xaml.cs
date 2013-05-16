@@ -30,6 +30,7 @@ namespace KinectMotionAnalyzer.UI.Controls
         private readonly MainUserWindow parentWindow = null;
         private KinectSensor kinect_sensor = null;
         private KinectDataManager query_kinect_data_manager = null;
+        private FMSProcessor fmsProcessor = null;
 
         private bool ifDoSmoothing = true;
         private bool isQueryCapturing = true;
@@ -114,6 +115,11 @@ namespace KinectMotionAnalyzer.UI.Controls
 
             kinect_sensor = sensorChooser.Kinect;
 
+            this.query_color_frame_rec_buffer = new List<byte[]>();
+            this.query_skeleton_rec_buffer = new List<Skeleton>();
+
+            fmsProcessor = new FMSProcessor();
+
             PrepareKinectForInteraction();
             kinect_sensor.Start();
         }
@@ -167,10 +173,8 @@ namespace KinectMotionAnalyzer.UI.Controls
                 kinect_sensor.AllFramesReady += kinect_allframes_ready;
 
                 // create data
-                if (query_color_frame_rec_buffer == null)
-                    query_color_frame_rec_buffer = new List<byte[]>();
-                if (query_skeleton_rec_buffer == null)
-                    query_skeleton_rec_buffer = new List<Skeleton>();
+                query_color_frame_rec_buffer.Clear();
+                query_skeleton_rec_buffer.Clear();
 
                 this.ifStartedTracking = false;
 
@@ -260,7 +264,10 @@ namespace KinectMotionAnalyzer.UI.Controls
                         if (ifStartedTracking)
                         {
                             // stop processing and start interaction
+                            ProcessFMSTest();
+
                             PrepareKinectForInteraction();
+
                             ifStartedTracking = false;
                             kinect_sensor.Start();
                             return;
@@ -298,6 +305,23 @@ namespace KinectMotionAnalyzer.UI.Controls
             }
             #endregion
 
+        }
+
+        private void ProcessFMSTest()
+        {
+            FMSTestEvaluation test_eval = fmsProcessor.EvaluateTest(query_skeleton_rec_buffer, "Hurdle Step");
+            int sel_test_id = fmsProcessor.FMSName2Id("Hurdle Step");
+
+            FMSReportWindow reportWin = new FMSReportWindow();
+            reportWin.groupBox.Header = fmsProcessor.FMSTests[sel_test_id].testName;
+            reportWin.ScoreLabel1.Content = "Score: " + test_eval.testScore;
+            reportWin.ruleBox1.Content = fmsProcessor.FMSTests[sel_test_id].rules[0].name;
+            reportWin.ruleBox1.IsChecked = (test_eval.rule_evals[0].ruleScore == 1 ? true : false);
+            reportWin.ruleBox2.Content = fmsProcessor.FMSTests[sel_test_id].rules[1].name;
+            reportWin.ruleBox2.IsChecked = (test_eval.rule_evals[1].ruleScore == 1 ? true : false);
+            reportWin.ruleBox3.Content = fmsProcessor.FMSTests[sel_test_id].rules[2].name;
+            reportWin.ruleBox3.IsChecked = (test_eval.rule_evals[2].ruleScore == 1 ? true : false);
+            reportWin.Show();
         }
 
         private void exitBtn_Click(object sender, RoutedEventArgs e)
