@@ -1563,16 +1563,20 @@ namespace Microsoft.Samples.Kinect.KinectFusionExplorer
                     for (int i = 0; i < colorFrames.Count; i++)
                     {
                         // save color frame
-                        string path = dialog.FileName + i.ToString() + ".jpg";
+                        string colorfile = dialog.FileName + i.ToString() + ".jpg";
                         bitmap.WritePixels(drawRect, colorFrames[i], stride, 0);
 
                         JpegBitmapEncoder encoder = new JpegBitmapEncoder();
                         encoder.Frames.Add(BitmapFrame.Create(bitmap));
-                        using (var stream = File.Open(path, FileMode.Create))
+                        using (var stream = File.Open(colorfile, FileMode.Create))
                             encoder.Save(stream);
 
                         // save camera pose file
-
+                        string posefile = dialog.FileName + i.ToString() + ".pose";
+                        using (StreamWriter writer = new StreamWriter(posefile))
+                        {
+                            writer.WriteLine(cameraPose[i].ToString());
+                        }
                     }
 
                     this.ShowStatusMessage(Properties.Resources.MeshSaved);
