@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿using System.Drawing;
+//------------------------------------------------------------------------------
 // <copyright file="MainWindow.xaml.cs" company="Microsoft">
 //     Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>
@@ -7,7 +8,9 @@
 namespace Microsoft.Samples.Kinect.KinectFusionExplorer
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Drawing;
     using System.Globalization;
     using System.IO;
     using System.Threading.Tasks;
@@ -547,6 +550,11 @@ namespace Microsoft.Samples.Kinect.KinectFusionExplorer
         }
         #endregion
 
+        // added: rgb frame list
+        private byte[] curColorData = null;
+        private List<byte[]> colorFrames = new List<byte[]>();
+        private List<Matrix4> cameraPose = new List<Matrix4>();
+
         /// <summary>
         /// Dispose resources
         /// </summary>
@@ -919,6 +927,7 @@ namespace Microsoft.Samples.Kinect.KinectFusionExplorer
                 {
                     this.sensor.Stop();
                     this.sensor.DepthFrameReady -= this.OnDepthFrameReady;
+                    this.sensor.ColorFrameReady -= this.kinect_colorframe_ready;
                 }
 
                 this.sensor = null;
@@ -992,6 +1001,10 @@ namespace Microsoft.Samples.Kinect.KinectFusionExplorer
                 // Enable depth stream, register event handler and start
                 this.sensor.DepthStream.Enable(format);
                 this.sensor.DepthFrameReady += this.OnDepthFrameReady;
+
+                this.sensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
+                this.sensor.ColorFrameReady += this.kinect_colorframe_ready;
+
                 this.sensor.Start();
             }
             catch (IOException ex)
@@ -1068,6 +1081,19 @@ namespace Microsoft.Samples.Kinect.KinectFusionExplorer
             }
         }
 
+        // ADDED
+        private void kinect_colorframe_ready(object sender, ColorImageFrameReadyEventArgs e)
+        {
+            using (ColorImageFrame frame = e.OpenColorImageFrame())
+            {
+                if (frame == null)
+                    return;
+
+                curColorData = new byte[frame.PixelDataLength];
+                frame.CopyPixelDataTo(curColorData);
+            }
+        }
+
         /// <summary>
         /// Process the depth input
         /// </summary>
@@ -1124,6 +1150,11 @@ namespace Microsoft.Samples.Kinect.KinectFusionExplorer
                         // Get updated camera transform from image alignment
                         Matrix4 calculatedCameraPos = this.volume.GetCurrentWorldToCameraTransform();
 
+                        cameraPose.Add(calculatedCameraPos);
+
+                        if (curColorData != null)
+                            colorFrames.Add(curColorData);
+
                         // Render delta from reference frame
                         this.RenderAlignDeltasFloatImage(this.deltaFromReferenceFrame, ref this.deltaFromReferenceFrameBitmap, this.deltaFromReferenceImage);
 
@@ -1137,6 +1168,7 @@ namespace Microsoft.Samples.Kinect.KinectFusionExplorer
                         {
                             this.volume.IntegrateFrame(this.depthFloatFrame, this.integrationWeight, this.worldToCameraTransform);
                         }
+
                     }
 
 
@@ -1327,6 +1359,9 @@ namespace Microsoft.Samples.Kinect.KinectFusionExplorer
         /// </summary>
         private void ResetReconstruction()
         {
+            this.cameraPose.Clear();
+            this.colorFrames.Clear();
+
             if (null == this.sensor)
             {
                 return;
@@ -1519,6 +1554,25 @@ namespace Microsoft.Samples.Kinect.KinectFusionExplorer
                         {
                             SaveAsciiObjMesh(mesh, writer);
                         }
+                    }
+
+                    // save color frame and camera pose
+                    WriteableBitmap bitmap = new WriteableBitmap(640, 480, 96, 96, PixelFormats.Bgr32, null);
+                    int stride = bitmap.PixelWidth * sizeof(int);
+                    Int32Rect drawRect = new Int32Rect(0, 0, bitmap.PixelWidth, bitmap.PixelHeight);
+                    for (int i = 0; i < colorFrames.Count; i++)
+                    {
+                        // save color frame
+                        string path = dialog.FileName + i.ToString() + ".jpg";
+                        bitmap.WritePixels(drawRect, colorFrames[i], stride, 0);
+
+                        JpegBitmapEncoder encoder = new JpegBitmapEncoder();
+                        encoder.Frames.Add(BitmapFrame.Create(bitmap));
+                        using (var stream = File.Open(path, FileMode.Create))
+                            encoder.Save(stream);
+
+                        // save camera pose file
+
                     }
 
                     this.ShowStatusMessage(Properties.Resources.MeshSaved);

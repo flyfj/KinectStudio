@@ -10,11 +10,13 @@ namespace Microsoft.Samples.Kinect.KinectFusionBasics
     using System.Diagnostics;
     using System.IO;
     using System.Windows;
+    using System.Collections;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using System.Windows.Threading;
     using Microsoft.Kinect;
     using Microsoft.Kinect.Toolkit.Fusion;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -178,6 +180,9 @@ namespace Microsoft.Samples.Kinect.KinectFusionBasics
         /// </summary>
         private bool disposed;
 
+        // added: rgb frame list
+        private List<byte[]> colorFrames = new List<byte[]>();
+
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
         /// </summary>
@@ -300,6 +305,8 @@ namespace Microsoft.Samples.Kinect.KinectFusionBasics
             // Turn on the depth stream to receive depth frames
             this.sensor.DepthStream.Enable(DepthImageResolution);
 
+            this.sensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
+
             this.frameDataLength = this.sensor.DepthStream.FramePixelDataLength;
 
             // Allocate space to put the color pixels we'll create
@@ -319,6 +326,8 @@ namespace Microsoft.Samples.Kinect.KinectFusionBasics
 
             // Add an event handler to be called whenever there is new depth frame data
             this.sensor.DepthFrameReady += this.SensorDepthFrameReady;
+
+            this.sensor.ColorFrameReady += this.kinect_colorframe_ready;
 
             var volParam = new ReconstructionParameters(VoxelsPerMeter, VoxelResolutionX, VoxelResolutionY, VoxelResolutionZ);
 
@@ -400,6 +409,21 @@ namespace Microsoft.Samples.Kinect.KinectFusionBasics
 
             // Reset the reconstruction
             this.ResetReconstruction();
+        }
+
+        // ADDED
+        private void kinect_colorframe_ready(object sender, ColorImageFrameReadyEventArgs e)
+        {
+            using (ColorImageFrame frame = e.OpenColorImageFrame())
+            {
+                if (frame == null)
+                    return;
+
+                byte[] colorData = new byte[frame.PixelDataLength];
+                frame.CopyPixelDataTo(colorData);
+
+                colorFrames.Add(colorData);
+            }
         }
 
         /// <summary>
