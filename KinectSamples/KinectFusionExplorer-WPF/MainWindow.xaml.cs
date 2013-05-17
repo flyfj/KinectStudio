@@ -1575,7 +1575,10 @@ namespace Microsoft.Samples.Kinect.KinectFusionExplorer
                         string posefile = dialog.FileName + i.ToString() + ".pose";
                         using (StreamWriter writer = new StreamWriter(posefile))
                         {
-                            writer.WriteLine(cameraPose[i].ToString());
+                            writer.Write(cameraPose[i].M11 + " " + cameraPose[i].M12 + " " + cameraPose[i].M13 + " " + cameraPose[i].M14 + " " + 
+                                        cameraPose[i].M21 + " " + cameraPose[i].M22 + " " + cameraPose[i].M23 + " " + cameraPose[i].M24 + " " +
+                                        cameraPose[i].M31 + " " + cameraPose[i].M32 + " " + cameraPose[i].M33 + " " + cameraPose[i].M34 + " " +
+                                        cameraPose[i].M41 + " " + cameraPose[i].M42 + " " + cameraPose[i].M43 + " " + cameraPose[i].M44);
                         }
                     }
 

@@ -278,7 +278,7 @@
 
                         <StackPanel Orientation="Horizontal" Margin="0 -3 0 30">
                             <RadioButton Name="stlFormat" Style="{StaticResource KinectRadioButton}" Content="STL" Margin="40 0 0 0" IsChecked="True" AutomationProperties.AutomationId="STLFormat"/>
-                            <RadioButton Name="objFormat" Style="{StaticResource KinectRadioButton}" Content="OBJ" Margin="10 0 0 0" AutomationProperties.AutomationId="OBJFormat"/>
+                            <RadioButton Name="objFormat" Style="{StaticResource KinectRadioButton}" Content="OBJ" Margin="10 0 0 0" AutomationProperties.AutomationId="OBJFormat" IsChecked="True"/>
                         </StackPanel>
 
                         <Button Style="{StaticResource ResetButton}" Content="Reset Reconstruction" Margin="10 0 5 0" Click="ResetReconstructionButtonClick" AutomationProperties.AutomationId="ResetReconstruction"/>
