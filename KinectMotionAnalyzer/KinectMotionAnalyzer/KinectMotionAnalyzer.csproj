@@ -133,6 +133,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Migrations\201305180444326_added joint weights to action.cs" />
+    <Compile Include="Migrations\201305180444326_added joint weights to action.Designer.cs">
+      <DependentUpon>201305180444326_added joint weights to action.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\DepthMapData.cs" />
     <Compile Include="Model\KinectAction.cs" />
@@ -207,6 +211,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="Migrations\201305180444326_added joint weights to action.resx">
+      <DependentUpon>201305180444326_added joint weights to action.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

@@ -39,5 +39,7 @@ namespace KinectMotionAnalyzer.Model
         [Required]
         public string Name { get; set; }
 
+        public List<float> JointWeights { get; set; }
+
     }
 }
