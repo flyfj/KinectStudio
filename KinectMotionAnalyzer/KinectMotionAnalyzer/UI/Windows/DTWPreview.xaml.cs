@@ -155,6 +155,11 @@ namespace KinectMotionAnalyzer.UI
                         // just add first tracked skeleton, assume only one person is present
                         query_skeleton_rec_buffer.Add(tracked_skeleton);
 
+                        if(query_skeleton_rec_buffer.Count >= 2 * target_skeleton_rec_buffer.Count)
+                        {
+                            Console.WriteLine(ComputeActionSimilarity());
+                        }
+
                         ifAddSkeleton = true;
                     }
 
@@ -472,6 +477,11 @@ namespace KinectMotionAnalyzer.UI
 
             if (!this.isQueryCapturing)
             {
+                if (target_skeleton_rec_buffer.Count <= 0)
+                {
+                    MessageBox.Show("Load target action before recording.");
+                    return;
+                }
                 // reset buffer
                 query_color_frame_rec_buffer.Clear();
                 query_skeleton_rec_buffer.Clear();
@@ -677,5 +687,57 @@ namespace KinectMotionAnalyzer.UI
             }
         }
 
+        private double ComputeActionSimilarity()
+        {
+            if (query_skeleton_rec_buffer.Count <= 0 || target_skeleton_rec_buffer.Count <= 0)
+                return 100000000;
+
+            // do matching using dtw
+            // try 1/2 length, same length, 2 length to see which one is most similar
+            KinectMotionAnalyzer.Processors.Action queryAction = new KinectMotionAnalyzer.Processors.Action();
+            queryAction.name = "Query";
+            KinectMotionAnalyzer.Processors.Action targetAction = new KinectMotionAnalyzer.Processors.Action();
+            targetAction.name = "Target";
+            targetAction.data = target_skeleton_rec_buffer;
+
+            double minDist = double.PositiveInfinity;
+            int bestType = 0;
+            // 1/2 length
+            queryAction.data = query_skeleton_rec_buffer.GetRange(
+                query_skeleton_rec_buffer.Count - target_skeleton_rec_buffer.Count / 2, 
+                target_skeleton_rec_buffer.Count / 2);
+
+            double dist = actionRecognizer.ActionSimilarity(queryAction, targetAction, 0);
+            if (dist < minDist)
+            {
+                minDist = dist;
+                bestType = 0;
+            }
+            // same length
+            queryAction.data = query_skeleton_rec_buffer.GetRange(
+                query_skeleton_rec_buffer.Count - target_skeleton_rec_buffer.Count,
+                target_skeleton_rec_buffer.Count);
+            dist = actionRecognizer.ActionSimilarity(queryAction, targetAction, 0);
+            if (dist < minDist)
+            {
+                minDist = dist;
+                bestType = 1;
+            }
+            // 2 length
+            queryAction.data = query_skeleton_rec_buffer.GetRange(
+                query_skeleton_rec_buffer.Count - target_skeleton_rec_buffer.Count * 2,
+                target_skeleton_rec_buffer.Count * 2);
+            dist = actionRecognizer.ActionSimilarity(queryAction, targetAction, 0);
+            if (dist < minDist)
+            {
+                minDist = dist;
+                bestType = 2;
+            }
+
+            statusbarLabel.Content = "Action distance: " + minDist + " best matching: "
+                + (bestType == 0 ? "half length" : bestType == 1 ? "same length" : "twice length");
+
+            return dist;
+        }
     }
 }

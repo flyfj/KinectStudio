@@ -31,6 +31,7 @@ namespace KinectMotionAnalyzer.Model
         }
     }
 
+    // action category
     class ActionType
     {
         [Key]
