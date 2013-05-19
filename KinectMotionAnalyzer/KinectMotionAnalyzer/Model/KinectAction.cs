@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 namespace KinectMotionAnalyzer.Model
 {
     // each basic exercise, e.g. one repetition
+    // this is the representation for database storage 
+    // (have another rep for runtime processing, more light-weighted)
     class KinectAction
     {
         [Key]

@@ -52,12 +52,15 @@ namespace KinectMotionAnalyzer.Processors
             return angle * 180 / Math.PI;
         }
 
+        /// <summary>
+        /// convert from database representation to runtime format for light weight processing
+        /// </summary>
         static public bool ConvertFromKinectAction(KinectAction action,
             out List<byte[]> color_frames,
             out List<DepthImagePixel[]> depth_frames,
             out List<Skeleton> skeleton_buffer)
         {
-            if (action.ColorFrames == null)
+            if (action.Skeletons == null)
             {
                 // clear
                 color_frames = new List<byte[]>();
@@ -72,6 +75,7 @@ namespace KinectMotionAnalyzer.Processors
             {
                 color_frames.Add(colorData.FrameData);
             }
+
             // skeletons
             skeleton_buffer = new List<Skeleton>();
             foreach (SkeletonData skeData in action.Skeletons)
@@ -99,6 +103,7 @@ namespace KinectMotionAnalyzer.Processors
                 }
                 skeleton_buffer.Add(cur_ske);
             }
+
             // depth image
             depth_frames = new List<DepthImagePixel[]>();
             //foreach (DepthMapData dData in action.DepthFrames)

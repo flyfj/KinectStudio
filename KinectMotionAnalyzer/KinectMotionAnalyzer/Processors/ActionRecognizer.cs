@@ -15,7 +15,7 @@ namespace KinectMotionAnalyzer.Processors
 {
 
     /// <summary>
-    /// user gesture
+    /// light-weight action representation for processing use
     /// </summary>
     public class Action
     {
@@ -25,7 +25,7 @@ namespace KinectMotionAnalyzer.Processors
     }
 
     /// <summary>
-    /// common data for all template gesture
+    /// meta data for a type of action
     /// </summary>
     public class ActionTemplateBase
     {
@@ -50,7 +50,9 @@ namespace KinectMotionAnalyzer.Processors
     /// </summary>
     public class Feedback
     {
-
+        public JointType jtype;
+        public double displacement;
+        public double direction;
     };
 
     /// <summary>
@@ -487,7 +489,9 @@ namespace KinectMotionAnalyzer.Processors
             return target_id - 1;   // start from 1
         }
         
-
+        /// <summary>
+        /// simple distance between pose
+        /// </summary>
         private float DistBetweenPose(Skeleton pose1, Skeleton pose2, Dictionary<JointType, float> weights)
         {
             if (pose1 == null || pose2 == null)
