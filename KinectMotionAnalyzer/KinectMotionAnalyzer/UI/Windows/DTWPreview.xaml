@@ -38,11 +38,12 @@
                 <Button Content="Load" Height="29" HorizontalAlignment="Left" Margin="190,0,0,10" x:Name="targetLoadBtn" VerticalAlignment="Bottom" Width="74" IsEnabled="True" FontSize="11" Click="targetLoadBtn_Click" />
             </Grid>
         </GroupBox>
-        <Button x:Name="matchBtn" Content="Match" HorizontalAlignment="Left" Margin="367,574,0,0" VerticalAlignment="Top" Width="102" Height="31" Click="matchBtn_Click"/>
+        <Button x:Name="matchBtn" Content="Match" HorizontalAlignment="Left" Margin="240,574,0,0" VerticalAlignment="Top" Width="102" Height="31" Click="matchBtn_Click"/>
         <StatusBar Background="#FFB49788" Height="33" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10"  x:Name="kinectStatusBar" Width="820">
             <Label Content="Welcome" x:Name="statusbarLabel" FontStretch="Medium" FontSize="14" />
         </StatusBar>
         <CheckBox Content="Show Video" x:Name="triggerVideoCheckBox"  HorizontalAlignment="Left" Margin="53,553,0,0" VerticalAlignment="Top" Height="21" Width="92" FontSize="14"/>
+        <ProgressBar x:Name="actionSimBar" HorizontalAlignment="Left" Height="32" Margin="405,571,0,0" VerticalAlignment="Top" Width="382" Maximum="1000"/>
 
     </Grid>
 </Window>

@@ -9,6 +9,7 @@ using System.Web;
 using Microsoft.Kinect;
 using System.Xml;
 using System.Diagnostics;
+using System.Windows.Media.Media3D;
 
 
 namespace KinectMotionAnalyzer.Processors
@@ -51,7 +52,8 @@ namespace KinectMotionAnalyzer.Processors
     public class Feedback
     {
         public JointType jtype;
-        public double displacement;
+        public Point3D displacement;
+        public double distance;
         public double direction;
     };
 
@@ -511,9 +513,42 @@ namespace KinectMotionAnalyzer.Processors
         }
 
 
-        public void GenerateFeedbacks(Action query, Action target)
+        public Feedback GenerateFeedbacks(Action query, Action target)
         {
+            Feedback fb = new Feedback();
 
+            if (WarpingPath == null)
+                return fb;
+
+            // for each frame in query, compare with matched target frame and generate feedbacks
+            // find most significant dissimilar joint between query and target
+            double maxDist = double.PositiveInfinity;
+            foreach (Point curp in WarpingPath)
+            {
+                Skeleton alignedInput = Tools.AlignSkeletons(query.data[(int)curp.X], target.data[(int)curp.Y]);
+                foreach (JointType jtype in Enum.GetValues(typeof(JointType)))
+                {
+                    Joint query_joint = alignedInput.Joints[jtype];
+                    Joint target_joint = target.data[(int)curp.Y].Joints[jtype];
+                    Point3D displacement = new Point3D();
+                    displacement.X = (query_joint.Position.X - target_joint.Position.X);
+                    displacement.Y = (query_joint.Position.Y - target_joint.Position.Y);
+                    displacement.Z = (query_joint.Position.Z - target_joint.Position.Z);
+                    double dist = displacement.X * displacement.X +
+                        displacement.Y * displacement.Y +
+                        displacement.Z * displacement.Z;
+                    dist = Math.Sqrt(dist);
+                    if (dist > maxDist)
+                    {
+                        maxDist = dist;
+                        fb.jtype = jtype;
+                        fb.distance = dist;
+                        fb.displacement = displacement;
+                    }
+                }
+            }
+
+            return fb;
         }
     }
 }

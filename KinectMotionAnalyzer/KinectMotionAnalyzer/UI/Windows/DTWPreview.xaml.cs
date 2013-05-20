@@ -37,7 +37,7 @@ namespace KinectMotionAnalyzer.UI
         bool isCheckingMatching = false;
 
         // record params
-        private int MAX_ALLOW_FRAME = 500;  // no more than this number for color and skeleton to avoid memory issue
+        private int MAX_ALLOW_FRAME = 800;  // no more than this number for color and skeleton to avoid memory issue
         List<Skeleton> query_skeleton_rec_buffer = null; // record skeleton data
         List<byte[]> query_color_frame_rec_buffer = null; // record video frames
         List<Skeleton> target_skeleton_rec_buffer = null; // record skeleton data
@@ -157,7 +157,9 @@ namespace KinectMotionAnalyzer.UI
 
                         if(query_skeleton_rec_buffer.Count >= 2 * target_skeleton_rec_buffer.Count)
                         {
-                            Console.WriteLine(ComputeActionSimilarity());
+                            double dist = ComputeActionSimilarity();
+                            actionSimBar.Value = dist;
+                            Console.WriteLine(dist);
                         }
 
                         ifAddSkeleton = true;
@@ -698,41 +700,42 @@ namespace KinectMotionAnalyzer.UI
             queryAction.name = "Query";
             KinectMotionAnalyzer.Processors.Action targetAction = new KinectMotionAnalyzer.Processors.Action();
             targetAction.name = "Target";
-            targetAction.data = target_skeleton_rec_buffer;
+            targetAction.data = target_skeleton_rec_buffer.GetRange((int)targetVideoSlider.SelectionStart,
+                (int)(targetVideoSlider.SelectionEnd - targetVideoSlider.SelectionStart));
 
             double minDist = double.PositiveInfinity;
             int bestType = 0;
             // 1/2 length
-            queryAction.data = query_skeleton_rec_buffer.GetRange(
-                query_skeleton_rec_buffer.Count - target_skeleton_rec_buffer.Count / 2, 
-                target_skeleton_rec_buffer.Count / 2);
+            //queryAction.data = query_skeleton_rec_buffer.GetRange(
+            //    query_skeleton_rec_buffer.Count - target_skeleton_rec_buffer.Count / 2, 
+            //    target_skeleton_rec_buffer.Count / 2);
 
-            double dist = actionRecognizer.ActionSimilarity(queryAction, targetAction, 0);
-            if (dist < minDist)
-            {
-                minDist = dist;
-                bestType = 0;
-            }
+            //double dist = actionRecognizer.ActionSimilarity(queryAction, targetAction, 0);
+            //if (dist < minDist)
+            //{
+            //    minDist = dist;
+            //    bestType = 0;
+            //}
             // same length
             queryAction.data = query_skeleton_rec_buffer.GetRange(
                 query_skeleton_rec_buffer.Count - target_skeleton_rec_buffer.Count,
                 target_skeleton_rec_buffer.Count);
-            dist = actionRecognizer.ActionSimilarity(queryAction, targetAction, 0);
+            double dist = actionRecognizer.ActionSimilarity(queryAction, targetAction, 0);
             if (dist < minDist)
             {
                 minDist = dist;
                 bestType = 1;
             }
             // 2 length
-            queryAction.data = query_skeleton_rec_buffer.GetRange(
-                query_skeleton_rec_buffer.Count - target_skeleton_rec_buffer.Count * 2,
-                target_skeleton_rec_buffer.Count * 2);
-            dist = actionRecognizer.ActionSimilarity(queryAction, targetAction, 0);
-            if (dist < minDist)
-            {
-                minDist = dist;
-                bestType = 2;
-            }
+            //queryAction.data = query_skeleton_rec_buffer.GetRange(
+            //    query_skeleton_rec_buffer.Count - target_skeleton_rec_buffer.Count * 2,
+            //    target_skeleton_rec_buffer.Count * 2);
+            //dist = actionRecognizer.ActionSimilarity(queryAction, targetAction, 0);
+            //if (dist < minDist)
+            //{
+            //    minDist = dist;
+            //    bestType = 2;
+            //}
 
             statusbarLabel.Content = "Action distance: " + minDist + " best matching: "
                 + (bestType == 0 ? "half length" : bestType == 1 ? "same length" : "twice length");
