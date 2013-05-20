@@ -37,6 +37,7 @@ namespace KinectMotionAnalyzer.UI
         bool isCheckingMatching = false;
 
         // record params
+        private double ACTION_RECOGNITION_TH = 150;
         private int MAX_ALLOW_FRAME = 800;  // no more than this number for color and skeleton to avoid memory issue
         List<Skeleton> query_skeleton_rec_buffer = null; // record skeleton data
         List<byte[]> query_color_frame_rec_buffer = null; // record video frames
@@ -157,7 +158,7 @@ namespace KinectMotionAnalyzer.UI
 
                         if (queryDetectCheckBox.IsChecked.Value)
                         {
-                            if (query_skeleton_rec_buffer.Count >= 2 * target_skeleton_rec_buffer.Count)
+                            if (query_skeleton_rec_buffer.Count >= target_skeleton_rec_buffer.Count)
                             {
                                 double dist = ComputeActionSimilarity();
                                 actionSimBar.Value = dist;

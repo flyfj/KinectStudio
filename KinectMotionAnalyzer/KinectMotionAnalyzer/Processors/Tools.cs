@@ -69,13 +69,6 @@ namespace KinectMotionAnalyzer.Processors
                 return false;
             }
 
-            // color frames
-            color_frames = new List<byte[]>();
-            foreach (ColorFrameData colorData in action.ColorFrames)
-            {
-                color_frames.Add(colorData.FrameData);
-            }
-
             // skeletons
             skeleton_buffer = new List<Skeleton>();
             foreach (SkeletonData skeData in action.Skeletons)
@@ -102,6 +95,13 @@ namespace KinectMotionAnalyzer.Processors
                     cur_ske.Joints[cur_type] = cur_joint;
                 }
                 skeleton_buffer.Add(cur_ske);
+            }
+
+            // color frames
+            color_frames = new List<byte[]>();
+            foreach (ColorFrameData colorData in action.ColorFrames)
+            {
+                color_frames.Add(colorData.FrameData);
             }
 
             // depth image

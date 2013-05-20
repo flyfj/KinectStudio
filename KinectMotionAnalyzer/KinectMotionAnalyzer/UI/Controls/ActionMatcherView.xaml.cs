@@ -13,6 +13,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using KinectMotionAnalyzer.Model;
 using KinectMotionAnalyzer.Processors;
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit;
@@ -30,14 +31,18 @@ namespace KinectMotionAnalyzer.UI.Controls
         private readonly MainUserWindow parentWindow = null;
         private KinectSensor kinect_sensor = null;
         private KinectDataManager query_kinect_data_manager = null;
+        private ActionRecognizer actionRecognizer = null;
 
         private bool ifDoSmoothing = true;
         private bool isQueryCapturing = true;
         private bool ifStartedTracking = false; // sign to indicate if the tracking has started
 
-        private int MAX_ALLOW_FRAME = 500;
+        private int MAX_ALLOW_FRAME = 700;
+        private double ACTION_RECOGNITION_TH = 150;
         private List<Skeleton> query_skeleton_rec_buffer = null; // record skeleton data
         private List<byte[]> query_color_frame_rec_buffer = null; // record video frames
+        private List<Skeleton> target_skeleton_rec_buffer = null;
+
 
         public ActionMatcherView(MainUserWindow parentWin)
         {
@@ -114,6 +119,11 @@ namespace KinectMotionAnalyzer.UI.Controls
 
             kinect_sensor = sensorChooser.Kinect;
 
+            // create data
+            query_color_frame_rec_buffer = new List<byte[]>();
+            query_skeleton_rec_buffer = new List<Skeleton>();
+            target_skeleton_rec_buffer = new List<Skeleton>();
+
             PrepareKinectForInteraction();
             kinect_sensor.Start();
         }
@@ -132,7 +142,12 @@ namespace KinectMotionAnalyzer.UI.Controls
                     kinect_sensor.Stop();
 
                 // initialize data manager
-                query_kinect_data_manager = new KinectDataManager(ref kinect_sensor);
+                if (query_kinect_data_manager == null)
+                    query_kinect_data_manager = new KinectDataManager(ref kinect_sensor);
+
+                // initialize action recognizer
+                if (actionRecognizer == null)
+                    actionRecognizer = new ActionRecognizer();
 
                 // initialize stream
                 kinect_sensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
@@ -166,12 +181,6 @@ namespace KinectMotionAnalyzer.UI.Controls
                 // bind event handlers
                 kinect_sensor.AllFramesReady += kinect_allframes_ready;
 
-                // create data
-                if (query_color_frame_rec_buffer == null)
-                    query_color_frame_rec_buffer = new List<byte[]>();
-                if (query_skeleton_rec_buffer == null)
-                    query_skeleton_rec_buffer = new List<Skeleton>();
-
                 this.ifStartedTracking = false;
 
                 // set ui
@@ -180,6 +189,9 @@ namespace KinectMotionAnalyzer.UI.Controls
 
                 // give prompt
                 this.infoTextBlock.Text = "Processing activated.\nLeave the screen to enable interaction.";
+
+                // load template action
+                LoadPrerecordAction();
             }
         }
 
@@ -202,6 +214,11 @@ namespace KinectMotionAnalyzer.UI.Controls
                     query_color_frame_rec_buffer.Clear();
                 if (query_skeleton_rec_buffer != null)
                     query_skeleton_rec_buffer.Clear();
+                if (target_skeleton_rec_buffer != null)
+                    target_skeleton_rec_buffer.Clear();
+
+                if (query_kinect_data_manager != null)
+                    query_kinect_data_manager.UpdateSkeletonData(new Skeleton[0]);
 
                 // activate kinect region
                 this.controlKinectRegion.IsEnabled = true;
@@ -253,6 +270,18 @@ namespace KinectMotionAnalyzer.UI.Controls
                         query_skeleton_rec_buffer.Add(tracked_skeleton);
 
                         ifAddSkeleton = true;
+
+                        if (query_skeleton_rec_buffer.Count >= target_skeleton_rec_buffer.Count)
+                        {
+                            double dist = ComputeActionSimilarity();
+                            if (dist < ACTION_RECOGNITION_TH)
+                            {
+                                infoTextBlock.Text = "Action Detected: " + dist;
+                            }
+                            else
+                                infoTextBlock.Text = "Action not detected: " + dist;
+                            //Console.WriteLine(dist);
+                        }
                     }
                     else
                     {
@@ -287,14 +316,15 @@ namespace KinectMotionAnalyzer.UI.Controls
                     if (ifAddSkeleton)
                     {
                         // remove oldest frame
-                        if (query_color_frame_rec_buffer.Count == MAX_ALLOW_FRAME)
-                            query_color_frame_rec_buffer.RemoveAt(0);
+                        //if (query_color_frame_rec_buffer.Count == MAX_ALLOW_FRAME)
+                        //    query_color_frame_rec_buffer.RemoveAt(0);
 
-                        query_color_frame_rec_buffer.Add(colorData);
+                        //query_color_frame_rec_buffer.Add(colorData);
                     }
                 }
 
-                query_kinect_data_manager.UpdateColorData(frame);
+                //query_kinect_data_manager.UpdateColorData(frame);
+ 
             }
             #endregion
 
@@ -320,5 +350,91 @@ namespace KinectMotionAnalyzer.UI.Controls
             kinect_sensor.Start();
         }
 
+        private void LoadPrerecordAction()
+        {
+            using (MotionDBContext dbcontext = new MotionDBContext())
+            {
+                //MessageBox.Show(dbcontext.Database.Connection.ConnectionString);
+
+                // retrieve action from database
+                var query = from ac in dbcontext.Actions.Include("Skeletons.JointsData")
+                            where ac.Id == 3
+                            select ac;
+
+                if (query != null)
+                {
+                    List<byte[]> color_frame_rec_buffer = null;
+                    List<DepthImagePixel[]> depth_frame_rec_buffer = null;
+                    foreach (var q in query)
+                    {
+                        KinectAction sel_action = q as KinectAction;
+                        if (!Tools.ConvertFromKinectAction(
+                                sel_action,
+                                out color_frame_rec_buffer,
+                                out depth_frame_rec_buffer,
+                                out target_skeleton_rec_buffer))
+                        {
+                            MessageBox.Show("Fail to load database action.");
+                            return;
+                        }
+                        else
+                        {
+                            infoTextBlock.Text = "Action loaded.";
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        private double ComputeActionSimilarity()
+        {
+            if (query_skeleton_rec_buffer.Count <= 0 || target_skeleton_rec_buffer.Count <= 0)
+                return 100000000;
+
+            // do matching using dtw
+            // try 1/2 length, same length, 2 length to see which one is most similar
+            KinectMotionAnalyzer.Processors.Action queryAction = new KinectMotionAnalyzer.Processors.Action();
+            queryAction.name = "Query";
+            KinectMotionAnalyzer.Processors.Action targetAction = new KinectMotionAnalyzer.Processors.Action();
+            targetAction.name = "Target";
+            targetAction.data = target_skeleton_rec_buffer;
+
+            double minDist = double.PositiveInfinity;
+            int bestType = 0;
+            // 1/2 length
+            //queryAction.data = query_skeleton_rec_buffer.GetRange(
+            //    query_skeleton_rec_buffer.Count - target_skeleton_rec_buffer.Count / 2, 
+            //    target_skeleton_rec_buffer.Count / 2);
+
+            //double dist = actionRecognizer.ActionSimilarity(queryAction, targetAction, 0);
+            //if (dist < minDist)
+            //{
+            //    minDist = dist;
+            //    bestType = 0;
+            //}
+            // same length
+            queryAction.data = query_skeleton_rec_buffer.GetRange(
+                query_skeleton_rec_buffer.Count - target_skeleton_rec_buffer.Count,
+                target_skeleton_rec_buffer.Count);
+            double dist = actionRecognizer.ActionSimilarity(queryAction, targetAction, 0);
+            if (dist < minDist)
+            {
+                minDist = dist;
+                bestType = 1;
+            }
+            // 2 length
+            //queryAction.data = query_skeleton_rec_buffer.GetRange(
+            //    query_skeleton_rec_buffer.Count - target_skeleton_rec_buffer.Count * 2,
+            //    target_skeleton_rec_buffer.Count * 2);
+            //dist = actionRecognizer.ActionSimilarity(queryAction, targetAction, 0);
+            //if (dist < minDist)
+            //{
+            //    minDist = dist;
+            //    bestType = 2;
+            //}
+
+            return dist;
+        }
     }
 }

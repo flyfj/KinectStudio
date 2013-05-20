@@ -77,6 +77,7 @@
             <Grid Grid.Row="0">
                 <Image HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="/KinectMotionAnalyzer;component/Resources/FitronixIO_logo.png" Margin="0 0 0 4" Width="377"/>
                 <k:KinectSensorChooserUI HorizontalAlignment="Center" VerticalAlignment="Top" Name="sensorChooserUi" />
+                <k:KinectUserViewer Name="userViewer" DefaultUserColor="Purple"  k:KinectRegion.KinectRegion="{Binding ElementName=controlKinectRegion}" Height="100" HorizontalAlignment="Center" VerticalAlignment="Top" />
                 <TextBlock HorizontalAlignment="Right" Margin="0 0 50 20" VerticalAlignment="Bottom" FontSize="22" Text="Virtual Fitness Platform" FontWeight="Bold"/>
             </Grid>
 
@@ -95,14 +96,12 @@
                                 <ColumnDefinition Width="10*"/>
                             </Grid.ColumnDefinitions>
 
-                            <Border BorderBrush="Black" BorderThickness="1" Grid.ColumnSpan="3">
-                                <TextBlock x:Name="infoTextBlock" TextWrapping="Wrap"  Padding="20" FontFamily="Tw Cen MT Condensed Extra Bold" FontSize="20">
-                                    Action recognized <LineBreak/>
-                                    No action
-                                </TextBlock>
-                            </Border>
                             <Image Grid.Column="1"  x:Name="color_query_img" Stretch="Fill" HorizontalAlignment="Center"  />
                             <Image Grid.Column="1"  x:Name="ske_query_img" Stretch="Fill" HorizontalAlignment="Center"  />
+                            <Border BorderBrush="Black" BorderThickness="1" Grid.ColumnSpan="3">
+                                <TextBlock x:Name="infoTextBlock" TextWrapping="Wrap"  Padding="20" FontFamily="Tw Cen MT Condensed Extra Bold" FontSize="36" Foreground="#FF0C39D3">
+                                </TextBlock>
+                            </Border>
                         </Grid>
                     </Border>
                    

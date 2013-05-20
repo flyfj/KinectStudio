@@ -40,8 +40,13 @@ namespace KinectMotionAnalyzer.UI
 
             if (realtimeRadioBtn.IsChecked.Value)
             {
+                MotionAnalyzerWindow_User userWin = new MotionAnalyzerWindow_User();
+                userWin.ShowDialog();
+            }
+
+            if (kinectUIRadioBtn.IsChecked.Value)
+            {
                 MainUserWindow userWin = new MainUserWindow();
-                //MotionAnalyzerWindow_User userWin = new MotionAnalyzerWindow_User();
                 userWin.ShowDialog();
             }
 

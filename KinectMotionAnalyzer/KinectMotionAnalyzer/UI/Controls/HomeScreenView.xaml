@@ -137,9 +137,9 @@
                             <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/dance.jpg" Stretch="UniformToFill"/>
                         </k:KinectTileButton.Background>
                     </k:KinectTileButton>
-                    <k:KinectTileButton Label="Golf" Style="{StaticResource KinectTileButtonStyle}">
+                    <k:KinectTileButton Label="Cat Walk" Style="{StaticResource KinectTileButtonStyle}">
                         <k:KinectTileButton.Background>
-                            <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/tiger_golf.jpg"/>
+                            <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/catwalk.jpg" Stretch="Uniform"/>
                         </k:KinectTileButton.Background>
                     </k:KinectTileButton>
                     <k:KinectTileButton Label="Yoga" Style="{StaticResource KinectTileButtonStyle}">
@@ -147,7 +147,11 @@
                             <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/yoga.jpg"/>
                         </k:KinectTileButton.Background>
                     </k:KinectTileButton>
-                    <k:KinectTileButton Label="6" Style="{StaticResource KinectTileButtonStyle}"/>
+                    <k:KinectTileButton Label="Golf" Style="{StaticResource KinectTileButtonStyle}">
+                        <k:KinectTileButton.Background>
+                            <ImageBrush ImageSource="/KinectMotionAnalyzer;component/Resources/tiger_golf.jpg"/>
+                        </k:KinectTileButton.Background>
+                    </k:KinectTileButton>
                 </WrapPanel>
             </k:KinectScrollViewer>
 
