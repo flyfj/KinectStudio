@@ -23,7 +23,7 @@
                 <Button Content="Set End" Height="20" HorizontalAlignment="Left" Margin="184,69,0,0" x:Name="query_setEndBtn" VerticalAlignment="Top" Width="54" FontSize="10" IsEnabled="False" Click="query_setEndBtn_Click" />
                 <Label BorderThickness="1" Content="0" FontSize="8" Height="21" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="253,68,0,0" x:Name="query_endLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="32" Background="#FFC3B9B9" />
                 <Label BorderThickness="1" Content="0" FontSize="8" Height="22" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="119,67,0,0" x:Name="query_startLabel" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="32" Background="#FFCBC0C0" />
-                <Button Content="Capture" Height="29" HorizontalAlignment="Left" Margin="131,0,0,10" x:Name="queryCaptureBtn" VerticalAlignment="Bottom" Width="74" IsEnabled="True" FontSize="11" Click="queryCaptureBtn_Click" />
+                <Button Content="Capture" Height="29" HorizontalAlignment="Left" Margin="52,0,0,10" x:Name="queryCaptureBtn" VerticalAlignment="Bottom" Width="74" IsEnabled="True" FontSize="11" Click="queryCaptureBtn_Click" RenderTransformOrigin="2.189,0.448" />
             </Grid>
         </GroupBox>
         <GroupBox Header="Target Control" HorizontalAlignment="Left" Margin="451,367,0,0" VerticalAlignment="Top" Height="167" Width="343">
@@ -44,6 +44,7 @@
         </StatusBar>
         <CheckBox Content="Show Video" x:Name="triggerVideoCheckBox"  HorizontalAlignment="Left" Margin="53,553,0,0" VerticalAlignment="Top" Height="21" Width="92" FontSize="14"/>
         <ProgressBar x:Name="actionSimBar" HorizontalAlignment="Left" Height="32" Margin="405,571,0,0" VerticalAlignment="Top" Width="382" Maximum="1000"/>
+        <CheckBox Content="Detect" x:Name="queryDetectCheckBox"  HorizontalAlignment="Left" Margin="226,499,0,0" VerticalAlignment="Top" Height="21" Width="66" FontSize="14"/>
 
     </Grid>
 </Window>

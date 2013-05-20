@@ -512,7 +512,9 @@ namespace KinectMotionAnalyzer.Processors
             return dist / pose1.Joints.Count;
         }
 
-
+        /// <summary>
+        /// create feedback information
+        /// </summary>
         public Feedback GenerateFeedbacks(Action query, Action target)
         {
             Feedback fb = new Feedback();

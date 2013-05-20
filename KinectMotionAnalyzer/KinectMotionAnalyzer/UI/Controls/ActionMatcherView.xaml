@@ -83,19 +83,11 @@
             <Border BorderBrush="Black" BorderThickness="1" Grid.Row="1">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="20*"/>
-                        <ColumnDefinition Width="60*"/>
+                        <ColumnDefinition Width="80*"/>
                         <ColumnDefinition Width="20*"/>
                     </Grid.ColumnDefinitions>
 
                     <Border BorderBrush="Black" BorderThickness="1" Grid.Column="0">
-                        <TextBlock x:Name="infoTextBlock" TextWrapping="Wrap"  Padding="20" FontFamily="Tw Cen MT Condensed Extra Bold" FontSize="20">
-                            Action recognized
-                            No action
-                        </TextBlock>
-                    </Border>
-
-                    <Border BorderBrush="Black" BorderThickness="1" Grid.Column="1">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="10*"/>
@@ -103,12 +95,18 @@
                                 <ColumnDefinition Width="10*"/>
                             </Grid.ColumnDefinitions>
 
+                            <Border BorderBrush="Black" BorderThickness="1" Grid.ColumnSpan="3">
+                                <TextBlock x:Name="infoTextBlock" TextWrapping="Wrap"  Padding="20" FontFamily="Tw Cen MT Condensed Extra Bold" FontSize="20">
+                                    Action recognized <LineBreak/>
+                                    No action
+                                </TextBlock>
+                            </Border>
                             <Image Grid.Column="1"  x:Name="color_query_img" Stretch="Fill" HorizontalAlignment="Center"  />
                             <Image Grid.Column="1"  x:Name="ske_query_img" Stretch="Fill" HorizontalAlignment="Center"  />
                         </Grid>
                     </Border>
                    
-                    <Border BorderBrush="Black" BorderThickness="1" Grid.Column="2">
+                    <Border BorderBrush="Black" BorderThickness="1" Grid.Column="1">
                         <k:KinectRegion x:Name="controlKinectRegion" Padding="20">
                             <StackPanel Orientation="Vertical">
                                 <k:KinectTileButton Name="startBtn"  Width="120" Label="Start" HorizontalLabelAlignment="Center"  Margin="20" Height="Auto" FontSize="24" HorizontalAlignment="Center" Click="startBtn_Click"></k:KinectTileButton>

@@ -155,11 +155,14 @@ namespace KinectMotionAnalyzer.UI
                         // just add first tracked skeleton, assume only one person is present
                         query_skeleton_rec_buffer.Add(tracked_skeleton);
 
-                        if(query_skeleton_rec_buffer.Count >= 2 * target_skeleton_rec_buffer.Count)
+                        if (queryDetectCheckBox.IsChecked.Value)
                         {
-                            double dist = ComputeActionSimilarity();
-                            actionSimBar.Value = dist;
-                            Console.WriteLine(dist);
+                            if (query_skeleton_rec_buffer.Count >= 2 * target_skeleton_rec_buffer.Count)
+                            {
+                                double dist = ComputeActionSimilarity();
+                                actionSimBar.Value = dist;
+                                Console.WriteLine(dist);
+                            }
                         }
 
                         ifAddSkeleton = true;
@@ -348,17 +351,17 @@ namespace KinectMotionAnalyzer.UI
         {
             // clear all
             targetVideoSlider.IsEnabled = false;
-            targetVideoSlider.SelectionStart = 0;
-            targetVideoSlider.SelectionEnd = 0;
-            targetVideoSlider.Minimum = 0;
-            targetVideoSlider.Maximum = 0;
+            //targetVideoSlider.SelectionStart = 0;
+            //targetVideoSlider.SelectionEnd = 0;
+            //targetVideoSlider.Minimum = 0;
+            //targetVideoSlider.Maximum = 0;
             targetVideoSlider.Value = 0;
             targetVideoSliderLabel.Content = "0";
 
             target_setStartBtn.IsEnabled = false;
-            target_startLabel.Content = "0";
+            target_startLabel.Content = targetVideoSlider.SelectionStart;
             target_setEndBtn.IsEnabled = false;
-            target_endLabel.Content = "0";
+            target_endLabel.Content = targetVideoSlider.SelectionEnd;
 
             this.isTargetReplaying = false;
         }
@@ -742,5 +745,6 @@ namespace KinectMotionAnalyzer.UI
 
             return dist;
         }
+
     }
 }
