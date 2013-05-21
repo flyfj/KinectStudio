@@ -34,7 +34,7 @@ namespace KinectMotionAnalyzer.UI.Controls
         private ActionRecognizer actionRecognizer = null;
 
         private bool ifDoSmoothing = true;
-        private bool isQueryCapturing = true;
+        private bool isQueryCapturing = false;
         private bool ifStartedTracking = false; // sign to indicate if the tracking has started
 
         private int MAX_ALLOW_FRAME = 700;
@@ -99,15 +99,6 @@ namespace KinectMotionAnalyzer.UI.Controls
                     // KinectSensor might enter an invalid state while enabling/disabling streams or stream features.
                     // E.g.: sensor might be abruptly unplugged.
                 }
-            }
-        }
-
-        private void mainGrid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            if (this.mainGrid.Visibility == Visibility.Hidden)
-            {
-                var parent = (Panel)this.Parent;
-                parent.Children.Remove(this);
             }
         }
 
@@ -191,7 +182,7 @@ namespace KinectMotionAnalyzer.UI.Controls
                 this.infoTextBlock.Text = "Processing activated.\nLeave the screen to enable interaction.";
 
                 // load template action
-                LoadPrerecordAction();
+                //LoadPrerecordAction();
             }
         }
 
@@ -323,7 +314,7 @@ namespace KinectMotionAnalyzer.UI.Controls
                     }
                 }
 
-                //query_kinect_data_manager.UpdateColorData(frame);
+                query_kinect_data_manager.UpdateColorData(frame);
  
             }
             #endregion
