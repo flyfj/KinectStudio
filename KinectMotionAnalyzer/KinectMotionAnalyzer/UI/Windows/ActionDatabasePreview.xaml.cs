@@ -71,21 +71,21 @@ namespace KinectMotionAnalyzer.UI
             {
                 //MessageBox.Show(dbActionIdList.SelectedValue.ToString());
 
-                //// remove select action from database
-                //using (MotionDBContext dbcontext = new MotionDBContext())
-                //{
-                //    //MessageBox.Show(dbcontext.Actions.Count().ToString());
-                //    foreach (KinectAction cur_action in dbcontext.Actions)
-                //    {
-                //        if (cur_action.CurActionName == dbActionIdList.SelectedValue.ToString())
-                //        {
-                //            dbcontext.Actions.Remove(cur_action);
-                //            break;
-                //        }
-                //    }
+                // remove select action from database
+                using (MotionDBContext dbcontext = new MotionDBContext())
+                {
+                    
+                    foreach (KinectAction cur_action in dbcontext.Actions)
+                    {
+                        if (cur_action.CurActionName == dbActionIdList.SelectedValue.ToString())
+                        {
+                            dbcontext.Actions.Remove(cur_action);
+                            break;
+                        }
+                    }
 
-                //    dbcontext.SaveChanges();
-                //}
+                    dbcontext.SaveChanges();
+                }
             }
         }
     }
