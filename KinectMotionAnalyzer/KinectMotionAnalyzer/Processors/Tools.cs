@@ -127,13 +127,13 @@ namespace KinectMotionAnalyzer.Processors
 
             // get input scale
             Point3D shoulderRight = new Point3D(
-                inputSke.Joints[JointType.ShoulderRight].Position.X,
-                inputSke.Joints[JointType.ShoulderRight].Position.Y,
-                inputSke.Joints[JointType.ShoulderRight].Position.Z);
+                inputSke.Joints[JointType.ShoulderCenter].Position.X,
+                inputSke.Joints[JointType.ShoulderCenter].Position.Y,
+                inputSke.Joints[JointType.ShoulderCenter].Position.Z);
             Point3D shoulderLeft = new Point3D(
-                inputSke.Joints[JointType.ShoulderLeft].Position.X,
-                inputSke.Joints[JointType.ShoulderLeft].Position.Y,
-                inputSke.Joints[JointType.ShoulderLeft].Position.Z);
+                inputSke.Joints[JointType.HipCenter].Position.X,
+                inputSke.Joints[JointType.HipCenter].Position.Y,
+                inputSke.Joints[JointType.HipCenter].Position.Z);
             float inputShoulderDist =
                (float)Math.Sqrt(
                         Math.Pow((shoulderLeft.X - shoulderRight.X), 2) +
@@ -143,13 +143,13 @@ namespace KinectMotionAnalyzer.Processors
 
             // get target scale
             shoulderRight = new Point3D(
-                targetSke.Joints[JointType.ShoulderRight].Position.X,
-                targetSke.Joints[JointType.ShoulderRight].Position.Y,
-                targetSke.Joints[JointType.ShoulderRight].Position.Z);
+                targetSke.Joints[JointType.ShoulderCenter].Position.X,
+                targetSke.Joints[JointType.ShoulderCenter].Position.Y,
+                targetSke.Joints[JointType.ShoulderCenter].Position.Z);
             shoulderLeft = new Point3D(
-                targetSke.Joints[JointType.ShoulderLeft].Position.X,
-                targetSke.Joints[JointType.ShoulderLeft].Position.Y,
-                targetSke.Joints[JointType.ShoulderLeft].Position.Z);
+                targetSke.Joints[JointType.HipCenter].Position.X,
+                targetSke.Joints[JointType.HipCenter].Position.Y,
+                targetSke.Joints[JointType.HipCenter].Position.Z);
             float targetShoulderDist =
                (float)Math.Sqrt(
                         Math.Pow((shoulderLeft.X - shoulderRight.X), 2) +

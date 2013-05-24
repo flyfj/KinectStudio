@@ -61,7 +61,8 @@ namespace KinectMotionAnalyzer.UI
         // data type, e.g. skeleton which is harder to visualize
 
         // motion analysis params
-        public List<MeasurementUnit> toMeasureUnits;
+        public List<List<MeasurementUnit>> toMeasureUnits = null;
+        List<bool> ifKeyFrames = null;
 
 
         public MotionAnalyzerWindow_Trainer()
@@ -200,6 +201,9 @@ namespace KinectMotionAnalyzer.UI
             using (ColorImageFrame frame = e.OpenColorImageFrame())
             {
                 if (frame == null)
+                    return;
+
+                if (!triggerVideoCheckBox.IsChecked.Value)
                     return;
 
                 if (isCapturing && ifAddSkeleton)
@@ -662,6 +666,15 @@ namespace KinectMotionAnalyzer.UI
 
             isReplaying = true;
             saveGestureBtn.IsEnabled = true;
+            configBtn.IsEnabled = true;
+
+            // init measurements
+            toMeasureUnits.Clear();
+            toMeasureUnits = new List<List<MeasurementUnit>>();
+            for (int i = 0; i < skeleton_rec_buffer.Count; i++)
+            {
+                toMeasureUnits.Add(new List<MeasurementUnit>());
+            }
 
             // update view
             kinect_data_manager.UpdateColorData(color_frame_rec_buffer[min_frame_id], 640, 480);
@@ -685,6 +698,7 @@ namespace KinectMotionAnalyzer.UI
             replay_endLabel.Content = "0";
 
             isReplaying = false;
+            configBtn.IsEnabled = false;
         }
 
         private void replay_setStartBtn_Click(object sender, RoutedEventArgs e)
@@ -724,7 +738,7 @@ namespace KinectMotionAnalyzer.UI
             //gesture_recognizer = new GestureRecognizer();
             motion_assessor = new MotionAssessor();
             fmsProcessor = new FMSProcessor();
-            toMeasureUnits = new List<MeasurementUnit>();
+            toMeasureUnits = new List<List<MeasurementUnit>>();
             overlap_frame_rec_buffer = new ArrayList();
             skeleton_rec_buffer = new List<Skeleton>();
             color_frame_rec_buffer = new List<byte[]>();
@@ -744,6 +758,23 @@ namespace KinectMotionAnalyzer.UI
             // load gesture config and update ui
             //gesture_recognizer.LoadAllGestureConfig();
             UpdateActionComboBox();
+
+            this.WindowState = WindowState.Maximized;
+        }
+
+        private void configBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MeasurementConfigWin_Train configWin = new MeasurementConfigWin_Train();
+            int curFrameId = (int)actionVideoSlider.Value;
+            configWin.measureUnits = toMeasureUnits[curFrameId];
+            if (configWin.ShowDialog() == true)
+            {
+                // add measurements if any
+                if (configWin.measureUnits.Count > 0)
+                {
+                    toMeasureUnits[curFrameId].Union(configWin.measureUnits);
+                }
+            }
         }
 
     }

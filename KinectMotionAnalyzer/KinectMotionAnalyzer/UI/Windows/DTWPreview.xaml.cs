@@ -87,6 +87,26 @@ namespace KinectMotionAnalyzer.UI
                         smoothingParam.Prediction = 0.5f;
                         smoothingParam.JitterRadius = 0.05f;
                         smoothingParam.MaxDeviationRadius = 0.04f;
+
+                        // Smoothed with some latency.
+                        // Filters out medium jitters.
+                        // Good for a menu system that needs to be smooth but
+                        // doesn't need the reduced latency as much as gesture recognition does.
+                        //smoothingParam.Smoothing = 0.5f;
+                        //smoothingParam.Correction = 0.1f;
+                        //smoothingParam.Prediction = 0.5f;
+                        //smoothingParam.JitterRadius = 0.1f;
+                        //smoothingParam.MaxDeviationRadius = 0.1f;
+
+                        // Very smooth, but with a lot of latency.
+                        // Filters out large jitters.
+                        // Good for situations where smooth data is absolutely required
+                        // and latency is not an issue.
+                        //smoothingParam.Smoothing = 0.7f;
+                        //smoothingParam.Correction = 0.3f;
+                        //smoothingParam.Prediction = 1.0f;
+                        //smoothingParam.JitterRadius = 1.0f;
+                        //smoothingParam.MaxDeviationRadius = 1.0f;
                     };
 
                     kinect_sensor.SkeletonStream.Enable(smoothingParam);
@@ -196,6 +216,13 @@ namespace KinectMotionAnalyzer.UI
                 if (frame == null)
                     return;
 
+                if (!triggerVideoCheckBox.IsChecked.Value)
+                {
+                    query_kinect_data_manager.UpdateColorData(null);
+                    target_kinect_data_manager.UpdateColorData(null);
+                    return;
+                }
+
                 byte[] colorData = new byte[frame.PixelDataLength];
                 frame.CopyPixelDataTo(colorData);
 
@@ -263,17 +290,16 @@ namespace KinectMotionAnalyzer.UI
 
         private void ActivateQueryReplay(List<byte[]> color_frame_rec_buffer, List<Skeleton> skeleton_rec_buffer)
         {
-            if (this.query_color_frame_rec_buffer == null || this.query_color_frame_rec_buffer.Count == 0 ||
-                this.query_skeleton_rec_buffer == null || this.query_skeleton_rec_buffer.Count == 0)
+            if (this.query_skeleton_rec_buffer == null || this.query_skeleton_rec_buffer.Count == 0)
             {
                 MessageBox.Show("Replay action is empty.");
                 return;
             }
 
             int min_frame_id = 0;
-            int max_frame_id = this.query_color_frame_rec_buffer.Count - 1;
-            if (query_skeleton_rec_buffer != null)
-                max_frame_id = Math.Min(max_frame_id, this.query_skeleton_rec_buffer.Count - 1);
+            int max_frame_id = this.query_skeleton_rec_buffer.Count - 1;
+            if (triggerVideoCheckBox.IsChecked.Value)
+                max_frame_id = Math.Min(this.query_color_frame_rec_buffer.Count - 1, max_frame_id);
 
             queryVideoSlider.IsEnabled = true;
             queryVideoSlider.Minimum = min_frame_id;
@@ -290,24 +316,25 @@ namespace KinectMotionAnalyzer.UI
             isQueryReplaying = true;
 
             // update view
-            //if (triggerVideoCheckBox.IsChecked.Value)
+            if (triggerVideoCheckBox.IsChecked.Value)
                 query_kinect_data_manager.UpdateColorData(color_frame_rec_buffer[min_frame_id], 640, 480);
+            else
+                query_kinect_data_manager.UpdateColorData(null);
             query_kinect_data_manager.UpdateSkeletonData(skeleton_rec_buffer[min_frame_id]);
         }
 
         private void ActivateTargetReplay(List<byte[]> color_frame_rec_buffer, List<Skeleton> skeleton_rec_buffer)
         {
-            if (this.target_color_frame_rec_buffer == null || this.target_color_frame_rec_buffer.Count == 0 ||
-                this.target_skeleton_rec_buffer == null || this.target_skeleton_rec_buffer.Count == 0)
+            if (this.target_skeleton_rec_buffer == null || this.target_skeleton_rec_buffer.Count == 0)
             {
                 MessageBox.Show("Replay action is empty.");
                 return;
             }
 
             int min_frame_id = 0;
-            int max_frame_id = this.target_color_frame_rec_buffer.Count - 1;
-            if (target_skeleton_rec_buffer != null)
-                max_frame_id = Math.Min(max_frame_id, this.target_skeleton_rec_buffer.Count - 1);
+            int max_frame_id = this.target_skeleton_rec_buffer.Count - 1;
+            if (triggerVideoCheckBox.IsChecked.Value)
+                max_frame_id = Math.Min(this.target_color_frame_rec_buffer.Count - 1, max_frame_id);
 
             targetVideoSlider.IsEnabled = true;
             targetVideoSlider.Minimum = min_frame_id;
@@ -324,8 +351,11 @@ namespace KinectMotionAnalyzer.UI
             this.isTargetReplaying = true;
 
             // update view
-            //if (triggerVideoCheckBox.IsChecked.Value)
+            if (triggerVideoCheckBox.IsChecked.Value)
                 target_kinect_data_manager.UpdateColorData(target_color_frame_rec_buffer[min_frame_id], 640, 480);
+            else
+                target_kinect_data_manager.UpdateColorData(null);
+
             target_kinect_data_manager.UpdateSkeletonData(this.target_skeleton_rec_buffer[min_frame_id]);
         }
 
@@ -370,14 +400,17 @@ namespace KinectMotionAnalyzer.UI
         private void queryVideoSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             // valid only when kinect is stopped so no new data will come
-            if (this.isQueryReplaying && query_color_frame_rec_buffer.Count > 0 && query_skeleton_rec_buffer.Count > 0)
+            if (this.isQueryReplaying &&  query_skeleton_rec_buffer.Count > 0)
             {
                 // load new skeleton data
                 int cur_frame_id = (int)queryVideoSlider.Value;
-                if (query_skeleton_rec_buffer.Count > cur_frame_id && query_color_frame_rec_buffer.Count > cur_frame_id)
+                if (query_skeleton_rec_buffer.Count > cur_frame_id )
                 {
-                    //if (triggerVideoCheckBox.IsChecked.Value)
-                    query_kinect_data_manager.UpdateColorData(query_color_frame_rec_buffer[cur_frame_id], 640, 480);
+                    if (triggerVideoCheckBox.IsChecked.Value && query_color_frame_rec_buffer.Count > cur_frame_id)
+                        query_kinect_data_manager.UpdateColorData(query_color_frame_rec_buffer[cur_frame_id], 640, 480);
+                    else
+                        query_kinect_data_manager.UpdateColorData(null);
+
                     query_kinect_data_manager.UpdateSkeletonData(query_skeleton_rec_buffer[cur_frame_id]);
 
                     // update label
@@ -398,8 +431,8 @@ namespace KinectMotionAnalyzer.UI
                 skes[1] = target_skeleton_rec_buffer[target_id];
 
                 // show matched target frame
-                //if (triggerVideoCheckBox.IsChecked.Value)
-                target_kinect_data_manager.UpdateColorData(target_color_frame_rec_buffer[target_id], 640, 480);
+                if (triggerVideoCheckBox.IsChecked.Value)
+                    target_kinect_data_manager.UpdateColorData(target_color_frame_rec_buffer[target_id], 640, 480);
                 target_kinect_data_manager.UpdateSkeletonData(skes);
 
                 // update label
@@ -410,14 +443,17 @@ namespace KinectMotionAnalyzer.UI
         private void targetVideoSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             // valid only when kinect is stopped so no new data will come
-            if (this.isTargetReplaying && target_color_frame_rec_buffer.Count > 0 && target_skeleton_rec_buffer.Count > 0)
+            if (this.isTargetReplaying && target_skeleton_rec_buffer.Count > 0)
             {
                 // load new skeleton data
                 int cur_frame_id = (int)targetVideoSlider.Value;
-                if (target_skeleton_rec_buffer.Count > cur_frame_id && target_color_frame_rec_buffer.Count > cur_frame_id)
+                if (target_skeleton_rec_buffer.Count > cur_frame_id)
                 {
-                    //if (triggerVideoCheckBox.IsChecked.Value)
+                    if (!triggerVideoCheckBox.IsChecked.Value && target_color_frame_rec_buffer.Count > cur_frame_id)
                         target_kinect_data_manager.UpdateColorData(target_color_frame_rec_buffer[cur_frame_id], 640, 480);
+                    else
+                        target_kinect_data_manager.UpdateColorData(null);
+                    
                     target_kinect_data_manager.UpdateSkeletonData(target_skeleton_rec_buffer[cur_frame_id]);
 
                     // update label
@@ -579,13 +615,15 @@ namespace KinectMotionAnalyzer.UI
             int query_start_id = (int)queryVideoSlider.SelectionStart;
             int query_end_id = (int)queryVideoSlider.SelectionEnd;
             // remove end part first so front id will not change
-            if (query_color_frame_rec_buffer.Count > 0 &&
-                query_skeleton_rec_buffer.Count > 0)
+            if (query_skeleton_rec_buffer.Count > 0)
             {
-                // clean data
-                query_color_frame_rec_buffer.RemoveRange(query_end_id + 1, Math.Max(query_color_frame_rec_buffer.Count - query_end_id - 1, 0));
-                query_color_frame_rec_buffer.RemoveRange(0, query_start_id);
-
+                if (triggerVideoCheckBox.IsChecked.Value && query_color_frame_rec_buffer.Count > 0)
+                {
+                    // clean data
+                    query_color_frame_rec_buffer.RemoveRange(query_end_id + 1, Math.Max(query_color_frame_rec_buffer.Count - query_end_id - 1, 0));
+                    query_color_frame_rec_buffer.RemoveRange(0, query_start_id);
+                }
+                
                 query_skeleton_rec_buffer.RemoveRange(query_end_id + 1, Math.Max(query_skeleton_rec_buffer.Count - query_end_id - 1, 0));
                 query_skeleton_rec_buffer.RemoveRange(0, query_start_id);
             }
@@ -594,19 +632,21 @@ namespace KinectMotionAnalyzer.UI
             int target_start_id = (int)targetVideoSlider.SelectionStart;
             int target_end_id = (int)targetVideoSlider.SelectionEnd;
             // remove end part first so front id will not change
-            if (target_color_frame_rec_buffer.Count > 0 &&
-                target_skeleton_rec_buffer.Count > 0)
+            if (target_skeleton_rec_buffer.Count > 0)
             {
-                // clean data
-                target_color_frame_rec_buffer.RemoveRange(target_end_id + 1, Math.Max(target_color_frame_rec_buffer.Count - target_end_id - 1, 0));
-                target_color_frame_rec_buffer.RemoveRange(0, target_start_id);
+                if (triggerVideoCheckBox.IsChecked.Value && target_color_frame_rec_buffer.Count > 0)
+                {
+                    // clean data
+                    target_color_frame_rec_buffer.RemoveRange(target_end_id + 1, Math.Max(target_color_frame_rec_buffer.Count - target_end_id - 1, 0));
+                    target_color_frame_rec_buffer.RemoveRange(0, target_start_id);
+                }
 
                 target_skeleton_rec_buffer.RemoveRange(target_end_id + 1, Math.Max(target_skeleton_rec_buffer.Count - target_end_id - 1, 0));
                 target_skeleton_rec_buffer.RemoveRange(0, target_start_id);
             }
 
             ActivateQueryReplay(query_color_frame_rec_buffer, query_skeleton_rec_buffer);
-            DeactivateTargetReplay();
+            //DeactivateTargetReplay();
 
             // do matching using dtw
             KinectMotionAnalyzer.Processors.Action queryAction = new KinectMotionAnalyzer.Processors.Action();

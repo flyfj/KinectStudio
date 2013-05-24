@@ -98,7 +98,7 @@ namespace KinectMotionAnalyzer.Processors
         private readonly Brush inferredJointBrush = Brushes.Yellow;
 
         private readonly Pen trackedBonePen = new Pen(Brushes.Green, 2);
-        private readonly Pen inferredBonePen = new Pen(Brushes.Gray, 1);
+        private readonly Pen inferredBonePen = new Pen(Brushes.Green, 2);
 
         // color array
         private readonly List<Pen> BonePenList = new List<Pen>();
@@ -286,7 +286,10 @@ namespace KinectMotionAnalyzer.Processors
 
                         if (skel.TrackingState == SkeletonTrackingState.Tracked)
                         {
-                            this.DrawBonesAndJoints(skel, dc, BonePenList[cnt % BonePenList.Count]);
+                            if (cnt != 0)
+                                this.DrawBonesAndJoints(skel, dc, BonePenList[cnt % BonePenList.Count]);
+                            else
+                                this.DrawBonesAndJoints(skel, dc, trackedBonePen);
                         }
                         else if (skel.TrackingState == SkeletonTrackingState.PositionOnly)
                         {
@@ -556,7 +559,7 @@ namespace KinectMotionAnalyzer.Processors
             }
 
             // We assume all drawn bones are inferred unless BOTH joints are tracked
-            if (joint0.TrackingState == JointTrackingState.Tracked && joint1.TrackingState == JointTrackingState.Tracked)
+            if (joint0.TrackingState == JointTrackingState.Tracked || joint1.TrackingState == JointTrackingState.Tracked)
             {
                 //drawPen = this.trackedBonePen;
                 drawingContext.DrawLine(drawPen,

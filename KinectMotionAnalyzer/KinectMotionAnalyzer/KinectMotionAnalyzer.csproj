@@ -166,6 +166,9 @@
       <DependentUpon>FMSSelectorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Controls\KinectHoverButton.cs" />
+    <Compile Include="UI\Windows\MeasurementConfigWin_Train.xaml.cs">
+      <DependentUpon>MeasurementConfigWin_Train.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Windows\UserMatchingWindow.xaml.cs">
       <DependentUpon>UserMatchingWindow.xaml</DependentUpon>
     </Compile>
@@ -255,6 +258,10 @@
     <Page Include="UI\Controls\FMSSelectorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Windows\MeasurementConfigWin_Train.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\Windows\UserMatchingWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
