@@ -141,28 +141,32 @@ namespace KinectMotionAnalyzer.Processors
 
         public void UpdateColorData(ColorImageFrame frame)
         {
-            if (frame == null)
-                return;
-
-            // update property value
-            if (colorPixelData == null)
-            {
-                colorPixelData = new byte[frame.PixelDataLength];    // always BGR32
-            }
-
-            frame.CopyPixelDataTo(colorPixelData);
-
             if (ColorStreamBitmap == null)
             {
-                ColorStreamBitmap = new WriteableBitmap(frame.Width, frame.Height, 96, 96,
+                ColorStreamBitmap = new WriteableBitmap(
+                    sensor_ref.ColorStream.FrameWidth, 
+                    sensor_ref.ColorStream.FrameHeight, 96, 96,
                     PixelFormats.Bgr32, null);
+            }
+
+             // update property value
+            if (colorPixelData == null)
+            {
+                colorPixelData = new byte[sensor_ref.ColorStream.FramePixelDataLength];    // always BGR32
             }
 
             int stride = ColorStreamBitmap.PixelWidth * sizeof(int);
             Int32Rect drawRect = new Int32Rect(0, 0, ColorStreamBitmap.PixelWidth, ColorStreamBitmap.PixelHeight);
-            ColorStreamBitmap.WritePixels(drawRect, colorPixelData, stride, 0);
 
-            //ColorBitmap = new System.Drawing.Bitmap(frame.Width, frame.Height, stride, System.Drawing.Imaging.PixelFormat.Format32bppRgb, colorPixelData);
+            if (frame == null)
+            {
+                // draw empty background image
+                colorPixelData = colorPixelData.Select(n => n = 0).ToArray<byte>();
+            }
+            else
+                frame.CopyPixelDataTo(colorPixelData);
+
+            ColorStreamBitmap.WritePixels(drawRect, colorPixelData, stride, 0);
         }
 
         public void UpdateColorData(byte[] colorPixelData, int width, int height)

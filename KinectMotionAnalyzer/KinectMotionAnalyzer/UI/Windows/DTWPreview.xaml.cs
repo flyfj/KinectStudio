@@ -216,13 +216,6 @@ namespace KinectMotionAnalyzer.UI
                 if (frame == null)
                     return;
 
-                if (!triggerVideoCheckBox.IsChecked.Value)
-                {
-                    query_kinect_data_manager.UpdateColorData(null);
-                    target_kinect_data_manager.UpdateColorData(null);
-                    return;
-                }
-
                 byte[] colorData = new byte[frame.PixelDataLength];
                 frame.CopyPixelDataTo(colorData);
 
@@ -237,9 +230,12 @@ namespace KinectMotionAnalyzer.UI
                         query_color_frame_rec_buffer.Add(colorData);
                     }
 
-                    query_kinect_data_manager.UpdateColorData(frame);
+                    if (triggerVideoCheckBox.IsChecked.Value)
+                        query_kinect_data_manager.UpdateColorData(frame);
+                    else
+                        query_kinect_data_manager.UpdateColorData(null);
                 }
-
+ 
                 if (this.isTargetCapturing)
                 {
                     if (ifAddSkeleton)
@@ -251,7 +247,10 @@ namespace KinectMotionAnalyzer.UI
                         target_color_frame_rec_buffer.Add(colorData);
                     }
 
-                    target_kinect_data_manager.UpdateColorData(frame);
+                    if (triggerVideoCheckBox.IsChecked.Value)
+                        target_kinect_data_manager.UpdateColorData(frame);
+                    else
+                        target_kinect_data_manager.UpdateColorData(null);
                 }
             }
 #endregion
@@ -431,8 +430,11 @@ namespace KinectMotionAnalyzer.UI
                 skes[1] = target_skeleton_rec_buffer[target_id];
 
                 // show matched target frame
-                if (triggerVideoCheckBox.IsChecked.Value)
+                if (triggerVideoCheckBox.IsChecked.Value && target_color_frame_rec_buffer.Count > target_id)
                     target_kinect_data_manager.UpdateColorData(target_color_frame_rec_buffer[target_id], 640, 480);
+                else
+                    target_kinect_data_manager.UpdateColorData(null);
+                
                 target_kinect_data_manager.UpdateSkeletonData(skes);
 
                 // update label
@@ -449,7 +451,7 @@ namespace KinectMotionAnalyzer.UI
                 int cur_frame_id = (int)targetVideoSlider.Value;
                 if (target_skeleton_rec_buffer.Count > cur_frame_id)
                 {
-                    if (!triggerVideoCheckBox.IsChecked.Value && target_color_frame_rec_buffer.Count > cur_frame_id)
+                    if (triggerVideoCheckBox.IsChecked.Value && target_color_frame_rec_buffer.Count > cur_frame_id)
                         target_kinect_data_manager.UpdateColorData(target_color_frame_rec_buffer[cur_frame_id], 640, 480);
                     else
                         target_kinect_data_manager.UpdateColorData(null);
@@ -615,35 +617,29 @@ namespace KinectMotionAnalyzer.UI
             int query_start_id = (int)queryVideoSlider.SelectionStart;
             int query_end_id = (int)queryVideoSlider.SelectionEnd;
             // remove end part first so front id will not change
-            if (query_skeleton_rec_buffer.Count > 0)
+            if (triggerVideoCheckBox.IsChecked.Value && query_color_frame_rec_buffer.Count > 0)
             {
-                if (triggerVideoCheckBox.IsChecked.Value && query_color_frame_rec_buffer.Count > 0)
-                {
-                    // clean data
-                    query_color_frame_rec_buffer.RemoveRange(query_end_id + 1, Math.Max(query_color_frame_rec_buffer.Count - query_end_id - 1, 0));
-                    query_color_frame_rec_buffer.RemoveRange(0, query_start_id);
-                }
-                
-                query_skeleton_rec_buffer.RemoveRange(query_end_id + 1, Math.Max(query_skeleton_rec_buffer.Count - query_end_id - 1, 0));
-                query_skeleton_rec_buffer.RemoveRange(0, query_start_id);
+                // clean data
+                query_color_frame_rec_buffer.RemoveRange(query_end_id + 1, Math.Max(query_color_frame_rec_buffer.Count - query_end_id - 1, 0));
+                query_color_frame_rec_buffer.RemoveRange(0, query_start_id);
             }
+                
+            query_skeleton_rec_buffer.RemoveRange(query_end_id + 1, Math.Max(query_skeleton_rec_buffer.Count - query_end_id - 1, 0));
+            query_skeleton_rec_buffer.RemoveRange(0, query_start_id);
 
             // trim target action
             int target_start_id = (int)targetVideoSlider.SelectionStart;
             int target_end_id = (int)targetVideoSlider.SelectionEnd;
             // remove end part first so front id will not change
-            if (target_skeleton_rec_buffer.Count > 0)
+            if (triggerVideoCheckBox.IsChecked.Value && target_color_frame_rec_buffer.Count > 0)
             {
-                if (triggerVideoCheckBox.IsChecked.Value && target_color_frame_rec_buffer.Count > 0)
-                {
-                    // clean data
-                    target_color_frame_rec_buffer.RemoveRange(target_end_id + 1, Math.Max(target_color_frame_rec_buffer.Count - target_end_id - 1, 0));
-                    target_color_frame_rec_buffer.RemoveRange(0, target_start_id);
-                }
-
-                target_skeleton_rec_buffer.RemoveRange(target_end_id + 1, Math.Max(target_skeleton_rec_buffer.Count - target_end_id - 1, 0));
-                target_skeleton_rec_buffer.RemoveRange(0, target_start_id);
+                // clean data
+                target_color_frame_rec_buffer.RemoveRange(target_end_id + 1, Math.Max(target_color_frame_rec_buffer.Count - target_end_id - 1, 0));
+                target_color_frame_rec_buffer.RemoveRange(0, target_start_id);
             }
+
+            target_skeleton_rec_buffer.RemoveRange(target_end_id + 1, Math.Max(target_skeleton_rec_buffer.Count - target_end_id - 1, 0));
+            target_skeleton_rec_buffer.RemoveRange(0, target_start_id);
 
             ActivateQueryReplay(query_color_frame_rec_buffer, query_skeleton_rec_buffer);
             //DeactivateTargetReplay();
@@ -733,6 +729,10 @@ namespace KinectMotionAnalyzer.UI
             }
         }
 
+        /// <summary>
+        /// compute similarity for real time use
+        /// </summary>
+        /// <returns></returns>
         private double ComputeActionSimilarity()
         {
             if (query_skeleton_rec_buffer.Count <= 0 || target_skeleton_rec_buffer.Count <= 0)
