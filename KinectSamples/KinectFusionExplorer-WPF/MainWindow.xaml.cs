@@ -554,6 +554,7 @@ namespace Microsoft.Samples.Kinect.KinectFusionExplorer
         private byte[] curColorData = null;
         private List<byte[]> colorFrames = new List<byte[]>();
         private List<Matrix4> cameraPose = new List<Matrix4>();
+        private List<FusionPointCloudImageFrame> pointCloudFrames = new List<FusionPointCloudImageFrame>();
 
         /// <summary>
         /// Dispose resources
@@ -1184,6 +1185,9 @@ namespace Microsoft.Samples.Kinect.KinectFusionExplorer
                     // Calculate the point cloud of integration
                     this.volume.CalculatePointCloud(this.pointCloudFrame, this.worldToCameraTransform);
 
+                    // add to list
+                    pointCloudFrames.Add(pointCloudFrame);
+
                     // Map X axis to blue channel, Y axis to green channel and Z axiz to red channel,
                     // normalizing each to the range [0, 1].
                     Matrix4 worldToBGRTransform = new Matrix4();
@@ -1580,6 +1584,30 @@ namespace Microsoft.Samples.Kinect.KinectFusionExplorer
                                         cameraPose[i].M31 + " " + cameraPose[i].M32 + " " + cameraPose[i].M33 + " " + cameraPose[i].M34 + " " +
                                         cameraPose[i].M41 + " " + cameraPose[i].M42 + " " + cameraPose[i].M43 + " " + cameraPose[i].M44);
                         }
+
+                        // save point cloud file for each time stamp
+                        string pcFile = dialog.FileName + i.ToString() + ".pc";
+                        using (StreamWriter writer = new StreamWriter(pcFile))
+                        {
+                            float[] pixelValues = 
+                                new float[pointCloudFrames[i].PixelDataLength];
+                            pointCloudFrames[i].CopyPixelDataTo(pixelValues);
+                            writer.WriteLine(pointCloudFrames[i].Width + " " + pointCloudFrames[i].Height);
+                            for (int r = 0; r < pointCloudFrames[i].Height; r++)
+                            {
+                                for (int c = 0; c < pointCloudFrames[i].Width; c++)
+                                {
+                                    writer.Write(pixelValues[r * 6 * pointCloudFrames[i].Width + 6 * c] + " ");
+                                    writer.Write(pixelValues[r * 6 * pointCloudFrames[i].Width + 6 * c + 1] + " ");
+                                    writer.Write(pixelValues[r * 6 * pointCloudFrames[i].Width + 6 * c + 2] + " ");
+                                    writer.Write(pixelValues[r * 6 * pointCloudFrames[i].Width + 6 * c + 3] + " ");
+                                    writer.Write(pixelValues[r * 6 * pointCloudFrames[i].Width + 6 * c + 4] + " ");
+                                    writer.Write(pixelValues[r * 6 * pointCloudFrames[i].Width + 6 * c + 5]);
+                                }
+                                writer.WriteLine();
+                            }
+                        }
+
                     }
 
                     this.ShowStatusMessage(Properties.Resources.MeshSaved);
