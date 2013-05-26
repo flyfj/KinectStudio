@@ -1139,6 +1139,8 @@ namespace Microsoft.Samples.Kinect.KinectFusionExplorer
                         out this.alignmentEnergy,
                         this.worldToCameraTransform);
 
+                    bool ifAddedCameraPose = false;
+
                     if (!trackingSucceeded)
                     {
                         this.trackingErrorCount++;
@@ -1152,6 +1154,7 @@ namespace Microsoft.Samples.Kinect.KinectFusionExplorer
                         Matrix4 calculatedCameraPos = this.volume.GetCurrentWorldToCameraTransform();
 
                         cameraPose.Add(calculatedCameraPos);
+                        ifAddedCameraPose = true;
 
                         if (curColorData != null)
                             colorFrames.Add(curColorData);
@@ -1186,7 +1189,8 @@ namespace Microsoft.Samples.Kinect.KinectFusionExplorer
                     this.volume.CalculatePointCloud(this.pointCloudFrame, this.worldToCameraTransform);
 
                     // add to list
-                    pointCloudFrames.Add(pointCloudFrame);
+                    if (ifAddedCameraPose)
+                        pointCloudFrames.Add(pointCloudFrame);
 
                     // Map X axis to blue channel, Y axis to green channel and Z axiz to red channel,
                     // normalizing each to the range [0, 1].
@@ -1579,17 +1583,17 @@ namespace Microsoft.Samples.Kinect.KinectFusionExplorer
                         string posefile = dialog.FileName + i.ToString() + ".pose";
                         using (StreamWriter writer = new StreamWriter(posefile))
                         {
-                            writer.Write(cameraPose[i].M11 + " " + cameraPose[i].M12 + " " + cameraPose[i].M13 + " " + cameraPose[i].M14 + " " + 
+                            writer.Write(cameraPose[i].M11 + " " + cameraPose[i].M12 + " " + cameraPose[i].M13 + " " + cameraPose[i].M14 + " " +
                                         cameraPose[i].M21 + " " + cameraPose[i].M22 + " " + cameraPose[i].M23 + " " + cameraPose[i].M24 + " " +
                                         cameraPose[i].M31 + " " + cameraPose[i].M32 + " " + cameraPose[i].M33 + " " + cameraPose[i].M34 + " " +
-                                        cameraPose[i].M41 + " " + cameraPose[i].M42 + " " + cameraPose[i].M43 + " " + cameraPose[i].M44);
+                                        cameraPose[i].M41 + " " + cameraPose[i].M42 + " " + cameraPose[i].M43 + " " + cameraPose[i].M44 + " ");
                         }
 
                         // save point cloud file for each time stamp
                         string pcFile = dialog.FileName + i.ToString() + ".pc";
                         using (StreamWriter writer = new StreamWriter(pcFile))
                         {
-                            float[] pixelValues = new float[pointCloudFrames[i].PixelDataLength];
+                            float[] pixelValues = new float[pointCloudFrames[i].PixelDataLength * pointCloudFrames[i].BytesPerPixel / sizeof(float)];
                             pointCloudFrames[i].CopyPixelDataTo(pixelValues);
                             writer.WriteLine(pointCloudFrames[i].Width + " " + pointCloudFrames[i].Height);
                             for (int r = 0; r < pointCloudFrames[i].Height; r++)
