@@ -1589,8 +1589,7 @@ namespace Microsoft.Samples.Kinect.KinectFusionExplorer
                         string pcFile = dialog.FileName + i.ToString() + ".pc";
                         using (StreamWriter writer = new StreamWriter(pcFile))
                         {
-                            float[] pixelValues = 
-                                new float[pointCloudFrames[i].PixelDataLength];
+                            float[] pixelValues = new float[pointCloudFrames[i].PixelDataLength];
                             pointCloudFrames[i].CopyPixelDataTo(pixelValues);
                             writer.WriteLine(pointCloudFrames[i].Width + " " + pointCloudFrames[i].Height);
                             for (int r = 0; r < pointCloudFrames[i].Height; r++)
