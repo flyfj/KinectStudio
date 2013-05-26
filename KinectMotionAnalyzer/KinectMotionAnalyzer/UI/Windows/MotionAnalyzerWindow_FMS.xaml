@@ -5,7 +5,7 @@
     <Grid RenderTransformOrigin="0.501,0.544">
         <GroupBox Header="Display" Height="461" HorizontalAlignment="Left" Margin="31,12,0,0" Name="groupBox3" VerticalAlignment="Top" Width="560" FontSize="16" BorderBrush="#FF0C0C0B">
             <Grid>
-                <Image Name="color_disp_img" Stretch="Fill" Height="414" Margin="37,6,37,13" RenderTransformOrigin="0.484,0.505" />
+                <Image Name="color_disp_img" Stretch="Fill" Height="414" Margin="37,6,37,13" />
                 <Image Name="ske_disp_img" Height="414" Margin="37,6,37,13" Stretch="Fill" />
             </Grid>
         </GroupBox>

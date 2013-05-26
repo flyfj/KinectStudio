@@ -510,8 +510,8 @@ namespace KinectMotionAnalyzer.Processors
         {
             // Convert point to depth space.
             // We are not using depth directly, but we do want the points in our 640x480 output resolution.
-            DepthImagePoint depthPoint = sensor_ref.CoordinateMapper.MapSkeletonPointToDepthPoint(
-                skelpoint, DepthImageFormat.Resolution640x480Fps30);
+            ColorImagePoint depthPoint = sensor_ref.CoordinateMapper.MapSkeletonPointToColorPoint(
+                skelpoint, ColorImageFormat.RgbResolution640x480Fps30);
             return new Point(depthPoint.X, depthPoint.Y);
         }
 

@@ -38,7 +38,7 @@ namespace KinectMotionAnalyzer.UI
 
         // record params
         private double ACTION_RECOGNITION_TH = 150;
-        private int MAX_ALLOW_FRAME = 800;  // no more than this number for color and skeleton to avoid memory issue
+        private int MAX_ALLOW_FRAME = 400;  // no more than this number for color and skeleton to avoid memory issue
         List<Skeleton> query_skeleton_rec_buffer = null; // record skeleton data
         List<byte[]> query_color_frame_rec_buffer = null; // record video frames
         List<Skeleton> target_skeleton_rec_buffer = null; // record skeleton data
@@ -611,7 +611,7 @@ namespace KinectMotionAnalyzer.UI
             }
 
             this.isQueryReplaying = false;
-            this.isTargetReplaying = false;
+            //this.isTargetReplaying = false;
 
             // trim query action
             int query_start_id = (int)queryVideoSlider.SelectionStart;
