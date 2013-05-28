@@ -1605,7 +1605,7 @@ namespace Microsoft.Samples.Kinect.KinectFusionExplorer
                                     writer.Write(pixelValues[r * 6 * pointCloudFrames[i].Width + 6 * c + 2] + " ");
                                     writer.Write(pixelValues[r * 6 * pointCloudFrames[i].Width + 6 * c + 3] + " ");
                                     writer.Write(pixelValues[r * 6 * pointCloudFrames[i].Width + 6 * c + 4] + " ");
-                                    writer.Write(pixelValues[r * 6 * pointCloudFrames[i].Width + 6 * c + 5]);
+                                    writer.Write(pixelValues[r * 6 * pointCloudFrames[i].Width + 6 * c + 5] + " ");
                                 }
                                 writer.WriteLine();
                             }
