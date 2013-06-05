@@ -6,7 +6,7 @@ using System.Text;
 using System.Xml;
 using System.Windows.Forms;
 using Microsoft.Kinect;
-using KinectMotionAnalyzer.Model;
+using KinectMotionAnalyzer.DataModel;
 
 namespace KinectMotionAnalyzer.Processors
 {

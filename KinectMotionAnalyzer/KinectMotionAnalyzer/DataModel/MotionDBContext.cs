@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Entity;
 
-namespace KinectMotionAnalyzer.Model
+namespace KinectMotionAnalyzer.DataModel
 {
     class MotionDBContext : DbContext
     {
+        public DbSet<UserProfile> Users { get; set; }
         public DbSet<KinectAction> Actions { get; set; }
         public DbSet<ActionType> ActionTypes { get; set; }
 

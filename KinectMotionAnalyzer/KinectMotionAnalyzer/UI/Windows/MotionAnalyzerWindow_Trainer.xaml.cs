@@ -22,7 +22,7 @@ using System.Data.Entity;
 //using Emgu.CV;
 //using Emgu.CV.Structure;
 //using Emgu.Util;
-using KinectMotionAnalyzer.Model;
+using KinectMotionAnalyzer.DataModel;
 
 
 namespace KinectMotionAnalyzer.UI

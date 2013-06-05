@@ -6,22 +6,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KinectMotionAnalyzer.Model
+namespace KinectMotionAnalyzer.DataModel
 {
-    class DepthMapData
+    class ColorFrameData
     {
         [Key]
         public int Id { get; set; }
 
         public int FrameId { get; set; }
 
+        [Required]
         public int FrameWidth { get; set; }
 
+        [Required]
         public int FrameHeight { get; set; }
 
-        //[Column(TypeName = "image")]
-        //public short[] DepthData { get; set; }
+        [Column(TypeName = "image")]
+        public byte[] FrameData { get; set; }
 
-        //public KinectAction KAction { get; set; }
+        //[Required]
+       // public int KinectActionId { get; set; }
     }
 }

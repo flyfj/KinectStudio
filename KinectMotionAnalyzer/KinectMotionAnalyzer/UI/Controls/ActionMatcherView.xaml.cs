@@ -13,7 +13,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using KinectMotionAnalyzer.Model;
+using KinectMotionAnalyzer.DataModel;
 using KinectMotionAnalyzer.Processors;
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit;

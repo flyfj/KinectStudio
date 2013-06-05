@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Kinect;
 using System.Windows.Media.Media3D;
-using KinectMotionAnalyzer.Model;
+using KinectMotionAnalyzer.DataModel;
 using System.Windows;
 
 

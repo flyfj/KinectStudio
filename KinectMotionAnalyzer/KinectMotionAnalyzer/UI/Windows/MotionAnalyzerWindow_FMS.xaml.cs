@@ -19,7 +19,7 @@ using Microsoft.Kinect;
 using Microsoft.Win32;
 using System.Diagnostics;
 using System.Data.Entity;
-using KinectMotionAnalyzer.Model;
+using KinectMotionAnalyzer.DataModel;
 
 
 namespace KinectMotionAnalyzer.UI

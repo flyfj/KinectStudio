@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KinectMotionAnalyzer.Model
+namespace KinectMotionAnalyzer.DataModel
 {
     // each basic exercise, e.g. one repetition
     // this is the representation for database storage 

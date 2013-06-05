@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Kinect;
 
-namespace KinectMotionAnalyzer.Model
+namespace KinectMotionAnalyzer.DataModel
 {
     class SkeletonData
     {

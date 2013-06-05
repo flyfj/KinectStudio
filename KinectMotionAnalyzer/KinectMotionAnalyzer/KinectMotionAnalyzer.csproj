@@ -133,17 +133,22 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DataModel\UserProfile.cs" />
     <Compile Include="Migrations\201305180444326_added joint weights to action.cs" />
     <Compile Include="Migrations\201305180444326_added joint weights to action.Designer.cs">
       <DependentUpon>201305180444326_added joint weights to action.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201306050526408_added user profile.cs" />
+    <Compile Include="Migrations\201306050526408_added user profile.Designer.cs">
+      <DependentUpon>201306050526408_added user profile.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Model\DepthMapData.cs" />
-    <Compile Include="Model\KinectAction.cs" />
-    <Compile Include="Model\ColorFrameData.cs" />
-    <Compile Include="Model\MotionDBContext.cs" />
-    <Compile Include="Model\SingleJoint.cs" />
-    <Compile Include="Model\SkeletonData.cs" />
+    <Compile Include="DataModel\DepthMapData.cs" />
+    <Compile Include="DataModel\KinectAction.cs" />
+    <Compile Include="DataModel\ColorFrameData.cs" />
+    <Compile Include="DataModel\MotionDBContext.cs" />
+    <Compile Include="DataModel\SingleJoint.cs" />
+    <Compile Include="DataModel\SkeletonData.cs" />
     <Compile Include="Processors\FMSProcessor.cs" />
     <Compile Include="Processors\ActionRecognizer.cs" />
     <Compile Include="Processors\KinectRecorder.cs" />
@@ -166,6 +171,9 @@
       <DependentUpon>FMSSelectorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Controls\KinectHoverButton.cs" />
+    <Compile Include="UI\Windows\LoginWindow.xaml.cs">
+      <DependentUpon>LoginWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Windows\MeasurementConfigWin_Train.xaml.cs">
       <DependentUpon>MeasurementConfigWin_Train.xaml</DependentUpon>
     </Compile>
@@ -217,6 +225,9 @@
     <EmbeddedResource Include="Migrations\201305180444326_added joint weights to action.resx">
       <DependentUpon>201305180444326_added joint weights to action.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201306050526408_added user profile.resx">
+      <DependentUpon>201306050526408_added user profile.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -256,6 +267,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Controls\FMSSelectorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Windows\LoginWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
