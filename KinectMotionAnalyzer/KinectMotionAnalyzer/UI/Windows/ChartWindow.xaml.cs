@@ -24,11 +24,43 @@ namespace KinectMotionAnalyzer.UI.Windows
             InitializeComponent();
         }
 
+        /// <summary>
+        /// draw a normalized curve
+        /// </summary>
+        /// <param name="curveData"></param>
         private void DrawCurve(List<Point> curveData)
         {
             MainCanvas.Children.Clear();
 
-            Point chartOrigin = new Point(10, MainCanvas.ActualHeight - 10);
+            // margin for origin point
+            Thickness graphMargin = new Thickness(30, 10, 10, 30);
+
+            // actual canvas area
+            Rect canvasBox = new Rect(0, 0, MainCanvas.ActualWidth, MainCanvas.ActualHeight);
+            // origin point
+            Point chartOrigin = new Point(graphMargin.Left, canvasBox.Height - graphMargin.Bottom);
+            // axis
+            Line axisVertical = new Line();
+            axisVertical.Stroke = System.Windows.Media.Brushes.Black;
+            axisVertical.StrokeThickness = 2;
+            axisVertical.X1 = chartOrigin.X;
+            axisVertical.Y1 = chartOrigin.Y;
+            axisVertical.X2 = chartOrigin.X;
+            axisVertical.Y2 = graphMargin.Top;
+            Line axisHorizontal = new Line();
+            axisHorizontal.Stroke = System.Windows.Media.Brushes.Black;
+            axisHorizontal.StrokeThickness = 2;
+            axisHorizontal.X1 = chartOrigin.X;
+            axisHorizontal.Y1 = chartOrigin.Y;
+            axisHorizontal.X2 = canvasBox.Width - graphMargin.Right;
+            axisHorizontal.Y2 = chartOrigin.Y;
+
+            MainCanvas.Children.Add(axisVertical);
+            MainCanvas.Children.Add(axisHorizontal);
+
+            // find maximum and minimum value of each coordinate
+
+
             for (int i = 1; i < curveData.Count; i++)
             {
                 Line myLine = new Line();
@@ -46,11 +78,14 @@ namespace KinectMotionAnalyzer.UI.Windows
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            Random randGenerator = new Random();
             List<Point> curve = new List<Point>();
             curve.Add(new Point(0, 0));
-            curve.Add(new Point(50, 50));
-            curve.Add(new Point(70, 40));
-            curve.Add(new Point(80, 80));
+            for (int i = 1; i < 1000; i += 5)
+            {
+                int y = randGenerator.Next() % 400;
+                curve.Add(new Point(i, y));
+            }
 
             DrawCurve(curve);
         }
