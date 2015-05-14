@@ -1,0 +1,19 @@
+﻿<Window x:Class="DataCapture.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="350" Width="525"
+        Closing="Window_Closing">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <Viewbox HorizontalAlignment="Center">
+            <Image Source="{Binding ColorImageSource}" Stretch="UniformToFill" />
+        </Viewbox>
+        <Viewbox HorizontalAlignment="Center">
+            <Image Source="{Binding DepthImageSource}" Stretch="UniformToFill" />
+        </Viewbox>
+    </Grid>
+</Window>
