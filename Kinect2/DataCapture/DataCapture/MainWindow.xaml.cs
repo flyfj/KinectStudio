@@ -36,6 +36,11 @@ namespace DataCapture
         private const int MapDepthToByte = 8000 / 256;
         private byte[] depthPixels = null;
 
+        private int frameId = 0;
+        private string saveRoot = "N:\\Kinect2Videos\\";
+        private List<WriteableBitmap> allColorImgs = new List<WriteableBitmap>();
+        private List<WriteableBitmap> allDepthImgs = new List<WriteableBitmap>();
+
         private enum KinectFrameType
         {
             KinectColorFrame,
@@ -163,6 +168,14 @@ namespace DataCapture
                 this.RenderDepthPixels();
             }
 
+            // save frames
+            //new Task(() => SaveFrame(string.Format("{0}{1}_color.png", saveRoot, frameId), colorBitmap)).Start();
+            //new Task(() => SaveFrame(string.Format("{0}{1}_depth.png", saveRoot, frameId), depthBitmap)).Start();
+            allColorImgs.Add(colorBitmap.Clone());
+            allDepthImgs.Add(depthBitmap.Clone());
+
+            frameId++;
+
         }
 
         /// <summary>
@@ -253,37 +266,28 @@ namespace DataCapture
             }
         }
 
-        private void SaveFrame(string save_fn, KinectFrameType frame_type)
+        private void SaveFrame(string save_fn, WriteableBitmap toSaveImg)
         {
             BitmapEncoder encoder = new PngBitmapEncoder();
-            switch (frame_type)
+            if (toSaveImg != null)
             {
-                case KinectFrameType.KinectColorFrame:
-                    if(colorBitmap != null) 
-                        encoder.Frames.Add(BitmapFrame.Create(this.colorBitmap));
-                    break;
-                case KinectFrameType.KinectDepthFrame:
-                    if (depthBitmap != null) 
-                        encoder.Frames.Add(BitmapFrame.Create(this.depthBitmap));
-                    break;
-            }
+                encoder.Frames.Add(BitmapFrame.Create(toSaveImg));
 
-            if (encoder.Frames.Count == 0) 
-                return;
-            
-            // write the new file to disk
-            try
-            {
-                // FileStream is IDisposable
-                using (FileStream fs = new FileStream(save_fn, FileMode.Create))
+                // write the new file to disk
+                try
                 {
-                    encoder.Save(fs);
+                    // FileStream is IDisposable
+                    using (FileStream fs = new FileStream(save_fn, FileMode.Create))
+                    {
+                        encoder.Save(fs);
+                    }
+                }
+                catch (IOException)
+                {
+                    MessageBox.Show("fail to save color image");
                 }
             }
-            catch (IOException)
-            {
-                MessageBox.Show("fail to save color image");
-            }
+                       
         }
 
     }
