@@ -25,9 +25,9 @@ namespace DataCapture
     {
         private KinectSensor kinectSensor = null;
 
-        private ColorFrameReader colorFrameReader = null;
-        private DepthFrameReader depthFrameReader = null;
+        private MultiSourceFrameReader multiSourceFrameReader = null;
 
+        private WriteableBitmap rawColorBitmap = null;
         private WriteableBitmap colorBitmap = null;
         private WriteableBitmap depthBitmap = null;
         private FrameDescription colorFrameDescription = null;
@@ -40,6 +40,14 @@ namespace DataCapture
         {
             KinectColorFrame,
             KinectDepthFrame
+        }
+
+        public ImageSource RawColorImageSource
+        {
+            get
+            {
+                return rawColorBitmap;
+            }
         }
 
         public ImageSource ColorImageSource
@@ -63,18 +71,17 @@ namespace DataCapture
         {
             this.kinectSensor = KinectSensor.GetDefault();
 
-            this.colorFrameReader = kinectSensor.ColorFrameSource.OpenReader();
-            this.depthFrameReader = kinectSensor.DepthFrameSource.OpenReader();
+            this.multiSourceFrameReader = kinectSensor.OpenMultiSourceFrameReader(FrameSourceTypes.Color | FrameSourceTypes.Depth);
 
-            this.colorFrameReader.FrameArrived += this.ColorFrameArrived;
-            this.depthFrameReader.FrameArrived += this.DepthFrameArrived;
+            this.multiSourceFrameReader.MultiSourceFrameArrived += this.MultiSourceFrameArrived;
 
             // create image data
             colorFrameDescription = kinectSensor.ColorFrameSource.CreateFrameDescription(ColorImageFormat.Bgra);
-            this.colorBitmap = new WriteableBitmap(colorFrameDescription.Width, colorFrameDescription.Height, 96, 96, PixelFormats.Bgr32, null);
+            this.rawColorBitmap = new WriteableBitmap(colorFrameDescription.Width, colorFrameDescription.Height, 96, 96, PixelFormats.Bgr32, null);
             depthFrameDescription = kinectSensor.DepthFrameSource.FrameDescription;
             depthPixels = new byte[depthFrameDescription.Width * depthFrameDescription.Height];
             this.depthBitmap = new WriteableBitmap(depthFrameDescription.Width, depthFrameDescription.Height, 96, 96, PixelFormats.Gray8, null);
+            this.colorBitmap = new WriteableBitmap(depthFrameDescription.Width, depthFrameDescription.Height, 96, 96, PixelFormats.Bgr32, null);
 
             kinectSensor.Open();
 
@@ -83,9 +90,13 @@ namespace DataCapture
             InitializeComponent();
         }
 
-        private void ColorFrameArrived(object sender, ColorFrameArrivedEventArgs e)
+
+        private void MultiSourceFrameArrived(object sender, MultiSourceFrameArrivedEventArgs e)
         {
-            using (ColorFrame colorFrame = e.FrameReference.AcquireFrame())
+            var reference = e.FrameReference.AcquireFrame();
+
+            // process color frame
+            using (ColorFrame colorFrame = reference.ColorFrameReference.AcquireFrame())
             {
                 if (colorFrame != null)
                 {
@@ -93,31 +104,29 @@ namespace DataCapture
 
                     using (KinectBuffer colorBuffer = colorFrame.LockRawImageBuffer())
                     {
-                        this.colorBitmap.Lock();
+                        this.rawColorBitmap.Lock();
 
                         // verify data and write the new color frame data to the display bitmap
-                        if ((colorFrameDescription.Width == this.colorBitmap.PixelWidth) && (colorFrameDescription.Height == this.colorBitmap.PixelHeight))
+                        if ((colorFrameDescription.Width == this.rawColorBitmap.PixelWidth) && (colorFrameDescription.Height == this.rawColorBitmap.PixelHeight))
                         {
                             colorFrame.CopyConvertedFrameDataToIntPtr(
-                                this.colorBitmap.BackBuffer,
+                                this.rawColorBitmap.BackBuffer,
                                 (uint)(colorFrameDescription.Width * colorFrameDescription.Height * 4),
                                 ColorImageFormat.Bgra);
 
-                            this.colorBitmap.AddDirtyRect(new Int32Rect(0, 0, this.colorBitmap.PixelWidth, this.colorBitmap.PixelHeight));
+                            this.rawColorBitmap.AddDirtyRect(new Int32Rect(0, 0, this.rawColorBitmap.PixelWidth, this.rawColorBitmap.PixelHeight));
                         }
 
-                        this.colorBitmap.Unlock();
+                        this.rawColorBitmap.Unlock();
                     }
                 }
             }
-        }
 
-        private void DepthFrameArrived(object sender, DepthFrameArrivedEventArgs e)
-        {
+            // process depth frame
             bool depthFrameProcessed = false;
 
             // query depth frame
-            using (DepthFrame depthFrame = e.FrameReference.AcquireFrame())
+            using (DepthFrame depthFrame = reference.DepthFrameReference.AcquireFrame())
             {
                 if (depthFrame != null)
                 {
@@ -138,6 +147,12 @@ namespace DataCapture
 
                             this.ProcessDepthFrameData(depthBuffer.UnderlyingBuffer, depthBuffer.Size, depthFrame.DepthMinReliableDistance, maxDepth);
                             depthFrameProcessed = true;
+
+                            // align color image
+                            ushort[] depthFrameData = new ushort[depthFrameDescription.Width * depthFrameDescription.Height];
+                            // align color image
+                            depthFrame.CopyFrameDataToArray(depthFrameData);
+                            MapColorToDepth(depthFrameData);
                         }
                     }
                 }
@@ -147,6 +162,7 @@ namespace DataCapture
             {
                 this.RenderDepthPixels();
             }
+
         }
 
         /// <summary>
@@ -188,6 +204,34 @@ namespace DataCapture
                 0);
         }
 
+        private void MapColorToDepth(ushort[] depthFrameData)
+        {
+            if (rawColorBitmap != null)
+            {
+                var pixelBytes = colorFrameDescription.BytesPerPixel;
+                byte[] rawColorPixels = new byte[rawColorBitmap.PixelHeight * rawColorBitmap.PixelWidth * pixelBytes];
+                rawColorBitmap.CopyPixels(rawColorPixels, rawColorBitmap.BackBufferStride, 0);
+                byte[] colorPixels = new byte[colorBitmap.PixelHeight * colorBitmap.PixelWidth * pixelBytes];
+                ColorSpacePoint[] colorPoints = new ColorSpacePoint[depthFrameDescription.Height * depthFrameDescription.Width];
+                kinectSensor.CoordinateMapper.MapDepthFrameToColorSpace(depthFrameData, colorPoints);
+                for (var id = 0; id < colorPoints.Length; id++)
+                {
+                    if (colorPoints[id].X < 0 || colorPoints[id].X >= colorFrameDescription.Width ||
+                        colorPoints[id].Y < 0 || colorPoints[id].Y >= colorFrameDescription.Height)
+                        continue;
+
+                    for (var i = 0; i < pixelBytes; i++)
+                        colorPixels[id * pixelBytes + i] =
+                            rawColorPixels[(int)colorPoints[id].Y * rawColorBitmap.BackBufferStride + (int)colorPoints[id].X * pixelBytes + i];
+                }
+                colorBitmap.WritePixels(new Int32Rect(0, 0, colorBitmap.PixelWidth, colorBitmap.PixelHeight),
+                    colorPixels, colorBitmap.BackBufferStride, 0);
+                colorBitmap.Lock();
+                colorBitmap.AddDirtyRect(new Int32Rect(0, 0, colorBitmap.PixelWidth, colorBitmap.PixelHeight));
+                colorBitmap.Unlock();
+            }
+        }
+
         /// <summary>
         /// release resources when closing the window
         /// </summary>
@@ -195,17 +239,11 @@ namespace DataCapture
         /// <param name="e"></param>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (this.colorFrameReader != null)
+            if (this.multiSourceFrameReader != null)
             {
                 // ColorFrameReder is IDisposable
-                this.colorFrameReader.Dispose();
-                this.colorFrameReader = null;
-            }
-            if (this.depthFrameReader != null)
-            {
-                // ColorFrameReder is IDisposable
-                this.depthFrameReader.Dispose();
-                this.depthFrameReader = null;
+                this.multiSourceFrameReader.Dispose();
+                this.multiSourceFrameReader = null;
             }
 
             if (this.kinectSensor != null)
