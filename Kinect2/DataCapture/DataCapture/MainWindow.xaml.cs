@@ -171,8 +171,8 @@ namespace DataCapture
             // save frames
             //new Task(() => SaveFrame(string.Format("{0}{1}_color.png", saveRoot, frameId), colorBitmap)).Start();
             //new Task(() => SaveFrame(string.Format("{0}{1}_depth.png", saveRoot, frameId), depthBitmap)).Start();
-            allColorImgs.Add(colorBitmap.Clone());
-            allDepthImgs.Add(depthBitmap.Clone());
+            //allColorImgs.Add(colorBitmap.Clone());
+            //allDepthImgs.Add(depthBitmap.Clone());
 
             frameId++;
 
@@ -235,7 +235,7 @@ namespace DataCapture
 
                     for (var i = 0; i < pixelBytes; i++)
                         colorPixels[id * pixelBytes + i] =
-                            rawColorPixels[(int)colorPoints[id].Y * rawColorBitmap.BackBufferStride + (int)colorPoints[id].X * pixelBytes + i];
+                            rawColorPixels[(Int32)colorPoints[id].Y * rawColorBitmap.PixelWidth * pixelBytes + (Int32)colorPoints[id].X * pixelBytes + i];
                 }
                 colorBitmap.WritePixels(new Int32Rect(0, 0, colorBitmap.PixelWidth, colorBitmap.PixelHeight),
                     colorPixels, colorBitmap.BackBufferStride, 0);
