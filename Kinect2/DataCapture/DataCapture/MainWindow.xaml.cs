@@ -171,8 +171,8 @@ namespace DataCapture
             // save frames
             //new Task(() => SaveFrame(string.Format("{0}{1}_color.png", saveRoot, frameId), colorBitmap)).Start();
             //new Task(() => SaveFrame(string.Format("{0}{1}_depth.png", saveRoot, frameId), depthBitmap)).Start();
-            //allColorImgs.Add(colorBitmap.Clone());
-            //allDepthImgs.Add(depthBitmap.Clone());
+            allColorImgs.Add(colorBitmap.Clone());
+            allDepthImgs.Add(depthBitmap.Clone());
 
             frameId++;
 
@@ -263,6 +263,18 @@ namespace DataCapture
             {
                 this.kinectSensor.Close();
                 this.kinectSensor = null;
+            }
+
+            // save captured images
+            string saveDir = saveRoot + DateTime.Now.ToString("yyyy_mm_dd_hh_mm_ss") + "\\";
+            Directory.CreateDirectory(saveDir);
+            for (var i = 0; i < allColorImgs.Count; i++)
+            {
+                string color_fn = string.Format("{0}{1}_color.png", saveDir, i);
+                string depth_fn = string.Format("{0}{1}_depth.png", saveDir, i);
+                SaveFrame(color_fn, allColorImgs[i]);
+                SaveFrame(depth_fn, allDepthImgs[i]);
+                Console.WriteLine("saved {0}th frame.", i);
             }
         }
 
